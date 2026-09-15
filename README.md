@@ -1,2 +1,154 @@
-# moss-ai-token-cost-tracker
-Combined dashboard for Claude and OpenAI token costs
+# Moss AI Token Cost Tracker
+
+A dashboard for tracking your team's AI token spend (Anthropic + OpenAI) - no data leaves your machine.
+
+<details open>
+<summary>macOS setup guide (GIF)</summary>
+
+![macOS setup guide](assets/gif/repo_tutor_mac.gif)
+
+</details>
+
+<details>
+<summary>Windows setup guide (GIF)</summary>
+
+![Windows setup guide](assets/gif/repo_tutor_win.gif)
+
+</details>
+
+## Setup
+
+<details>
+<summary>macOS installation guide</summary>
+
+1. Install Git:
+
+   ```bash
+   xcode-select --install
+   ```
+
+   Then restart your terminal.
+
+2. Clone this repo:
+
+   ```bash
+   git clone https://github.com/michael-shiryakov/ai-token-spend.git
+   cd ai-token-spend
+   ```
+
+3. Install nvm:
+
+   ```bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+   ```
+
+   Then restart your terminal (or run source ~/.zshrc).
+
+4. Install the specific Node version:
+
+   ```bash
+   nvm install 24.14.1
+   ```
+
+5. Use it:
+
+   ```bash
+   nvm use 24.14.1
+   ```
+
+6. Set a default version so nvm loads it automatically every time:
+
+   ```bash
+   nvm alias default 24.14.1
+   ```
+
+</details>
+
+<details>
+<summary>Windows installation guide</summary>
+
+1. Install Git:
+
+   ```bash
+   winget install --id Git.Git -e
+   ```
+
+   Then restart your terminal.
+
+2. Clone this repo:
+
+   ```bash
+   git clone https://github.com/michael-shiryakov/ai-token-spend.git
+   cd ai-token-spend
+   ```
+
+3. Install nvm-windows:
+
+   ```bash
+   winget install CoreyButler.NVMforWindows
+   ```
+
+   Then restart your terminal.
+
+4. Install the specific Node version:
+
+   ```bash
+   nvm install 24.14.1
+   ```
+
+5. Use it:
+
+   ```bash
+   nvm use 24.14.1
+   ```
+
+6. If PowerShell blocks npm with a "running scripts is disabled" error, allow locally-created scripts to run:
+
+   ```bash
+   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+   ```
+
+</details>
+
+## Running the tool
+
+There are no dependencies to install.
+
+1. Start the app:
+
+   ```bash
+   npm start
+   ```
+
+3. Open [http://localhost:4173](http://localhost:4173) in your browser.
+
+## Demo mode (no API keys needed)
+
+Want to try it out without connecting real accounts? Run:
+
+```bash
+npm run demo
+```
+
+Then open [http://localhost:4173](http://localhost:4173), and enter anything (e.g. `demo`) as the API key(s) on the setup screen. Every request is served from realistic mock data instead of calling Anthropic/OpenAI, so nothing real is read or charged. A "Demo — sample data" banner stays visible the whole time so it's never mistaken for a live dashboard.
+
+## Useful commands
+
+| Command                    | What it does                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------- |
+| `npm start`                | Runs the local server on port `4173`                                                        |
+| `npm run demo`             | Runs the dashboard in demo mode with mock data, no API keys required                        |
+| `npm test`                 | Runs the test suite                                                                         |
+| `npm run reset-onboarding` | Clears your `.env` (backed up to `.env.bak`) and restarts you into the first-run setup flow |
+
+## How it works
+
+Everything lives in two files: `server.mjs` (a dependency-free Node HTTP server) and `index.html` (a single self-contained page — styles, fonts, and scripts all inlined, no build step). Your API keys stay in your local `.env` file and are only used to call the Anthropic/OpenAI APIs directly from your machine.
+
+## Requirements
+
+- [Node.js](https://nodejs.org/) 22 or newer
+
+## License
+
+[MIT](./LICENSE) © Moss

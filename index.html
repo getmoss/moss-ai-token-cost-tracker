@@ -1,0 +1,3153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Moss: AI Token Cost Tracker</title>
+    <link rel="stylesheet" href="/assets/styles.css" />
+  </head>
+  <body>
+    <header class="app-bar">
+      <div class="brand">
+        <span class="brand-mark"><!--ICON:moss-wordmark--></span>
+      </div>
+      <div class="app-bar-title-group">
+        <div class="demo-badge" id="demoBadge" hidden>Demo &middot; sample data</div>
+        <div class="app-bar-title">AI Token Cost Tracker</div>
+      </div>
+      <div class="app-bar-right">
+        <div class="connection-status">
+          <i></i><span id="connectionStatus">Connecting&hellip;</span>
+        </div>
+        <div class="provider-chip" id="providerChip-anthropic">
+          <button
+            type="button"
+            class="provider-chip-btn"
+            id="providerChipBtn-anthropic"
+          >
+            <span class="provider-chip-dot"></span>
+            <span class="provider-chip-label">Anthropic</span>
+            <span class="provider-chip-caret"></span>
+          </button>
+          <div class="provider-menu" id="providerMenu-anthropic" hidden>
+            <div class="provider-menu-key"></div>
+            <button
+              type="button"
+              class="provider-menu-item"
+              data-action="change"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8M21 3v5h-5" /><path
+                  d="M21 12a9 9 0 0 1-15.3 6.4L3 16M3 21v-5h5"
+              /></svg>
+              <span>Change key</span>
+            </button>
+            <button
+              type="button"
+              class="provider-menu-item provider-menu-item-danger"
+              data-action="remove"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><path d="M4 7h16" /><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" /><path
+                  d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"
+              /></svg>
+              <span>Remove key</span>
+            </button>
+          </div>
+        </div>
+        <div class="provider-chip" id="providerChip-openai">
+          <button type="button" class="provider-chip-btn" id="providerChipBtn-openai">
+            <span class="provider-chip-dot"></span>
+            <span class="provider-chip-label">Connect OpenAI</span>
+            <span class="provider-chip-caret"></span>
+          </button>
+          <div class="provider-menu" id="providerMenu-openai" hidden>
+            <div class="provider-menu-key"></div>
+            <button
+              type="button"
+              class="provider-menu-item"
+              data-action="change"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8M21 3v5h-5" /><path
+                  d="M21 12a9 9 0 0 1-15.3 6.4L3 16M3 21v-5h5"
+              /></svg>
+              <span>Change key</span>
+            </button>
+            <button
+              type="button"
+              class="provider-menu-item provider-menu-item-danger"
+              data-action="remove"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><path d="M4 7h16" /><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" /><path
+                  d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"
+              /></svg>
+              <span>Remove key</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="page">
+      <div class="page-intro">
+        <div>
+          <div class="eyebrow">AI spend for finance</div>
+          <h1>Bring AI token spend under track</h1>
+          <p style="margin-bottom: 8px">
+            AI costs grow across providers because every employee and
+            automated workflow can start the meter, creating a variable cost
+            that can rise faster than finance can see what is driving the
+            bill.
+          </p>
+          <p>
+            See how your company's AI spend changes over time, then trace
+            each movement to the provider, model choice, team, person or
+            workflow behind it.
+          </p>
+        </div>
+        <div class="data-note">Live data · USD</div>
+      </div>
+
+      <section class="card" id="overviewChartCard">
+        <div class="section-heading">
+          <div class="section-copy">
+            <div class="step-label"><b>1</b> Company overview</div>
+            <h2>How is AI spend changing across your company and providers?</h2>
+            <p>
+              See the three signals together: what you spend, how often AI is
+              used and how many employees are using it.
+            </p>
+          </div>
+        </div>
+
+        <div class="section-body">
+          <div class="connect-banner" id="connectBanner" hidden>
+            <a class="connect-banner-icon" href="/connect" aria-hidden="true" tabindex="-1">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </a>
+            <div class="connect-banner-body">
+              <div class="connect-banner-title" id="connectBannerTitle"></div>
+              <div class="connect-banner-desc" id="connectBannerDesc"></div>
+            </div>
+            <a class="connect-banner-btn" id="connectBannerBtn" href="/connect"></a>
+            <button
+              class="connect-banner-dismiss"
+              id="connectBannerDismiss"
+              type="button"
+              aria-label="Dismiss"
+            >
+              &times;
+            </button>
+          </div>
+
+          <div class="loading-block" id="overviewKpiBlock">
+            <section class="kpis" id="kpis" aria-label="Key metrics"></section>
+          </div>
+
+          <div class="overview-controls-row">
+            <div class="section-controls">
+              <div
+                class="segmented"
+                id="overviewMetricPicker"
+                role="tablist"
+                aria-label="Overview metric"
+              >
+                <button role="tab" data-metric="spend" aria-selected="true">
+                  Spend
+                </button>
+                <button role="tab" data-metric="usage" aria-selected="false">
+                  Usage
+                </button>
+                <button role="tab" data-metric="adoption" aria-selected="false">
+                  Adoption
+                </button>
+              </div>
+              <div class="period-picker">
+                <div
+                  class="segmented"
+                  id="periodPicker"
+                  role="group"
+                  aria-label="Reporting period"
+                >
+                  <button type="button" data-days="7" aria-selected="true">
+                    1 week
+                  </button>
+                  <button type="button" data-days="28" aria-selected="false">
+                    4 weeks
+                  </button>
+                  <button type="button" data-days="180" aria-selected="false">
+                    6 months
+                  </button>
+                  <button
+                    type="button"
+                    data-days="custom"
+                    aria-selected="false"
+                  >
+                    Custom&hellip;
+                  </button>
+                </div>
+                <span class="custom-range" id="customRangeWrap" hidden>
+                  <input type="date" id="rangeFrom" aria-label="From date" />
+                  <span>&ndash;</span>
+                  <input type="date" id="rangeTo" aria-label="To date" />
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card loading-block" id="overviewChartBody">
+            <div class="chart-head">
+              <h2 id="overviewChartTitle" style="margin: 0; font-size: 15px"></h2>
+              <div class="legend" id="overviewLegend"></div>
+            </div>
+            <div class="chart-wrap" id="overviewChartWrap">
+              <svg
+                id="overviewChart"
+                viewBox="0 0 1100 340"
+                role="img"
+                aria-label="Provider overview trend"
+              ></svg>
+              <div
+                class="tooltip"
+                id="overviewTooltip"
+                role="status"
+                aria-live="polite"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="investigationCard">
+        <div class="section-heading">
+          <div class="section-copy">
+            <div class="step-label"><b>2</b> Organisational allocation</div>
+            <h2>Trace where AI spend is coming from.</h2>
+            <p>
+              Start with the company total above, then investigate spikes and
+              anomalies by tracing the bill back to the tools, models, teams,
+              people and automated work behind it.
+            </p>
+          </div>
+        </div>
+        <nav
+          class="tabs"
+          id="dimensionTabs"
+          aria-label="Investigation dimensions"
+        >
+          <button data-dimension="product" aria-selected="true">
+            Product category
+          </button>
+          <button data-dimension="model" aria-selected="false">AI model</button>
+          <button data-dimension="team" aria-selected="false">Team</button>
+          <button data-dimension="person" aria-selected="false">
+            Top spender
+          </button>
+          <button data-dimension="skill" aria-selected="false">
+            API key / workflow
+          </button>
+        </nav>
+        <div class="investigation-head">
+          <div class="investigation-question">
+            <div class="small-label">Finance question</div>
+            <h3 id="dimensionQuestion"></h3>
+            <p id="dimensionDescription"></p>
+          </div>
+        </div>
+        <div
+          class="chart-meta"
+          id="investigationChartMeta"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            gap: 16px;
+            flex-wrap: wrap;
+          "
+        >
+          <span
+            id="investigationChartTitle"
+            style="
+              font-size: 12px;
+              color: var(--text-secondary);
+              font-weight: 730;
+            "
+          ></span>
+          <div class="legend" id="investigationLegend"></div>
+        </div>
+        <div class="chart-wrap" id="investigationChartWrap">
+          <svg
+            id="investigationChart"
+            viewBox="0 0 1100 340"
+            role="img"
+            aria-label="Combined spend and requests trend"
+          ></svg>
+          <div
+            class="tooltip"
+            id="investigationTooltip"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </div>
+        <div
+          class="investigation-placeholder"
+          id="investigationPlaceholder"
+          hidden
+        ></div>
+
+        <div class="insight-strip" id="investigationInsight" hidden>
+          <b>What to notice</b><span id="investigationInsightText"></span>
+        </div>
+
+        <div class="table-block" style="padding: 20px">
+          <div
+            class="chart-head"
+            style="border-bottom: none; padding: 0 0 11px"
+          >
+            <h3
+              id="investigationTableTitle"
+              style="margin: 0; font-size: 15px"
+            ></h3>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <span class="count-tag" id="investigationTableNote"></span>
+              <button class="table-toggle" id="investigationSeeAllBtn" hidden>
+                See all
+              </button>
+            </div>
+          </div>
+          <div class="table-view-wrap">
+            <table id="investigationTable">
+              <thead>
+                <tr>
+                  <th id="investigationNameColumn">Name</th>
+                  <th class="num sortable" data-sort="spend">Spend</th>
+                  <th class="num sortable" data-sort="trend">vs previous period</th>
+                  <th class="num sortable" data-sort="share">Share of total spend</th>
+                  <th class="num sortable" data-sort="benchmark" id="investigationBenchmarkColumn">vs average</th>
+                  <th
+                    class="num"
+                    id="investigationPricingColumn"
+                    style="display: none"
+                  >
+                    Current token price · USD per 1m tokens
+                  </th>
+                  <th class="num sortable" data-sort="requests">Requests sent</th>
+                  <th class="num sortable" data-sort="costPer1k">Cost per 1,000 requests</th>
+                </tr>
+              </thead>
+              <tbody id="investigationBody"></tbody>
+            </table>
+          </div>
+          <p
+            class="pricing-note"
+            id="investigationPricingNote"
+            style="display: none"
+          >
+            Published list prices in USD per 1 million tokens. Checked 1
+            September 2026 on the official
+            <a
+              href="https://platform.claude.com/docs/en/about-claude/pricing"
+              target="_blank"
+              rel="noreferrer"
+              >Anthropic pricing page</a
+            >. Current prices may differ from those applied to historical
+            usage. This pricing reference is Anthropic-only for now — OpenAI
+            model pricing isn't integrated yet.
+          </p>
+        </div>
+      </section>
+
+      <section class="card future-card" aria-label="Saving opportunities coming soon">
+        <div class="section-heading">
+          <div class="section-copy">
+            <div class="step-label"><b>3</b> Saving opportunities</div>
+            <h2>Where can we spend less without cutting useful AI work?</h2>
+            <p>
+              Find the workloads, models and usage habits where a change
+              could lower cost without getting in the way of productive use.
+            </p>
+            <p>Coming soon</p>
+          </div>
+        </div>
+      </section>
+      <section class="card future-card" aria-label="Planning coming later">
+        <div class="section-heading">
+          <div class="section-copy">
+            <div class="step-label"><b>4</b> Planning</div>
+            <h2>How might our AI spend develop?</h2>
+            <p>
+              Build a baseline forecast from spend, requests and adoption,
+              then adjust usage, token prices and provider or model mix to
+              test different futures.
+            </p>
+            <p>Coming later</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import {
+        money,
+        pct,
+        signedMoney,
+        signedNumber,
+        compactNumber,
+        pctChange,
+        trendBadge,
+        productLabel,
+        MODEL_PRICING,
+        modelPricingFor,
+        compareRows,
+        foldOther,
+        isoToday,
+        isoDaysAgo,
+      } from "/lib/format.mjs";
+      import { createSvgElement, xScale, yScale, niceMax } from "/lib/chart-dom.mjs";
+      import { readRangeCache, writeRangeCache } from "/lib/range-cache.mjs";
+
+      const COLOR_VARS = [
+        "--series-1",
+        "--series-2",
+        "--series-3",
+        "--series-4",
+        "--series-5",
+        "--series-6",
+      ];
+      const rootStyle = getComputedStyle(document.documentElement);
+      const colorFor = (index) =>
+        rootStyle
+          .getPropertyValue(COLOR_VARS[index % COLOR_VARS.length])
+          .trim();
+      const MUTED = () => rootStyle.getPropertyValue("--text-muted").trim();
+
+      const state = {
+        period: 7,
+        customRange: null, // { from: "YYYY-MM-DD", to: "YYYY-MM-DD" } when period === "custom"
+        tab: "byProduct",
+        tableView: false,
+        cost: null,
+        people: null,
+        peopleFilter: "",
+        efficiency: null,
+        seats: null,
+        segments: null,
+        toolAcceptance: null,
+        skills: null,
+        efficiencyByModel: null,
+        teams: null,
+        teamSeries: null,
+        openaiProjects: null,
+        visibility: {
+          byProduct: new Set(),
+          byModel: new Set(),
+        },
+        expanded: {
+          products: false,
+          models: false,
+          modelCaching: false,
+          teams: false,
+          skills: false,
+          investigation: false,
+        },
+        overview: { metric: "spend" },
+      };
+
+      // Tables long enough to warrant a "See all" toggle collapse to this
+      // many rows by default (mirrors the native Claude dashboard's cards).
+      const ROW_LIMIT = 5;
+
+      // The preset period-picker options (everything except "Custom…"), used both to
+      // validate ?period= on load and to know which ranges to prefetch in the background.
+      const PRESET_RANGES = [7, 28, 180];
+
+      // Restores period/customRange from ?period=&from=&to= so a page refresh keeps
+      // whatever range the user had selected, instead of always resetting to 7 days.
+      function readRangeFromUrl() {
+        const params = new URLSearchParams(location.search);
+        const period = params.get("period");
+        const from = params.get("from");
+        const to = params.get("to");
+        if (period === "custom" && from && to) {
+          state.period = "custom";
+          state.customRange = { from, to };
+        } else if (period && PRESET_RANGES.includes(Number(period))) {
+          state.period = Number(period);
+        }
+      }
+      readRangeFromUrl();
+
+      // ANTHROPIC_ENABLED/OPENAI_ENABLED in server.mjs, injected into window.__ATS_PROVIDERS__
+      // (see loadIndexHtml) — the authoritative "is this provider actually connected" fact.
+      // Not derived from spend: a genuinely-connected provider can still show $0 in totals
+      // for the selected range, which the old anthropicSpend/openaiSpend > 0 heuristic here
+      // used to get wrong.
+      function providerConnected(key) {
+        const p = window.__ATS_PROVIDERS__;
+        return !!(p && p[key] && p[key].connected);
+      }
+
+      function updateConnectionStatus(totals) {
+        const el = document.getElementById("connectionStatus");
+        if (!el || !totals) return;
+        const anthropicOn = providerConnected("anthropic");
+        const openaiOn = providerConnected("openai");
+        const providers =
+          anthropicOn && openaiOn
+            ? "Anthropic and ChatGPT"
+            : anthropicOn
+              ? "Anthropic"
+              : openaiOn
+                ? "ChatGPT"
+                : "none yet";
+        const time = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+        el.textContent = `Providers connected: ${providers} · Updated today at ${time}`;
+      }
+
+      // Same providerConnected() source of truth as updateConnectionStatus above, so this
+      // banner and the "Add {provider}" KPI tile (see renderKpis) appear/disappear in lockstep
+      // with the "Providers connected" line. Copy is intentionally asymmetric: per
+      // available-data-points.md, seat/adoption data only exists on the Anthropic side, so only
+      // the "add Anthropic" direction can honestly mention it — "add OpenAI" never does.
+      function renderConnectNudge(totals) {
+        const banner = document.getElementById("connectBanner");
+        if (!banner || !totals) return;
+        const anthropicOn = providerConnected("anthropic");
+        const openaiOn = providerConnected("openai");
+        const missing =
+          anthropicOn && !openaiOn
+            ? "openai"
+            : openaiOn && !anthropicOn
+              ? "anthropic"
+              : null;
+        if (!missing) {
+          banner.hidden = true;
+          return;
+        }
+        const dismissKey = `atsDismissedConnectBanner:v1:${missing}`;
+        if (localStorage.getItem(dismissKey)) {
+          banner.hidden = true;
+          return;
+        }
+        const copy =
+          missing === "openai"
+            ? {
+                title: "You're only tracking Claude spend",
+                desc: "Connect OpenAI to see combined AI cost and usage across both providers.",
+                button: "Connect OpenAI",
+              }
+            : {
+                title: "You're only tracking ChatGPT spend",
+                desc: "Connect Anthropic to see combined AI cost and usage across both providers, plus Claude adoption tracking.",
+                button: "Connect Anthropic",
+              };
+        document.getElementById("connectBannerTitle").textContent = copy.title;
+        document.getElementById("connectBannerDesc").textContent = copy.desc;
+        const btn = document.getElementById("connectBannerBtn");
+        btn.textContent = copy.button;
+        document.getElementById("connectBannerDismiss").onclick = () => {
+          localStorage.setItem(dismissKey, "1");
+          banner.hidden = true;
+        };
+        banner.hidden = false;
+      }
+
+      // Canonical string identifying the currently-selected range, for staleness checks in
+      // loadPiece (a preset day count on its own isn't unique once custom ranges exist — two
+      // different custom ranges could both be "in flight" as the user edits the date inputs).
+      function currentRangeKey() {
+        return state.period === "custom" && state.customRange
+          ? `custom:${state.customRange.from}:${state.customRange.to}`
+          : String(state.period);
+      }
+
+      // Query-string fragment for the /api/* fetches below.
+      function currentRangeQuery() {
+        return state.period === "custom" && state.customRange
+          ? `from=${state.customRange.from}&to=${state.customRange.to}`
+          : `days=${state.period}`;
+      }
+
+      // Day count for "vs prior Nd" labels — matches server.mjs's own day-count math for a
+      // custom range (inclusive of both endpoints).
+      function currentRangeDays() {
+        if (state.period === "custom" && state.customRange) {
+          const ms =
+            new Date(`${state.customRange.to}T00:00:00Z`) -
+            new Date(`${state.customRange.from}T00:00:00Z`);
+          return Math.round(ms / (24 * 60 * 60 * 1000)) + 1;
+        }
+        return state.period;
+      }
+
+      // previousValue is null when the backend couldn't produce a full equal-length prior
+      // period (see server.mjs's hasFullPreviousPeriod checks) — distinct from a present-but-
+      // zero value, which just yields no computable % change.
+      function deltaLine(
+        currentValue,
+        previousValue,
+        { points = false, goodDirection = null, formatAbs = null } = {},
+      ) {
+        if (previousValue == null) {
+          return `<span class="trend-empty">not enough history yet for a comparison</span>`;
+        }
+        const diff = points
+          ? currentValue - previousValue
+          : pctChange(currentValue, previousValue);
+        if (diff == null) return "";
+        const absPart = formatAbs
+          ? ` (${formatAbs(currentValue - previousValue)})`
+          : "";
+        return `${trendBadge(diff, { unit: points ? "pp" : "%", goodDirection, extra: absPart })} vs prior ${currentRangeDays()}d`;
+      }
+      const TOOL_LABEL = {
+        edit_tool: "Edit",
+        multi_edit_tool: "Multi-edit",
+        write_tool: "Write",
+        notebook_edit_tool: "Notebook edit",
+      };
+
+      // Combined chart + ranked table per dimension land in later steps —
+      // for now this just drives the tab shell and its question/description
+      // copy (investigationState.dimension is read from here).
+      const DIMENSIONS = {
+        product: {
+          label: "Product category",
+          short: "products",
+          noun: "product",
+          question:
+            "Which AI products and cost categories cost us the most?",
+          description:
+            "Separate employee tools, development work, customer features and automations to see which type of AI use is growing.",
+        },
+        model: {
+          label: "AI model",
+          short: "models",
+          noun: "model",
+          question: "Are more expensive models pushing up the bill?",
+          description:
+            "Compare company spend and requests by model with current provider prices per 1 million input and output tokens. This shows the rates behind each model and how your model mix affects the bill.",
+        },
+        team: {
+          label: "Team",
+          short: "teams",
+          noun: "team",
+          question: "Where in the company is AI spend growing?",
+          description:
+            "See which teams account for the bill and whether their costs are rising faster or slower than the company average.",
+          benchmarkLabel: "vs company average",
+        },
+        person: {
+          label: "Top spender",
+          short: "people",
+          noun: "person",
+          question: "Which employees account for the most AI spend?",
+          description:
+            "Identify the people linked to the most spend, then account for the different ways their teams and roles use AI.",
+          unavailableNote:
+            "A daily spend/requests trend isn't available for individual people — Anthropic's API only reports per-person cost as a period total, not a daily series. See the ranked table below instead.",
+          benchmarkLabel: "vs team member average",
+        },
+        skill: {
+          label: "API key / workflow",
+          short: "skills",
+          noun: "skill",
+          question: "Where is automated AI usage adding most to the bill?",
+          description:
+            "Compare automated workloads by spend, growth and cost per request to find agents that may need tighter guardrails or could deliver the same result with a lower-cost model.",
+          unavailableNote:
+            "A daily spend/requests trend isn't available for skills — Anthropic's API only reports per-skill cost as a period total, not a daily series. See the ranked table below instead.",
+          benchmarkLabel: "vs workflow average",
+        },
+      };
+      const investigationState = { dimension: "product", sort: { key: "spend", dir: "desc" } };
+      const SORT_LABELS = {
+        spend: "spend",
+        trend: "vs previous period",
+        share: "share of total spend",
+        benchmark: "vs average",
+        requests: "requests sent",
+        costPer1k: "cost per 1,000 requests",
+      };
+      // Product/Model already carry a daily spend+requests series (from
+      // cost_report). Team gets its own daily series from /api/teams
+      // (state.teamSeries). Person/Skill have NO daily series available at
+      // all — confirmed live: cost_report's group_by only supports product,
+      // model, context_window, inference_geo, speed, slack_channel_id,
+      // teams_channel_id, claude_tag_category, claude_tag_user_id,
+      // rbac_group_id, claude_project_id, cost_type, token_type — nothing
+      // per-person or per-skill. Those two dimensions' /users and /skills
+      // endpoints only report a period total, not a time series, so there's
+      // no real per-row daily trend to draw for them.
+      function investigationRowsForDimension() {
+        const dimension = investigationState.dimension;
+        if (dimension === "product" || dimension === "model") {
+          if (!state.cost) return null;
+          const raw =
+            dimension === "product"
+              ? state.cost.byProduct.map((s) => ({
+                  ...s,
+                  name: productLabel(s.name),
+                }))
+              : state.cost.byModel;
+          const top = raw.slice(0, 4); // already sorted desc by spend
+          return {
+            labels: state.cost.labels,
+            rows: top.map((s, i) => ({
+              name: s.name,
+              color: colorFor(i),
+              spend: s.spend,
+              requests: s.requestsDaily,
+            })),
+          };
+        }
+        if (dimension === "team") {
+          if (!state.teamSeries) return null;
+          return {
+            labels: state.teamSeries.labels,
+            rows: state.teamSeries.series.map((s, i) => ({
+              name: s.name,
+              color: colorFor(i),
+              spend: s.spend,
+              requests: s.requests,
+            })),
+          };
+        }
+        return null;
+      }
+
+      function renderInvestigationLegend(rows) {
+        const legend = document.getElementById("investigationLegend");
+        legend.innerHTML = "";
+        for (const r of rows) {
+          const item = document.createElement("span");
+          item.className = "legend-item";
+          const key = document.createElement("i");
+          key.className = "legend-key";
+          key.style.background = r.color;
+          item.append(key, document.createTextNode(r.name));
+          legend.appendChild(item);
+        }
+      }
+
+      // Spend (solid, left axis) + requests (dashed, right axis) for the
+      // same top-N rows, one color per row shared across both lines —
+      // mirrors the mockup's dual-axis combined chart.
+      function drawCombinedChart(labels, rows) {
+        const svg = document.getElementById("investigationChart");
+        svg.innerHTML = "";
+        const width = 1100,
+          height = 340;
+        const margin = { top: 16, right: 56, bottom: 28, left: 64 };
+        const plotW = width - margin.left - margin.right;
+        const plotH = height - margin.top - margin.bottom;
+        svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+        const spendMax = Math.max(...rows.flatMap((r) => r.spend), 1) * 1.15;
+        const requestsMax =
+          Math.max(...rows.flatMap((r) => r.requests), 1) * 1.15;
+
+        const x = xScale(labels.length, plotW, margin.left);
+        const ySpend = yScale(spendMax, plotH, margin.top);
+        const yRequests = yScale(requestsMax, plotH, margin.top);
+
+        for (let i = 0; i <= 4; i++) {
+          const spendValue = (spendMax / 4) * i;
+          const py = ySpend(spendValue);
+          svg.appendChild(
+            createSvgElement("line", {
+              class: "gridline",
+              x1: margin.left,
+              x2: width - margin.right,
+              y1: py,
+              y2: py,
+            }),
+          );
+          const leftLabel = createSvgElement("text", {
+            class: "axis-label",
+            x: margin.left - 10,
+            y: py + 4,
+            "text-anchor": "end",
+          });
+          leftLabel.textContent = money(spendValue);
+          svg.appendChild(leftLabel);
+          const rightLabel = createSvgElement("text", {
+            class: "axis-label",
+            x: width - margin.right + 10,
+            y: py + 4,
+            "text-anchor": "start",
+          });
+          rightLabel.textContent = compactNumber((requestsMax / 4) * i);
+          svg.appendChild(rightLabel);
+        }
+
+        const labelStep = Math.ceil(labels.length / 8);
+        labels.forEach((d, i) => {
+          if (i % labelStep !== 0 && i !== labels.length - 1) return;
+          const label = createSvgElement("text", {
+            class: "axis-label",
+            x: x(i),
+            y: height - 8,
+            "text-anchor": "middle",
+          });
+          label.textContent = d.slice(5).replace("-", "/");
+          svg.appendChild(label);
+        });
+
+        rows.forEach((r) => {
+          const spendPoints = r.spend
+            .map((v, i) => `${x(i)},${ySpend(v)}`)
+            .join(" ");
+          svg.appendChild(
+            createSvgElement("polyline", {
+              class: "series-line",
+              points: spendPoints,
+              stroke: r.color,
+            }),
+          );
+          const requestPoints = r.requests
+            .map((v, i) => `${x(i)},${yRequests(v)}`)
+            .join(" ");
+          svg.appendChild(
+            createSvgElement("polyline", {
+              points: requestPoints,
+              fill: "none",
+              stroke: r.color,
+              "stroke-width": 2,
+              "stroke-dasharray": "6 5",
+              opacity: 0.75,
+            }),
+          );
+        });
+
+        const crosshair = createSvgElement("line", {
+          class: "crosshair",
+          x1: 0,
+          x2: 0,
+          y1: margin.top,
+          y2: height - margin.bottom,
+          opacity: 0,
+        });
+        svg.appendChild(crosshair);
+
+        const tooltip = document.getElementById("investigationTooltip");
+        const chartWrap = document.getElementById("investigationChartWrap");
+
+        labels.forEach((d, i) => {
+          const bandW = plotW / labels.length;
+          const hit = createSvgElement("rect", {
+            class: "hover-col",
+            x: x(i) - bandW / 2,
+            y: margin.top,
+            width: bandW,
+            height: plotH,
+            tabindex: "0",
+            role: "img",
+          });
+          const summary = rows
+            .map(
+              (r) =>
+                `${r.name}: ${money(r.spend[i])} · ${compactNumber(r.requests[i])} req`,
+            )
+            .join(", ");
+          hit.setAttribute("aria-label", `${d}: ${summary}`);
+          const show = () => {
+            crosshair.setAttribute("x1", x(i));
+            crosshair.setAttribute("x2", x(i));
+            crosshair.setAttribute("opacity", 1);
+            tooltip.innerHTML = "";
+            const dateEl = document.createElement("div");
+            dateEl.className = "tooltip-date";
+            dateEl.textContent = d;
+            tooltip.appendChild(dateEl);
+            rows.forEach((r) => {
+              const row = document.createElement("div");
+              row.className = "tooltip-row";
+              const key = document.createElement("span");
+              key.className = "tooltip-key";
+              key.style.background = r.color;
+              const name = document.createElement("span");
+              name.className = "tooltip-name";
+              name.textContent = r.name;
+              const value = document.createElement("span");
+              value.className = "tooltip-value";
+              value.textContent = `${money(r.spend[i])} · ${compactNumber(r.requests[i])} req`;
+              row.append(key, name, value);
+              tooltip.appendChild(row);
+            });
+            const bounds = svg.getBoundingClientRect();
+            const wrapBounds = chartWrap.getBoundingClientRect();
+            const scaleX = bounds.width / width;
+            tooltip.style.left = `${bounds.left - wrapBounds.left + x(i) * scaleX}px`;
+            tooltip.style.top = `${bounds.top - wrapBounds.top + margin.top}px`;
+            tooltip.style.opacity = "1";
+          };
+          const hide = () => {
+            crosshair.setAttribute("opacity", 0);
+            tooltip.style.opacity = "0";
+          };
+          hit.addEventListener("pointerenter", show);
+          hit.addEventListener("pointermove", show);
+          hit.addEventListener("pointerleave", hide);
+          hit.addEventListener("focus", show);
+          hit.addEventListener("blur", hide);
+          svg.appendChild(hit);
+        });
+      }
+
+      // Full (not just top-4) row list per dimension, for the ranked table —
+      // separate from investigationRowsForDimension() above, which only
+      // returns the top 4 rows needed for the combined chart.
+      function investigationFullRows() {
+        const dimension = investigationState.dimension;
+        if (dimension === "product") {
+          if (!state.cost) return null;
+          return state.cost.byProduct.map((p) => ({
+            name: productLabel(p.name),
+            sub: "",
+            spend: p.totalSpend,
+            previousSpend: p.previousSpend,
+            requests: p.requests,
+          }));
+        }
+        if (dimension === "model") {
+          if (!state.cost) return null;
+          return state.cost.byModel.map((m) => ({
+            name: m.name,
+            sub: "",
+            spend: m.totalSpend,
+            previousSpend: m.previousSpend,
+            requests: m.requests,
+          }));
+        }
+        if (dimension === "team") {
+          if (!state.teams) return null;
+          return state.teams.map((t) => ({
+            name: t.name,
+            sub: "",
+            spend: t.spend,
+            previousSpend: t.previousSpend,
+            requests: t.requests,
+          }));
+        }
+        if (dimension === "person") {
+          if (!state.people) return null;
+          return state.people.map((p) => ({
+            name: p.name,
+            sub: p.email && p.email !== p.name ? p.email : "",
+            spend: p.amount,
+            previousSpend: p.previousAmount,
+            requests: p.requests,
+            anthropicAmount: p.anthropicAmount,
+            openaiAmount: p.openaiAmount,
+          }));
+        }
+        if (dimension === "skill") {
+          if (!state.skills) return null;
+          // "Spend" here is overage cost, not list value — see the earlier
+          // discussion on this dashboard's Skills card: list value counts
+          // seat-covered usage too and doesn't tie to actual billed spend,
+          // while overage cost is the closest thing to a real dollar figure.
+          return state.skills.map((s) => ({
+            name: s.name,
+            sub: "",
+            spend: s.overageSpend,
+            previousSpend: s.previousOverageSpend,
+            requests: s.invocations,
+          }));
+        }
+        return null;
+      }
+
+      // Computed from real rows (top-by-share, fastest-growing-by-trend) —
+      // not hardcoded copy like the mockup's fake insight text. Names come
+      // from external API data, so this builds nodes with textContent rather
+      // than an HTML template string.
+      function renderInvestigationInsight(sorted, totalSpend, noun) {
+        const strip = document.getElementById("investigationInsight");
+        const text = document.getElementById("investigationInsightText");
+        text.innerHTML = "";
+
+        if (!sorted.length || totalSpend <= 0) {
+          strip.hidden = true;
+          return;
+        }
+
+        const top = sorted[0];
+        const topShare = (top.spend / totalSpend) * 100;
+
+        const growing = sorted
+          .map((r) => ({
+            row: r,
+            trend: r.previousSpend ? pctChange(r.spend, r.previousSpend) : null,
+          }))
+          .filter((r) => r.trend != null && r.trend > 0);
+        const fastest = growing.length
+          ? growing.reduce((a, b) => (b.trend > a.trend ? b : a))
+          : null;
+
+        const topName = document.createElement("strong");
+        topName.textContent = top.name;
+        text.append(
+          topName,
+          ` is the largest ${noun} at ${topShare.toFixed(0)}% of spend.`,
+        );
+
+        if (fastest && fastest.row.name !== top.name) {
+          const fastName = document.createElement("strong");
+          fastName.textContent = fastest.row.name;
+          text.append(
+            " ",
+            fastName,
+            ` has the fastest growth, up ${fastest.trend.toFixed(0)}% vs the prior period.`,
+          );
+        }
+
+        strip.hidden = false;
+      }
+
+      function updateSortHeaders() {
+        document.querySelectorAll("#investigationTable th.sortable").forEach((th) => {
+          th.querySelector(".sort-arrow")?.remove();
+          const arrow = document.createElement("span");
+          arrow.className = "sort-arrow";
+          if (th.dataset.sort === investigationState.sort.key) {
+            const dir = investigationState.sort.dir;
+            th.setAttribute("aria-sort", dir === "asc" ? "ascending" : "descending");
+            arrow.textContent = dir === "asc" ? "▲" : "▼";
+          } else {
+            th.removeAttribute("aria-sort");
+            arrow.textContent = "▾";
+          }
+          th.appendChild(arrow);
+        });
+      }
+
+      function renderInvestigationTable() {
+        const dimension = investigationState.dimension;
+        const isModel = dimension === "model";
+        const def = DIMENSIONS[dimension];
+        const body = document.getElementById("investigationBody");
+        const seeAllBtn = document.getElementById("investigationSeeAllBtn");
+        const titleCase =
+          def.short.charAt(0).toUpperCase() + def.short.slice(1);
+        const colCount = isModel ? 8 : 7;
+        document.getElementById("investigationNameColumn").textContent =
+          def.label;
+        document.getElementById("investigationBenchmarkColumn").textContent =
+          def.benchmarkLabel ?? "vs average";
+        document.getElementById("investigationPricingColumn").style.display =
+          isModel ? "" : "none";
+        document.getElementById("investigationPricingNote").style.display =
+          isModel ? "block" : "none";
+
+        const rows = investigationFullRows();
+        body.innerHTML = "";
+
+        if (!rows) {
+          document.getElementById("investigationTableTitle").textContent =
+            titleCase;
+          document.getElementById("investigationTableNote").textContent = "";
+          document.getElementById("investigationInsight").hidden = true;
+          seeAllBtn.hidden = true;
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = colCount;
+          cell.className = "empty";
+          cell.textContent = "Loading…";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+
+        if (!rows.length) {
+          document.getElementById("investigationTableTitle").textContent =
+            titleCase;
+          document.getElementById("investigationTableNote").textContent = "";
+          document.getElementById("investigationInsight").hidden = true;
+          seeAllBtn.hidden = true;
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = colCount;
+          cell.className = "empty";
+          cell.textContent = "No data for this period";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+
+        // Every sortable column computed once up front, before sorting —
+        // share/benchmark/costPer1k all depend on the full unsorted list's
+        // totals, and the insight strip always reflects true top-by-spend
+        // regardless of which column the table is currently sorted by.
+        const totalSpend = rows.reduce((sum, r) => sum + r.spend, 0);
+        const averageSpend = totalSpend / rows.length;
+        const enriched = rows.map((r) => ({
+          ...r,
+          trend: r.previousSpend != null ? pctChange(r.spend, r.previousSpend) : null,
+          share: totalSpend > 0 ? (r.spend / totalSpend) * 100 : 0,
+          benchmark: averageSpend > 0 ? (r.spend / averageSpend - 1) * 100 : null,
+          costPer1k: r.requests > 0 ? (r.spend / r.requests) * 1000 : null,
+        }));
+        const bySpendDesc = enriched.slice().sort((a, b) => b.spend - a.spend);
+        renderInvestigationInsight(bySpendDesc, totalSpend, def.noun);
+
+        const { key: sortKey, dir: sortDir } = investigationState.sort;
+        const sorted = enriched.sort((a, b) => compareRows(a, b, sortKey, sortDir));
+        updateSortHeaders();
+
+        document.getElementById("investigationTableTitle").textContent =
+          "Full spend breakdown";
+        document.getElementById("investigationTableNote").textContent = state
+          .expanded.investigation
+          ? `${titleCase} · full breakdown · sorted by ${SORT_LABELS[sortKey]} (${sortDir === "asc" ? "low to high" : "high to low"}) · current vs prior ${currentRangeDays()}d`
+          : `${titleCase} · top ${Math.min(ROW_LIMIT, sorted.length)} of ${sorted.length} · sorted by ${SORT_LABELS[sortKey]} (${sortDir === "asc" ? "low to high" : "high to low"}) · current vs prior ${currentRangeDays()}d`;
+
+        seeAllBtn.hidden = sorted.length <= ROW_LIMIT;
+        seeAllBtn.textContent = state.expanded.investigation
+          ? `Return to top ${ROW_LIMIT}`
+          : `View all ${sorted.length}`;
+        const visible = state.expanded.investigation
+          ? sorted
+          : sorted.slice(0, ROW_LIMIT);
+
+        visible.forEach((r, i) => {
+          const share = r.share;
+          const benchmarkPct = r.benchmark;
+          const costPer1k = r.costPer1k;
+          const color = colorFor(i);
+
+          const row = document.createElement("tr");
+
+          const nameCell = document.createElement("td");
+          const nameWrap = document.createElement("div");
+          nameWrap.className = "row-name";
+          const rank = document.createElement("span");
+          rank.className = "row-rank";
+          rank.textContent = String(i + 1);
+          const dot = document.createElement("span");
+          dot.className = "row-dot";
+          dot.style.background = color;
+          const nameText = document.createElement("div");
+          const nameMain = document.createElement("div");
+          nameMain.className = "name-main";
+          nameMain.textContent = r.name;
+          nameText.appendChild(nameMain);
+          if (r.sub) {
+            const nameSub = document.createElement("div");
+            nameSub.className = "name-sub";
+            nameSub.textContent = r.sub;
+            nameText.appendChild(nameSub);
+          }
+          nameWrap.append(rank, dot, nameText);
+          nameCell.appendChild(nameWrap);
+
+          const spendCell = document.createElement("td");
+          spendCell.className = "num";
+          spendCell.textContent = money(r.spend);
+          // Only Top spender rows carry a per-provider split — Product/Model/
+          // Team/Skill breakdowns are Anthropic-only in our data already.
+          if (r.anthropicAmount != null && r.openaiAmount > 0) {
+            const providerSplit = document.createElement("div");
+            providerSplit.className = "name-sub";
+            providerSplit.textContent = `${money(r.anthropicAmount)} Anthropic + ${money(r.openaiAmount)} ChatGPT`;
+            spendCell.appendChild(providerSplit);
+          }
+
+          const trendCell = document.createElement("td");
+          trendCell.className = "num";
+          trendCell.innerHTML =
+            r.trend == null
+              ? `<span class="trend-empty">n/a</span>`
+              : trendBadge(r.trend, { goodDirection: "down" }) || "—";
+
+          const shareCell = document.createElement("td");
+          shareCell.className = "num share-cell";
+          const shareValue = document.createElement("div");
+          shareValue.textContent = `${share.toFixed(1)}%`;
+          const shareBar = document.createElement("div");
+          shareBar.className = "share-bar";
+          const shareBarFill = document.createElement("i");
+          shareBarFill.style.width = `${Math.min(100, share)}%`;
+          shareBarFill.style.background = color;
+          shareBar.appendChild(shareBarFill);
+          shareCell.append(shareValue, shareBar);
+
+          const benchmarkCell = document.createElement("td");
+          benchmarkCell.className = "num";
+          benchmarkCell.textContent =
+            benchmarkPct == null
+              ? "—"
+              : `${benchmarkPct >= 0 ? "+" : ""}${benchmarkPct.toFixed(0)}%`;
+
+          let pricingCell = null;
+          if (isModel) {
+            pricingCell = document.createElement("td");
+            pricingCell.className = "num price-cell";
+            const pricing = modelPricingFor(r.name);
+            if (pricing) {
+              const main = document.createElement("b");
+              main.textContent = `Input $${pricing.input} · Output $${pricing.output}`;
+              const sub = document.createElement("small");
+              sub.textContent = `Cached input $${pricing.cached}`;
+              pricingCell.append(main, sub);
+            } else {
+              pricingCell.textContent = "—";
+            }
+          }
+
+          const requestsCell = document.createElement("td");
+          requestsCell.className = "num";
+          requestsCell.textContent = r.requests.toLocaleString();
+
+          const costPer1kCell = document.createElement("td");
+          costPer1kCell.className = "num";
+          costPer1kCell.textContent =
+            costPer1k == null ? "—" : money(costPer1k);
+
+          row.append(nameCell, spendCell, trendCell, shareCell, benchmarkCell);
+          if (pricingCell) row.appendChild(pricingCell);
+          row.append(requestsCell, costPer1kCell);
+          body.appendChild(row);
+        });
+      }
+
+      function renderInvestigation() {
+        const def = DIMENSIONS[investigationState.dimension];
+        document.getElementById("dimensionQuestion").textContent = def.question;
+        document.getElementById("dimensionDescription").textContent =
+          def.description;
+
+        const chartMeta = document.getElementById("investigationChartMeta");
+        const chartWrap = document.getElementById("investigationChartWrap");
+        const placeholder = document.getElementById("investigationPlaceholder");
+        const data = investigationRowsForDimension();
+
+        if (!data || !data.rows.length) {
+          chartMeta.hidden = true;
+          chartWrap.hidden = true;
+          placeholder.hidden = false;
+          placeholder.textContent = def.unavailableNote ?? "";
+        } else {
+          chartMeta.hidden = false;
+          chartWrap.hidden = false;
+          placeholder.hidden = true;
+          document.getElementById("investigationChartTitle").textContent =
+            `Spend and requests over time · Top ${data.rows.length} ${def.short} rows · Last ${currentRangeDays()} days`;
+          renderInvestigationLegend(data.rows);
+          drawCombinedChart(data.labels, data.rows);
+        }
+
+        renderInvestigationTable();
+      }
+
+      function seriesForTab(tab) {
+        if (!state.cost) return { labels: [], series: [] };
+        const labels = state.cost.labels;
+        const raw =
+          tab === "byProduct"
+            ? state.cost.byProduct.map((s) => ({
+                ...s,
+                name: productLabel(s.name),
+              }))
+            : state.cost.byModel;
+        return { labels, series: foldOther(raw) };
+      }
+
+      const ALL_CARD_IDS = [
+        "overviewKpiBlock",
+        "overviewChartBody",
+        "investigationCard",
+        "chartCard",
+        "peopleCard",
+        "toolAcceptanceCard",
+        "skillsCard",
+        "productsCard",
+        "modelsCard",
+        "modelCachingCard",
+        "teamsCard",
+        "openaiProjectsCard",
+      ];
+
+      // Tracks fetches that are still in flight, keyed by `endpoint:range`, so that switching
+      // back and forth between an uncached range and other ranges (each of which re-invokes
+      // loadRangeData for the range currently on screen) piggybacks on the one request already
+      // out for that range instead of firing a fresh duplicate every time.
+      const inFlightRequests = new Map();
+
+      // Browsers cap concurrent connections per origin (6 for HTTP/1.1) — a full 10-endpoint
+      // range load plus background prefetching of other ranges can easily saturate that,
+      // leaving a genuinely instant server-side action (/remove-key — see applyProviderKeys
+      // in server.mjs, which responds in milliseconds) stuck waiting in the *browser's own*
+      // outgoing queue for a connection slot, not the server. Every background data fetch
+      // below carries this controller's signal so a real user action that needs to jump the
+      // queue (removing/changing a key) can cancel everything in flight first — those
+      // results are about to be superseded by the key change anyway.
+      let backgroundAbortController = new AbortController();
+      // Bumped on every cancellation so a still-running prefetchOtherRanges loop (below) can
+      // tell it was cancelled out from under it and stop advancing to the next range, rather
+      // than resuming immediately with a fresh (non-aborted) controller — aborting only the
+      // in-flight requests but letting the loop march on to the next range would still end
+      // up feeding the server's shared upstream request queue (see MAX_CONCURRENT_REQUESTS
+      // in server.mjs) for several more ranges' worth of work, for data that
+      // clearStaleProviderMixState is about to throw away anyway.
+      let backgroundGeneration = 0;
+      function cancelBackgroundLoads() {
+        backgroundGeneration++;
+        backgroundAbortController.abort();
+        backgroundAbortController = new AbortController();
+      }
+
+      // Each piece of the dashboard is fetched and rendered independently, as soon as its own
+      // response lands, instead of waiting for every endpoint before showing anything. A
+      // sessionStorage hit short-circuits straight to `apply` with no network round trip —
+      // this runs synchronously so a cached range never even flashes the loading state.
+      // `apply`/loading-class updates only fire while `key` is still the active range, so
+      // background prefetch calls (key !== currentRangeKey()) safely just populate the cache.
+      function loadPiece(endpoint, key, url, cardIds, apply) {
+        const finish = () => {
+          if (currentRangeKey() === key)
+            cardIds.forEach((id) =>
+              document.getElementById(id)?.classList.remove("loading"),
+            );
+        };
+        const cached = readRangeCache(endpoint, key);
+        if (cached !== undefined) {
+          if (currentRangeKey() === key) {
+            apply(cached);
+            finish();
+          }
+          return Promise.resolve(cached);
+        }
+
+        const flightKey = `${endpoint}:${key}`;
+        const request =
+          inFlightRequests.get(flightKey) ||
+          fetch(url, { signal: backgroundAbortController.signal })
+            .then((res) => res.json())
+            .then((data) => {
+              writeRangeCache(endpoint, key, data);
+              return data;
+            })
+            .catch((err) => {
+              // AbortError means cancelBackgroundLoads() deliberately killed this fetch to
+              // free up a connection slot for something more urgent — not a real failure.
+              if (err?.name !== "AbortError") console.error(err);
+              return undefined; // fall back to each render function's built-in "no data" state
+            })
+            .finally(() => {
+              inFlightRequests.delete(flightKey);
+            });
+        inFlightRequests.set(flightKey, request);
+
+        return request.then((data) => {
+          if (currentRangeKey() !== key) return data; // a newer range was selected while this was in flight
+          if (data !== undefined) apply(data);
+          finish();
+          return data;
+        });
+      }
+
+      // Fires every endpoint fetch for one range/query pair. Reused both for the currently
+      // selected range (where `apply` updates state + re-renders) and for background
+      // prefetching other ranges (where the currentRangeKey() guard inside loadPiece makes
+      // `apply` a no-op and only the sessionStorage cache gets populated). Returns the
+      // in-flight promises so callers can wait for a range to fully settle.
+      function loadRangeData(key, q) {
+        return [
+          loadPiece(
+            "cost-summary",
+            key,
+            `/api/cost-summary?${q}`,
+            [
+              "overviewKpiBlock",
+              "overviewChartBody",
+              "investigationCard",
+              "chartCard",
+              "productsCard",
+              "modelsCard",
+            ],
+            (data) => {
+              state.cost = data;
+              renderKpis();
+              renderChart();
+              renderProductsSpend();
+              renderModelsSpend();
+              renderOverviewChart();
+              renderInvestigation();
+              updateConnectionStatus(data.totals);
+              renderConnectNudge(data.totals);
+            },
+          ),
+          loadPiece(
+            "people",
+            key,
+            `/api/people?${q}`,
+            ["peopleCard", "investigationCard"],
+            (data) => {
+              state.people = data.people;
+              renderKpis();
+              renderPeople();
+              renderInvestigation();
+            },
+          ),
+          loadPiece("efficiency", key, `/api/efficiency?${q}`, [], (data) => {
+            state.efficiency = data;
+            renderKpis();
+          }),
+          loadPiece(
+            "seats",
+            key,
+            `/api/seats?${q}`,
+            ["overviewKpiBlock", "overviewChartBody"],
+            (data) => {
+              state.seats = data;
+              renderKpis();
+              renderOverviewChart();
+            },
+          ),
+          loadPiece("segments", key, `/api/segments?${q}`, [], (data) => {
+            state.segments = data;
+            renderKpis();
+          }),
+          loadPiece(
+            "tool-acceptance",
+            key,
+            `/api/tool-acceptance?${q}`,
+            ["toolAcceptanceCard"],
+            (data) => {
+              state.toolAcceptance = data;
+              renderToolAcceptance();
+            },
+          ),
+          loadPiece(
+            "skills",
+            key,
+            `/api/skills?${q}`,
+            ["skillsCard", "investigationCard"],
+            (data) => {
+              state.skills = data.skills;
+              renderSkills();
+              renderInvestigation();
+            },
+          ),
+          loadPiece(
+            "efficiency-by-model",
+            key,
+            `/api/efficiency-by-model?${q}`,
+            ["modelCachingCard"],
+            (data) => {
+              state.efficiencyByModel = data.models;
+              renderModelCaching();
+            },
+          ),
+          loadPiece(
+            "teams",
+            key,
+            `/api/teams?${q}`,
+            ["teamsCard", "investigationCard"],
+            (data) => {
+              state.teams = data.teams;
+              state.teamSeries = data.teamSeries;
+              renderTeams();
+              renderInvestigation();
+            },
+          ),
+          loadPiece(
+            "openai-projects",
+            key,
+            `/api/openai-projects?${q}`,
+            ["openaiProjectsCard"],
+            (data) => {
+              state.openaiProjects = data.projects;
+              renderOpenAiProjects();
+            },
+          ),
+        ];
+      }
+
+      async function loadData() {
+        const key = currentRangeKey();
+        const q = currentRangeQuery();
+        state.cost =
+          state.people =
+          state.efficiency =
+          state.seats =
+          state.segments =
+            null;
+        state.toolAcceptance =
+          state.skills =
+          state.efficiencyByModel =
+          state.teams =
+          state.teamSeries =
+          state.openaiProjects =
+            null;
+        state.visibility.byProduct = null;
+        state.visibility.byModel = null;
+        ALL_CARD_IDS.forEach((id) =>
+          document.getElementById(id)?.classList.add("loading"),
+        );
+        renderKpis(); // all tiles start as spinners (cached ranges clear this synchronously)
+
+        // Awaited (not fire-and-forget) so callers — namely the background prefetch below —
+        // can tell when the visible range has actually finished, not just been kicked off.
+        await Promise.allSettled(loadRangeData(key, q));
+      }
+
+      // Warms the sessionStorage cache for every preset period the user hasn't looked at yet,
+      // one range at a time (so it doesn't compete with the visible range's own requests or
+      // burst the Admin API's rate limit), so switching periods is instant once this settles.
+      // Safe to call on every page load — already-cached ranges resolve to no-op network calls.
+      async function prefetchOtherRanges() {
+        const generation = backgroundGeneration;
+        for (const days of PRESET_RANGES) {
+          // A key was added/changed/removed mid-prefetch (see cancelBackgroundLoads) —
+          // whatever this loop would fetch next is for a provider mix that's already gone,
+          // and clearStaleProviderMixState already wiped the cache it would write into.
+          if (generation !== backgroundGeneration) return;
+          const key = String(days);
+          if (key === currentRangeKey()) continue;
+          await Promise.allSettled(loadRangeData(key, `days=${days}`));
+        }
+      }
+
+      function renderKpis() {
+        const t = state.cost?.totals;
+        const topPerson = state.people?.[0];
+        const eff = state.efficiency;
+        const seats = state.seats;
+        const geo = state.segments?.geo;
+        const speed = state.segments?.speed;
+        const kpis = [
+          {
+            label: "Total AI cost",
+            info: "The cash your company actually paid for AI token usage.",
+            ready: !!t,
+            value: t && money(t.spend),
+            sub:
+              t &&
+              (t.anthropicSpend > 0 && t.openaiSpend > 0
+                ? `${money(t.anthropicSpend)} Anthropic + ${money(t.openaiSpend)} ChatGPT`
+                : ""),
+            delta:
+              t &&
+              deltaLine(t.spend, t.previous ? t.previous.spend : null, {
+                goodDirection: "down",
+                formatAbs: signedMoney,
+              }),
+          },
+          {
+            label: "Total usage",
+            info: "Every prompt in chat and every automated API call starts the meter.",
+            ready: !!t,
+            value: t && t.requests.toLocaleString(),
+            sub:
+              t &&
+              (t.requests > 0
+                ? `${money(t.spend / t.requests)} avg per request`
+                : ""),
+            delta:
+              t &&
+              deltaLine(t.requests, t.previous ? t.previous.requests : null, {
+                formatAbs: signedNumber,
+              }),
+          },
+          {
+            label: "Claude adoption rate",
+            info: "Anthropic-only: how many eligible employees used Claude at least once during the period. There's no equivalent adoption metric available for ChatGPT.",
+            ready: !!seats,
+            value:
+              seats &&
+              (seats.available && seats.monthlyAdoptionRate != null
+                ? `${seats.monthlyAdoptionRate.toFixed(1)}%`
+                : "—"),
+            sub:
+              seats &&
+              (seats.available
+                ? `${seats.mau?.toLocaleString() ?? "—"} of ${seats.assignedSeats?.toLocaleString() ?? "—"} seats active`
+                : "not available on this plan"),
+            delta:
+              seats &&
+              seats.available &&
+              deltaLine(
+                seats.monthlyAdoptionRate,
+                seats.previous ? seats.previous.monthlyAdoptionRate : null,
+                {
+                  points: true,
+                  goodDirection: "up",
+                },
+              ),
+          },
+        ];
+
+        // "Add Anthropic" action tile — always exactly 3 KPI tiles, never 4. When Anthropic is
+        // connected (OpenAI missing or not), the "Claude adoption rate" tile has genuine data
+        // and stays as-is; the banner above is the only OpenAI nudge in that case. Only when
+        // OpenAI is connected and Anthropic isn't does this REPLACE the adoption tile — its
+        // "not available on this plan" wording would otherwise be misleading here, since the
+        // real reason is "Anthropic isn't connected," not a plan limitation.
+        const anthropicOn = providerConnected("anthropic");
+        const openaiOn = providerConnected("openai");
+        if (openaiOn && !anthropicOn) {
+          const adoptionIdx = kpis.findIndex((k) => k.label === "Claude adoption rate");
+          if (adoptionIdx !== -1) {
+            kpis[adoptionIdx] = {
+              action: true,
+              title: "Add Anthropic",
+              desc: "Connect Anthropic to see combined AI cost and usage across both providers, plus Claude adoption tracking.",
+              buttonLabel: "Connect Anthropic",
+            };
+          }
+        }
+
+        const container = document.getElementById("kpis");
+        container.innerHTML = "";
+        for (const k of kpis) {
+          if (k.action) {
+            const card = document.createElement("div");
+            card.className = "kpi kpi-action";
+            const icon = document.createElement("span");
+            icon.className = "kpi-action-icon";
+            icon.textContent = "+";
+            const title = document.createElement("span");
+            title.className = "kpi-action-title";
+            title.textContent = k.title;
+            const desc = document.createElement("span");
+            desc.className = "kpi-action-desc";
+            desc.textContent = k.desc;
+            const btn = document.createElement("a");
+            btn.className = "kpi-action-btn";
+            btn.href = "/connect";
+            btn.textContent = k.buttonLabel;
+            card.append(icon, title, desc, btn);
+            container.appendChild(card);
+            continue;
+          }
+          const card = document.createElement("div");
+          card.className = "kpi";
+          const label = document.createElement("span");
+          label.className = "kpi-label";
+          label.textContent = k.label;
+          const value = document.createElement("span");
+          value.className = "kpi-value";
+          const sub = document.createElement("span");
+          sub.className = "kpi-sub";
+          const delta = document.createElement("span");
+          delta.className = "kpi-delta";
+          if (!k.ready) {
+            const spinner = document.createElement("span");
+            spinner.className = "spinner";
+            value.appendChild(spinner);
+          } else {
+            value.textContent = k.value;
+            sub.innerHTML = k.sub; // fixed template above, not raw API text
+            if (k.delta) delta.innerHTML = k.delta; // fixed template above, not raw API text
+          }
+          card.append(label, value, sub, delta);
+          if (k.info) {
+            const description = document.createElement("span");
+            description.className = "kpi-description";
+            description.textContent = k.info;
+            card.appendChild(description);
+          }
+          container.appendChild(card);
+        }
+      }
+
+      const cssVar = (name) => rootStyle.getPropertyValue(name).trim();
+
+      function overviewChartTitle(metric) {
+        // Adoption has no OpenAI/ChatGPT equivalent (Anthropic-only seat data), so it
+        // doesn't get the "by provider" framing the other two metrics do — saying so here
+        // would wrongly imply a per-provider breakdown that doesn't exist for this metric.
+        if (metric === "adoption") {
+          return `Claude adoption · Last ${currentRangeDays()} days`;
+        }
+        const label = metric === "usage" ? "usage" : "spend";
+        return `AI ${label} by provider · Last ${currentRangeDays()} days`;
+      }
+
+      // Deliberately a separate, simpler renderer from renderChart() below —
+      // this chart is always exactly Overall/Anthropic/OpenAI (no dynamic
+      // "fold into Other", no legend-driven show/hide, no table view), so
+      // reusing renderChart's more general machinery would mean threading
+      // extra conditionals through code that already works for its own job.
+      function overviewSeriesForMetric(metric) {
+        if (metric === "adoption") {
+          const points = state.seats?.series ?? [];
+          if (!state.seats || !state.seats.available || !points.length) {
+            return {
+              labels: [],
+              series: [],
+              format: (v) => `${v.toFixed(1)}%`,
+            };
+          }
+          return {
+            labels: points.map((p) => p.date),
+            series: [
+              {
+                name: "Claude adoption rate",
+                color: cssVar("--overall"),
+                values: points.map((p) => p.monthlyAdoptionRate ?? 0),
+              },
+            ],
+            format: (v) => `${v.toFixed(1)}%`,
+          };
+        }
+
+        if (!state.cost) return { labels: [], series: [], format: money };
+        const labels = state.cost.labels;
+        const key = metric === "usage" ? "requests" : "spend";
+        const byProvider = state.cost.byProvider ?? [];
+        const anthropic = byProvider.find((p) => p.name === "Anthropic");
+        const openai = byProvider.find((p) => p.name === "OpenAI");
+        // The backend always returns both entries, even when a key is missing (as
+        // zeros) — so "is this provider actually connected" has to be judged by
+        // totalSpend, not by presence of the object, or a disabled provider would
+        // still draw a flat phantom zero-line and a redundant "Overall" duplicate.
+        const anthropicActive = anthropic && anthropic.totalSpend > 0;
+        const openaiActive = openai && openai.totalSpend > 0;
+        const series = [];
+        if (anthropicActive && openaiActive) {
+          const overall = labels.map(
+            (_, i) => (anthropic?.[key]?.[i] ?? 0) + (openai?.[key]?.[i] ?? 0),
+          );
+          series.push({
+            name: "Overall",
+            color: cssVar("--overall"),
+            values: overall,
+          });
+        }
+        if (anthropicActive)
+          series.push({
+            name: "Claude",
+            color: cssVar("--anthropic"),
+            values: anthropic[key],
+          });
+        if (openaiActive) {
+          series.push({
+            name: "ChatGPT",
+            color: cssVar("--openai"),
+            values: openai[key],
+          });
+        }
+        const format =
+          metric === "usage" ? (v) => Math.round(v).toLocaleString() : money;
+        return { labels, series, format };
+      }
+
+      function renderOverviewLegend(series) {
+        const legend = document.getElementById("overviewLegend");
+        legend.innerHTML = "";
+        for (const s of series) {
+          const item = document.createElement("span");
+          item.className = "legend-item";
+          const key = document.createElement("i");
+          key.className = "legend-key";
+          key.style.background = s.color;
+          item.append(key, document.createTextNode(s.name));
+          legend.appendChild(item);
+        }
+      }
+
+      function renderOverviewChart() {
+        const metric = state.overview.metric;
+        document.getElementById("overviewChartTitle").textContent =
+          overviewChartTitle(metric);
+        const { labels, series, format } = overviewSeriesForMetric(metric);
+        renderOverviewLegend(series);
+
+        const svg = document.getElementById("overviewChart");
+        svg.innerHTML = "";
+        const width = 1100,
+          height = 340;
+        // "Claude adoption rate 79.2%" is much longer than the Spend/Usage end labels
+        // ("Overall $4.1k") the default 130 was sized for, so it needs its own wider
+        // reserved margin or it overflows past the chart card's edge.
+        const margin = {
+          top: 16,
+          right:
+            series.length > 0 && series.length <= 4
+              ? metric === "adoption"
+                ? 200
+                : 130
+              : 20,
+          bottom: 28,
+          left: 64,
+        };
+        const plotW = width - margin.left - margin.right;
+        const plotH = height - margin.top - margin.bottom;
+
+        if (!labels.length || !series.length) {
+          svg.setAttribute("viewBox", `0 0 ${width} 80`);
+          const empty = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text",
+          );
+          empty.setAttribute("x", width / 2);
+          empty.setAttribute("y", 40);
+          empty.setAttribute("text-anchor", "middle");
+          empty.setAttribute("class", "axis-label");
+          empty.textContent =
+            metric === "adoption" && state.seats && !state.seats.available
+              ? "Seat data not available on this plan"
+              : "No data for this period";
+          svg.appendChild(empty);
+          return;
+        }
+        svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+        const allValues = series.flatMap((s) => s.values);
+        const maxRaw = Math.max(...allValues, 1);
+        const max = niceMax(maxRaw);
+
+        const x = xScale(labels.length, plotW, margin.left);
+        const y = yScale(max, plotH, margin.top);
+
+        for (let i = 0; i <= 4; i++) {
+          const value = (max / 4) * i;
+          const py = y(value);
+          svg.appendChild(
+            createSvgElement("line", {
+              class: "gridline",
+              x1: margin.left,
+              x2: width - margin.right,
+              y1: py,
+              y2: py,
+            }),
+          );
+          const label = createSvgElement("text", {
+            class: "axis-label",
+            x: margin.left - 10,
+            y: py + 4,
+            "text-anchor": "end",
+          });
+          label.textContent = format(value);
+          svg.appendChild(label);
+        }
+
+        const labelStep = Math.ceil(labels.length / 8);
+        labels.forEach((d, i) => {
+          if (i % labelStep !== 0 && i !== labels.length - 1) return;
+          const label = createSvgElement("text", {
+            class: "axis-label",
+            x: x(i),
+            y: height - 8,
+            "text-anchor": "middle",
+          });
+          label.textContent = d.slice(5).replace("-", "/");
+          svg.appendChild(label);
+        });
+
+        series.forEach((s) => {
+          const points = s.values.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+          svg.appendChild(
+            createSvgElement("polyline", { class: "series-line", points, stroke: s.color }),
+          );
+          s.values.forEach((v, i) => {
+            svg.appendChild(
+              createSvgElement("circle", {
+                class: "series-dot",
+                cx: x(i),
+                cy: y(v),
+                r: 3,
+                stroke: s.color,
+              }),
+            );
+          });
+          if (series.length <= 4) {
+            const lastI = labels.length - 1;
+            const lastV = s.values[lastI];
+            svg.appendChild(
+              createSvgElement("circle", {
+                cx: x(lastI),
+                cy: y(lastV),
+                r: 4,
+                fill: s.color,
+                class: "series-dot",
+                stroke: s.color,
+              }),
+            );
+            const label = createSvgElement("text", {
+              class: "series-end-label",
+              x: x(lastI) + 8,
+              y: y(lastV) + 4,
+              fill: s.color,
+            });
+            label.textContent = `${s.name} ${format(lastV)}`;
+            svg.appendChild(label);
+          }
+        });
+
+        const crosshair = createSvgElement("line", {
+          class: "crosshair",
+          x1: 0,
+          x2: 0,
+          y1: margin.top,
+          y2: height - margin.bottom,
+          opacity: 0,
+        });
+        svg.appendChild(crosshair);
+
+        const tooltip = document.getElementById("overviewTooltip");
+        const chartWrap = document.getElementById("overviewChartWrap");
+
+        labels.forEach((d, i) => {
+          const bandW = plotW / labels.length;
+          const hit = createSvgElement("rect", {
+            class: "hover-col",
+            x: x(i) - bandW / 2,
+            y: margin.top,
+            width: bandW,
+            height: plotH,
+            tabindex: "0",
+            role: "img",
+          });
+          const summary = series
+            .map((s) => `${s.name}: ${format(s.values[i])}`)
+            .join(", ");
+          hit.setAttribute("aria-label", `${d}: ${summary}`);
+          const show = () => {
+            crosshair.setAttribute("x1", x(i));
+            crosshair.setAttribute("x2", x(i));
+            crosshair.setAttribute("opacity", 1);
+            tooltip.innerHTML = "";
+            const dateEl = document.createElement("div");
+            dateEl.className = "tooltip-date";
+            dateEl.textContent = d;
+            tooltip.appendChild(dateEl);
+            series.forEach((s) => {
+              const row = document.createElement("div");
+              row.className = "tooltip-row";
+              const key = document.createElement("span");
+              key.className = "tooltip-key";
+              key.style.background = s.color;
+              const name = document.createElement("span");
+              name.className = "tooltip-name";
+              name.textContent = s.name;
+              const value = document.createElement("span");
+              value.className = "tooltip-value";
+              value.textContent = format(s.values[i]);
+              row.append(key, name, value);
+              tooltip.appendChild(row);
+            });
+            const bounds = svg.getBoundingClientRect();
+            const wrapBounds = chartWrap.getBoundingClientRect();
+            const scaleX = bounds.width / width;
+            tooltip.style.left = `${bounds.left - wrapBounds.left + x(i) * scaleX}px`;
+            tooltip.style.top = `${bounds.top - wrapBounds.top + margin.top}px`;
+            tooltip.style.opacity = "1";
+          };
+          const hide = () => {
+            crosshair.setAttribute("opacity", 0);
+            tooltip.style.opacity = "0";
+          };
+          hit.addEventListener("pointerenter", show);
+          hit.addEventListener("pointermove", show);
+          hit.addEventListener("pointerleave", hide);
+          hit.addEventListener("focus", show);
+          hit.addEventListener("blur", hide);
+          svg.appendChild(hit);
+        });
+      }
+
+      function renderChart() {
+        if (!document.getElementById("chartWrap")) return; // card commented out of the page
+        const { labels, series } = seriesForTab(state.tab);
+        if (
+          state.visibility[state.tab] === null ||
+          state.visibility[state.tab] === undefined
+        ) {
+          state.visibility[state.tab] = new Set(series.map((s) => s.name));
+        }
+        const visible = series.filter((s) =>
+          state.visibility[state.tab].has(s.name),
+        );
+
+        renderLegend(series);
+
+        if (state.tableView) {
+          document.getElementById("chartWrap").hidden = true;
+          renderTableView(labels, visible);
+          document.getElementById("tableView").hidden = false;
+          return;
+        }
+        document.getElementById("chartWrap").hidden = false;
+        document.getElementById("tableView").hidden = true;
+
+        const svg = document.getElementById("chart");
+        svg.innerHTML = "";
+        const width = 1100,
+          height = 340;
+        const margin = {
+          top: 16,
+          right: visible.length > 0 && visible.length <= 4 ? 130 : 20,
+          bottom: 28,
+          left: 64,
+        };
+        const plotW = width - margin.left - margin.right;
+        const plotH = height - margin.top - margin.bottom;
+
+        if (!labels.length || !visible.length) {
+          svg.setAttribute("viewBox", `0 0 ${width} 80`);
+          const empty = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "text",
+          );
+          empty.setAttribute("x", width / 2);
+          empty.setAttribute("y", 40);
+          empty.setAttribute("text-anchor", "middle");
+          empty.setAttribute("class", "axis-label");
+          empty.textContent = "No data for this period";
+          svg.appendChild(empty);
+          return;
+        }
+        svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+        const allValues = visible.flatMap((s) => s.spend);
+        const maxRaw = Math.max(...allValues, 1);
+        const max = niceMax(maxRaw);
+
+        const x = xScale(labels.length, plotW, margin.left);
+        const y = yScale(max, plotH, margin.top);
+
+        for (let i = 0; i <= 4; i++) {
+          const value = (max / 4) * i;
+          const py = y(value);
+          svg.appendChild(
+            createSvgElement("line", {
+              class: "gridline",
+              x1: margin.left,
+              x2: width - margin.right,
+              y1: py,
+              y2: py,
+            }),
+          );
+          const label = createSvgElement("text", {
+            class: "axis-label",
+            x: margin.left - 10,
+            y: py + 4,
+            "text-anchor": "end",
+          });
+          label.textContent = money(value);
+          svg.appendChild(label);
+        }
+
+        const labelStep = Math.ceil(labels.length / 8);
+        labels.forEach((d, i) => {
+          if (i % labelStep !== 0 && i !== labels.length - 1) return;
+          const label = createSvgElement("text", {
+            class: "axis-label",
+            x: x(i),
+            y: height - 8,
+            "text-anchor": "middle",
+          });
+          label.textContent = d.slice(5).replace("-", "/");
+          svg.appendChild(label);
+        });
+
+        if (visible.length === 1) {
+          const s = visible[0];
+          const color =
+            s.colorIndex === "other" ? MUTED() : colorFor(s.colorIndex);
+          const points = s.spend.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+          const areaPoints = `${x(0)},${y(0)} ${points} ${x(labels.length - 1)},${y(0)}`;
+          svg.appendChild(
+            createSvgElement("polygon", { points: areaPoints, fill: color, opacity: 0.1 }),
+          );
+        }
+
+        visible.forEach((s) => {
+          const color =
+            s.colorIndex === "other" ? MUTED() : colorFor(s.colorIndex);
+          const points = s.spend.map((v, i) => `${x(i)},${y(v)}`).join(" ");
+          svg.appendChild(
+            createSvgElement("polyline", { class: "series-line", points, stroke: color }),
+          );
+          s.spend.forEach((v, i) => {
+            svg.appendChild(
+              createSvgElement("circle", {
+                class: "series-dot",
+                cx: x(i),
+                cy: y(v),
+                r: 3,
+                stroke: color,
+              }),
+            );
+          });
+          if (visible.length <= 4) {
+            const lastI = labels.length - 1;
+            const lastV = s.spend[lastI];
+            const dot = createSvgElement("circle", {
+              cx: x(lastI),
+              cy: y(lastV),
+              r: 4,
+              fill: color,
+              class: "series-dot",
+              stroke: color,
+            });
+            svg.appendChild(dot);
+            const label = createSvgElement("text", {
+              class: "series-end-label",
+              x: x(lastI) + 8,
+              y: y(lastV) + 4,
+              fill: color,
+            });
+            label.textContent = `${s.name} ${money(lastV)}`;
+            svg.appendChild(label);
+          }
+        });
+
+        const crosshair = createSvgElement("line", {
+          class: "crosshair",
+          x1: 0,
+          x2: 0,
+          y1: margin.top,
+          y2: height - margin.bottom,
+          opacity: 0,
+        });
+        svg.appendChild(crosshair);
+
+        const tooltip = document.getElementById("tooltip");
+        const chartWrap = document.getElementById("chartWrap");
+
+        labels.forEach((d, i) => {
+          const bandW = plotW / labels.length;
+          const hit = createSvgElement("rect", {
+            class: "hover-col",
+            x: x(i) - bandW / 2,
+            y: margin.top,
+            width: bandW,
+            height: plotH,
+            tabindex: "0",
+            role: "img",
+          });
+          const summary = visible
+            .map((s) => `${s.name}: ${money(s.spend[i])}`)
+            .join(", ");
+          hit.setAttribute("aria-label", `${d}: ${summary}`);
+          const show = () => {
+            crosshair.setAttribute("x1", x(i));
+            crosshair.setAttribute("x2", x(i));
+            crosshair.setAttribute("opacity", 1);
+            tooltip.innerHTML = "";
+            const dateEl = document.createElement("div");
+            dateEl.className = "tooltip-date";
+            dateEl.textContent = d;
+            tooltip.appendChild(dateEl);
+            visible.forEach((s) => {
+              const color =
+                s.colorIndex === "other" ? MUTED() : colorFor(s.colorIndex);
+              const row = document.createElement("div");
+              row.className = "tooltip-row";
+              const key = document.createElement("span");
+              key.className = "tooltip-key";
+              key.style.background = color;
+              const name = document.createElement("span");
+              name.className = "tooltip-name";
+              name.textContent = s.name;
+              const value = document.createElement("span");
+              value.className = "tooltip-value";
+              value.textContent = money(s.spend[i]);
+              row.append(key, name, value);
+              tooltip.appendChild(row);
+            });
+            const bounds = svg.getBoundingClientRect();
+            const wrapBounds = chartWrap.getBoundingClientRect();
+            const scaleX = bounds.width / width;
+            tooltip.style.left = `${bounds.left - wrapBounds.left + x(i) * scaleX}px`;
+            tooltip.style.top = `${bounds.top - wrapBounds.top + margin.top}px`;
+            tooltip.style.opacity = "1";
+          };
+          const hide = () => {
+            crosshair.setAttribute("opacity", 0);
+            tooltip.style.opacity = "0";
+          };
+          hit.addEventListener("pointerenter", show);
+          hit.addEventListener("pointermove", show);
+          hit.addEventListener("pointerleave", hide);
+          hit.addEventListener("focus", show);
+          hit.addEventListener("blur", hide);
+          svg.appendChild(hit);
+        });
+      }
+
+      function renderLegend(series) {
+        const legend = document.getElementById("legend");
+        legend.innerHTML = "";
+        if (series.length <= 1) return; // single series: title already says what's plotted
+        for (const s of series) {
+          const btn = document.createElement("button");
+          btn.className = "legend-item";
+          btn.type = "button";
+          const visible = state.visibility[state.tab].has(s.name);
+          btn.setAttribute("aria-pressed", String(visible));
+          const key = document.createElement("span");
+          key.className = "legend-key";
+          key.style.background =
+            s.colorIndex === "other" ? MUTED() : colorFor(s.colorIndex);
+          const name = document.createElement("span");
+          name.textContent = `${s.name} · ${money(s.totalSpend)}`;
+          btn.append(key, name);
+          btn.addEventListener("click", () => {
+            const set = state.visibility[state.tab];
+            if (visible && set.size > 1) set.delete(s.name);
+            else set.add(s.name);
+            renderChart();
+          });
+          legend.appendChild(btn);
+        }
+      }
+
+      function renderTableView(labels, visible) {
+        const wrap = document.getElementById("tableView");
+        wrap.innerHTML = "";
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        const headRow = document.createElement("tr");
+        const dateHeader = document.createElement("th");
+        dateHeader.textContent = "Date";
+        headRow.appendChild(dateHeader);
+        for (const s of visible) {
+          const th = document.createElement("th");
+          th.className = "num";
+          th.textContent = s.name;
+          headRow.appendChild(th);
+        }
+        thead.appendChild(headRow);
+        table.appendChild(thead);
+        const tbody = document.createElement("tbody");
+        labels.forEach((d, i) => {
+          const row = document.createElement("tr");
+          const dateCell = document.createElement("td");
+          dateCell.textContent = d;
+          row.appendChild(dateCell);
+          for (const s of visible) {
+            const cell = document.createElement("td");
+            cell.className = "num";
+            cell.textContent = money(s.spend[i]);
+            row.appendChild(cell);
+          }
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+        wrap.appendChild(table);
+      }
+
+      // Shared by the Products and Models spend tables — both are just a
+      // sorted name/spend list with the same See-all/collapse behavior.
+      function renderNameSpendTable({
+        rows,
+        bodyId,
+        seeAllBtnId,
+        expandedKey,
+      }) {
+        const body = document.getElementById(bodyId);
+        const seeAllBtn = document.getElementById(seeAllBtnId);
+        if (!body || !seeAllBtn) return; // card commented out of the page
+        body.innerHTML = "";
+
+        if (!rows.length) {
+          seeAllBtn.hidden = true;
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 2;
+          cell.className = "empty";
+          cell.textContent = "No data for this period";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+        seeAllBtn.hidden = rows.length <= ROW_LIMIT;
+        seeAllBtn.textContent = state.expanded[expandedKey]
+          ? "Show less"
+          : "See all";
+        const visibleRows = state.expanded[expandedKey]
+          ? rows
+          : rows.slice(0, ROW_LIMIT);
+        visibleRows.forEach((r) => {
+          const row = document.createElement("tr");
+          const nameCell = document.createElement("td");
+          nameCell.textContent = r.name;
+          const spendCell = document.createElement("td");
+          spendCell.className = "num";
+          spendCell.textContent = money(r.spend);
+          row.append(nameCell, spendCell);
+          body.appendChild(row);
+        });
+      }
+
+      function renderProductsSpend() {
+        const rows = (state.cost?.byProduct ?? [])
+          .map((s) => ({ name: productLabel(s.name), spend: s.totalSpend }))
+          .sort((a, b) => b.spend - a.spend);
+        renderNameSpendTable({
+          rows,
+          bodyId: "productsBody",
+          seeAllBtnId: "productsSeeAllBtn",
+          expandedKey: "products",
+        });
+      }
+
+      function renderModelsSpend() {
+        const rows = (state.cost?.byModel ?? [])
+          .map((s) => ({ name: s.name, spend: s.totalSpend }))
+          .sort((a, b) => b.spend - a.spend);
+        renderNameSpendTable({
+          rows,
+          bodyId: "modelsBody",
+          seeAllBtnId: "modelsSeeAllBtn",
+          expandedKey: "models",
+        });
+      }
+
+      function renderModelCaching() {
+        const models = state.efficiencyByModel ?? [];
+        const body = document.getElementById("modelCachingBody");
+        const seeAllBtn = document.getElementById("modelCachingSeeAllBtn");
+        if (!body || !seeAllBtn) return; // card commented out of the page
+        body.innerHTML = "";
+        if (!models.length) {
+          seeAllBtn.hidden = true;
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 5;
+          cell.className = "empty";
+          cell.textContent = "No model usage for this period";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+        seeAllBtn.hidden = models.length <= ROW_LIMIT;
+        seeAllBtn.textContent = state.expanded.modelCaching
+          ? "Show less"
+          : "See all";
+        const visibleModels = state.expanded.modelCaching
+          ? models
+          : models.slice(0, ROW_LIMIT);
+        visibleModels.forEach((m) => {
+          const row = document.createElement("tr");
+          const nameCell = document.createElement("td");
+          nameCell.textContent = m.model;
+          const hitCell = document.createElement("td");
+          hitCell.className = "num";
+          hitCell.textContent =
+            m.cacheHitRate == null
+              ? "—"
+              : `${(m.cacheHitRate * 100).toFixed(1)}%`;
+          const actualCell = document.createElement("td");
+          actualCell.className = "num";
+          actualCell.textContent = money(m.actualInputCost);
+          const hypotheticalCell = document.createElement("td");
+          hypotheticalCell.className = "num";
+          hypotheticalCell.textContent =
+            m.hypotheticalInputCost == null
+              ? "—"
+              : money(m.hypotheticalInputCost);
+          const savingsCell = document.createElement("td");
+          savingsCell.className = "num";
+          savingsCell.textContent =
+            m.cachingSavings == null ? "—" : money(m.cachingSavings);
+          row.append(
+            nameCell,
+            hitCell,
+            actualCell,
+            hypotheticalCell,
+            savingsCell,
+          );
+          body.appendChild(row);
+        });
+      }
+
+      function renderTeams() {
+        const teams = state.teams ?? [];
+        const body = document.getElementById("teamsBody");
+        const seeAllBtn = document.getElementById("teamsSeeAllBtn");
+        const countEl = document.getElementById("teamsCount");
+        if (!body || !seeAllBtn || !countEl) return; // card commented out of the page
+        countEl.textContent = teams.length ? `${teams.length.toLocaleString()} teams` : "";
+        body.innerHTML = "";
+        if (!teams.length) {
+          seeAllBtn.hidden = true;
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 6;
+          cell.className = "empty";
+          cell.textContent = "No team data for this period";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+        seeAllBtn.hidden = teams.length <= ROW_LIMIT;
+        seeAllBtn.textContent = state.expanded.teams ? "Show less" : "See all";
+        const visibleTeams = state.expanded.teams
+          ? teams
+          : teams.slice(0, ROW_LIMIT);
+        visibleTeams.forEach((t) => {
+          const row = document.createElement("tr");
+          const nameCell = document.createElement("td");
+          nameCell.textContent = t.name;
+          const spendCell = document.createElement("td");
+          spendCell.className = "num";
+          spendCell.textContent = money(t.spend);
+          const listCell = document.createElement("td");
+          listCell.className = "num";
+          listCell.textContent = money(t.listAmount);
+          const savingsCell = document.createElement("td");
+          savingsCell.className = "num";
+          savingsCell.textContent = money(t.savings);
+          const pctCell = document.createElement("td");
+          pctCell.className = "num";
+          pctCell.textContent =
+            t.savingsPct == null ? "—" : `${t.savingsPct.toFixed(1)}%`;
+          const cacheCell = document.createElement("td");
+          cacheCell.className = "num";
+          cacheCell.textContent =
+            t.cacheHitRate == null
+              ? "—"
+              : `${(t.cacheHitRate * 100).toFixed(0)}%`;
+          row.append(
+            nameCell,
+            spendCell,
+            listCell,
+            savingsCell,
+            pctCell,
+            cacheCell,
+          );
+          body.appendChild(row);
+        });
+      }
+
+      function renderOpenAiProjects() {
+        const projects = state.openaiProjects ?? [];
+        const body = document.getElementById("openaiProjectsBody");
+        const countEl = document.getElementById("openaiProjectsCount");
+        if (!body || !countEl) return; // card commented out of the page
+        countEl.textContent = projects.length ? `${projects.length.toLocaleString()} projects` : "";
+        body.innerHTML = "";
+        if (!projects.length) {
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 2;
+          cell.className = "empty";
+          cell.textContent = "No OpenAI spend for this period";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+        projects.forEach((p) => {
+          const row = document.createElement("tr");
+          const nameCell = document.createElement("td");
+          nameCell.textContent = p.name;
+          const spendCell = document.createElement("td");
+          spendCell.className = "num";
+          spendCell.textContent = money(p.spend);
+          row.append(nameCell, spendCell);
+          body.appendChild(row);
+        });
+      }
+
+      function renderToolAcceptance() {
+        const data = state.toolAcceptance;
+        const body = document.getElementById("toolAcceptanceBody");
+        const rateTag = document.getElementById("toolAcceptanceRate");
+        if (!body || !rateTag) return; // card commented out of the page
+        body.innerHTML = "";
+        const overallTotal = data ? data.totalAccepted + data.totalRejected : 0;
+        if (!overallTotal) {
+          rateTag.textContent = "";
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 4;
+          cell.className = "empty";
+          cell.textContent = "No Claude Code tool activity for this period";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+        rateTag.textContent = `${((data.totalAccepted / overallTotal) * 100).toFixed(1)}% overall accept rate`;
+        data.tools.forEach((t) => {
+          const total = t.accepted + t.rejected;
+          const row = document.createElement("tr");
+          const nameCell = document.createElement("td");
+          nameCell.textContent = TOOL_LABEL[t.key] ?? t.key;
+          const acceptedCell = document.createElement("td");
+          acceptedCell.className = "num";
+          acceptedCell.textContent = t.accepted.toLocaleString();
+          const rejectedCell = document.createElement("td");
+          rejectedCell.className = "num";
+          rejectedCell.textContent = t.rejected.toLocaleString();
+          const rateCell = document.createElement("td");
+          rateCell.className = "num";
+          rateCell.textContent =
+            total > 0 ? `${((t.accepted / total) * 100).toFixed(1)}%` : "—";
+          row.append(nameCell, acceptedCell, rejectedCell, rateCell);
+          body.appendChild(row);
+        });
+      }
+
+      function renderSkills() {
+        const skills = state.skills ?? [];
+        const body = document.getElementById("skillsBody");
+        const seeAllBtn = document.getElementById("skillsSeeAllBtn");
+        const countEl = document.getElementById("skillsCount");
+        if (!body || !seeAllBtn || !countEl) return; // card commented out of the page
+        countEl.textContent = skills.length ? `${skills.length.toLocaleString()} skills` : "";
+        body.innerHTML = "";
+        if (!skills.length) {
+          seeAllBtn.hidden = true;
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 5;
+          cell.className = "empty";
+          cell.textContent = "No skill usage for this period";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+        seeAllBtn.hidden = skills.length <= ROW_LIMIT;
+        seeAllBtn.textContent = state.expanded.skills ? "Show less" : "See all";
+        const visibleSkills = state.expanded.skills
+          ? skills
+          : skills.slice(0, ROW_LIMIT);
+        visibleSkills.forEach((s) => {
+          const row = document.createElement("tr");
+          const nameCell = document.createElement("td");
+          nameCell.textContent = s.name;
+          const usersCell = document.createElement("td");
+          usersCell.className = "num";
+          usersCell.textContent = s.users.toLocaleString();
+          const invocationsCell = document.createElement("td");
+          invocationsCell.className = "num";
+          invocationsCell.textContent = s.invocations.toLocaleString();
+          const listCell = document.createElement("td");
+          listCell.className = "num";
+          listCell.textContent = money(s.listValue);
+          const overageCell = document.createElement("td");
+          overageCell.className = "num";
+          overageCell.textContent = money(s.overageSpend);
+          row.append(
+            nameCell,
+            usersCell,
+            invocationsCell,
+            listCell,
+            overageCell,
+          );
+          body.appendChild(row);
+        });
+      }
+
+      function renderPeople() {
+        const body = document.getElementById("peopleBody");
+        const countEl = document.getElementById("peopleCount");
+        if (!body || !countEl) return; // card commented out of the page
+        body.innerHTML = "";
+        const query = state.peopleFilter.trim().toLowerCase();
+        const ranked = state.people.map((p, idx) => ({ ...p, rank: idx + 1 }));
+        const filtered = query
+          ? ranked.filter(
+              (p) =>
+                p.name.toLowerCase().includes(query) ||
+                (p.email ?? "").toLowerCase().includes(query),
+            )
+          : ranked;
+
+        countEl.textContent = state.people.length
+          ? query
+            ? `${filtered.length.toLocaleString()} of ${state.people.length.toLocaleString()} people`
+            : `${state.people.length.toLocaleString()} people`
+          : "";
+
+        if (!filtered.length) {
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = 8;
+          cell.className = "empty";
+          cell.textContent = state.people.length
+            ? "No matches"
+            : "No per-user data for this period";
+          row.appendChild(cell);
+          body.appendChild(row);
+          return;
+        }
+        filtered.forEach((p) => {
+          const row = document.createElement("tr");
+
+          const rankCell = document.createElement("td");
+          rankCell.className = "num rank";
+          rankCell.textContent = p.rank;
+
+          const nameCell = document.createElement("td");
+          const nameEl = document.createElement("span");
+          nameEl.className = "person-name";
+          nameEl.textContent = p.name;
+          nameCell.appendChild(nameEl);
+          if (p.email) {
+            const emailEl = document.createElement("span");
+            emailEl.className = "person-email";
+            emailEl.textContent = p.email;
+            nameCell.appendChild(emailEl);
+          }
+
+          const reqCell = document.createElement("td");
+          reqCell.className = "num";
+          reqCell.textContent = p.requests.toLocaleString();
+
+          const anthropicCell = document.createElement("td");
+          anthropicCell.className = "num";
+          anthropicCell.textContent = money(p.anthropicAmount ?? p.amount);
+
+          const openaiCell = document.createElement("td");
+          openaiCell.className = "num";
+          openaiCell.textContent = money(p.openaiAmount ?? 0);
+
+          const spendCell = document.createElement("td");
+          spendCell.className = "num";
+          spendCell.textContent = money(p.amount);
+
+          // Savings vs list is Anthropic-only (OpenAI has no list-price concept) —
+          // must compare against the Anthropic-only amount, not the combined total.
+          const savingsCell = document.createElement("td");
+          savingsCell.className = "num";
+          savingsCell.textContent = money(
+            p.listAmount - (p.anthropicAmount ?? p.amount),
+          );
+
+          const cacheCell = document.createElement("td");
+          cacheCell.className = "num";
+          cacheCell.textContent =
+            p.cacheHitRate == null
+              ? "—"
+              : `${(p.cacheHitRate * 100).toFixed(0)}%`;
+
+          row.append(
+            rankCell,
+            nameCell,
+            reqCell,
+            anthropicCell,
+            openaiCell,
+            spendCell,
+            savingsCell,
+            cacheCell,
+          );
+          body.appendChild(row);
+        });
+      }
+
+      // Scoped to [data-tab] rather than the shared ".tab" style class, so
+      // other controls that reuse the same pill styling (e.g. See-all
+      // buttons) never get swept up by this chart-tab listener.
+      document.querySelectorAll("[data-tab]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.tab = btn.dataset.tab;
+          document
+            .querySelectorAll("[data-tab]")
+            .forEach((t) => t.setAttribute("aria-selected", String(t === btn)));
+          renderChart();
+        });
+      });
+
+      document.querySelectorAll("[data-metric]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          state.overview.metric = btn.dataset.metric;
+          document
+            .querySelectorAll("[data-metric]")
+            .forEach((t) => t.setAttribute("aria-selected", String(t === btn)));
+          renderOverviewChart();
+        });
+      });
+
+      document.querySelectorAll("[data-dimension]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          investigationState.dimension = btn.dataset.dimension;
+          state.expanded.investigation = false;
+          document
+            .querySelectorAll("[data-dimension]")
+            .forEach((t) => t.setAttribute("aria-selected", String(t === btn)));
+          renderInvestigation();
+        });
+      });
+      document
+        .getElementById("investigationSeeAllBtn")
+        .addEventListener("click", () => {
+          state.expanded.investigation = !state.expanded.investigation;
+          renderInvestigationTable();
+        });
+      document.querySelectorAll("#investigationTable th.sortable").forEach((th) => {
+        th.addEventListener("click", () => {
+          const key = th.dataset.sort;
+          investigationState.sort =
+            investigationState.sort.key === key
+              ? { key, dir: investigationState.sort.dir === "asc" ? "desc" : "asc" }
+              : { key, dir: "desc" };
+          renderInvestigationTable();
+        });
+      });
+      renderInvestigation();
+
+      document.getElementById("tableToggle")?.addEventListener("click", (e) => {
+        state.tableView = !state.tableView;
+        e.currentTarget.setAttribute("aria-pressed", String(state.tableView));
+        e.currentTarget.textContent = state.tableView
+          ? "View as chart"
+          : "View as table";
+        renderChart();
+      });
+
+      const periodButtons = document.querySelectorAll(
+        "#periodPicker [data-days]",
+      );
+      const customRangeWrap = document.getElementById("customRangeWrap");
+      const rangeFromInput = document.getElementById("rangeFrom");
+      const rangeToInput = document.getElementById("rangeTo");
+
+      rangeFromInput.max = isoToday();
+      rangeToInput.max = isoToday();
+
+      function syncUrl() {
+        const params = new URLSearchParams(location.search);
+        if (state.period === "custom" && state.customRange) {
+          params.set("period", "custom");
+          params.set("from", state.customRange.from);
+          params.set("to", state.customRange.to);
+        } else {
+          params.set("period", String(state.period));
+          params.delete("from");
+          params.delete("to");
+        }
+        history.replaceState(
+          null,
+          "",
+          `${location.pathname}?${params.toString()}`,
+        );
+      }
+
+      function setActivePeriodButton() {
+        const activeValue =
+          state.period === "custom" ? "custom" : String(state.period);
+        periodButtons.forEach((btn) =>
+          btn.setAttribute(
+            "aria-selected",
+            String(btn.dataset.days === activeValue),
+          ),
+        );
+      }
+
+      // Reflect a range restored from the URL (readRangeFromUrl, above) into the controls.
+      if (state.period === "custom" && state.customRange) {
+        customRangeWrap.hidden = false;
+        rangeFromInput.value = state.customRange.from;
+        rangeToInput.value = state.customRange.to;
+        rangeToInput.min = state.customRange.from;
+      }
+      setActivePeriodButton();
+      syncUrl();
+
+      function applyCustomRange() {
+        const from = rangeFromInput.value;
+        const to = rangeToInput.value;
+        if (!from || !to || from > to) return; // wait for a valid, correctly-ordered pair
+        state.period = "custom";
+        state.customRange = { from, to };
+        setActivePeriodButton();
+        syncUrl();
+        loadData();
+      }
+
+      periodButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.dataset.days === "custom") {
+            customRangeWrap.hidden = false;
+            if (!state.customRange) {
+              // Sensible starting window so switching to "Custom…" isn't blank/invalid.
+              rangeFromInput.value = isoDaysAgo(28);
+              rangeToInput.value = isoToday();
+            }
+            applyCustomRange();
+            return;
+          }
+          customRangeWrap.hidden = true;
+          state.period = Number(btn.dataset.days);
+          setActivePeriodButton();
+          syncUrl();
+          loadData();
+        });
+      });
+
+      rangeFromInput.addEventListener("change", () => {
+        rangeToInput.min = rangeFromInput.value;
+        applyCustomRange();
+      });
+      rangeToInput.addEventListener("change", applyCustomRange);
+
+      // Several cards below are currently commented out of the page —
+      // this guards every listener targeting them so toggling a card in/out
+      // of the markup never throws, instead of null-checking each one inline.
+      function onClick(id, handler) {
+        document.getElementById(id)?.addEventListener("click", handler);
+      }
+
+      onClick("productsSeeAllBtn", () => {
+        state.expanded.products = !state.expanded.products;
+        renderProductsSpend();
+      });
+      onClick("modelsSeeAllBtn", () => {
+        state.expanded.models = !state.expanded.models;
+        renderModelsSpend();
+      });
+      onClick("modelCachingSeeAllBtn", () => {
+        state.expanded.modelCaching = !state.expanded.modelCaching;
+        renderModelCaching();
+      });
+      onClick("teamsSeeAllBtn", () => {
+        state.expanded.teams = !state.expanded.teams;
+        renderTeams();
+      });
+      onClick("skillsSeeAllBtn", () => {
+        state.expanded.skills = !state.expanded.skills;
+        renderSkills();
+      });
+
+      document.getElementById("peopleFilter")?.addEventListener("input", (e) => {
+        state.peopleFilter = e.target.value;
+        renderPeople();
+      });
+
+      loadData()
+        .catch((err) => {
+          document.getElementById("kpis").innerHTML = "";
+          const msg = document.createElement("div");
+          msg.className = "empty";
+          msg.textContent = `Failed to load data: ${err.message}`;
+          document.querySelector(".page").prepend(msg);
+        })
+        .finally(() => {
+          // Only start warming other ranges once the visible one has fully landed, so
+          // background prefetch never competes with it for the connection pool.
+          prefetchOtherRanges().catch((err) => console.error(err));
+        });
+
+      // Set only by loadIndexHtml() in the demo build (see build-mac-demo.sh) — real builds
+      // never inject this, so the badge stays hidden and this is a no-op there.
+      if (window.__ATS_MOCK_MODE__) {
+        const demoBadge = document.getElementById("demoBadge");
+        if (demoBadge) demoBadge.hidden = false;
+      }
+
+      // Header status chips: view the masked key, change it, or remove it, for each
+      // connected provider. window.__ATS_PROVIDERS__ (see server.mjs's loadIndexHtml) is the
+      // authoritative connected/masked state — not derived from spend data, since a
+      // genuinely-connected provider can still have $0 spend in the selected range.
+      //
+      // Removing a provider can only ever SUBTRACT from data already sitting in `state` —
+      // no new number a fresh fetch could reveal — so this recomputes every already-loaded
+      // piece of state in place instead of re-fetching anything. Most endpoints are
+      // single-provider-exclusive (seats/efficiency/segments/tool-acceptance/skills/
+      // efficiency-by-model/teams are Anthropic-only, openai-projects is OpenAI-only — see
+      // HANDOFF.md's "hard API constraints"), so those just clear to the same "no data"
+      // shape every render function here already tolerates (see the "Anthropic made fully
+      // optional" work). Only cost-summary and people genuinely blend both providers'
+      // numbers together and need a real subtraction rather than a plain clear.
+      function dropProviderFromLoadedState(provider) {
+        const isAnthropic = provider === "anthropic";
+        const providerName = isAnthropic ? "Anthropic" : "OpenAI";
+
+        if (state.cost) {
+          const c = state.cost;
+          const byProvider = c.byProvider ?? [];
+          const entry = byProvider.find((p) => p.name === providerName);
+          const removedSpend = entry ? entry.totalSpend : 0;
+          const removedRequests = entry ? entry.totalRequests : 0;
+          if (entry) {
+            entry.spend = entry.spend.map(() => 0);
+            entry.requests = entry.requests.map(() => 0);
+            entry.totalSpend = 0;
+            entry.totalRequests = 0;
+          }
+          if (c.totals) {
+            c.totals.spend -= removedSpend;
+            c.totals.requests -= removedRequests;
+            if (isAnthropic) c.totals.anthropicSpend = 0;
+            else c.totals.openaiSpend = 0;
+            if (c.totals.previous) {
+              const removedPrevSpend = isAnthropic
+                ? c.totals.previous.anthropicSpend
+                : c.totals.previous.openaiSpend;
+              c.totals.previous.spend -= removedPrevSpend ?? 0;
+              if (isAnthropic) c.totals.previous.anthropicSpend = 0;
+              else c.totals.previous.openaiSpend = 0;
+              // The previous period's request count was never split per-provider in the
+              // response (unlike spend) — no way to un-mix it here, so drop the comparison
+              // rather than show a misleading delta against a number that still silently
+              // includes the just-removed provider.
+              c.totals.previous.requests = null;
+            }
+          }
+          if (isAnthropic) {
+            // byProduct/byModel/byContextWindow/savings are Anthropic-only (see
+            // HANDOFF.md) — removing OpenAI never touches them; removing Anthropic empties
+            // them entirely, same as a fresh Anthropic-disabled fetch would.
+            c.byProduct = [];
+            c.byModel = [];
+            c.byContextWindow = [];
+            if (c.totals) c.totals.savings = 0;
+            if (c.totals?.previous) c.totals.previous.savings = 0;
+          }
+        }
+
+        if (state.people) {
+          state.people = state.people
+            .map((p) => {
+              const anthropicAmount = isAnthropic ? 0 : p.anthropicAmount;
+              const openaiAmount = isAnthropic ? p.openaiAmount : 0;
+              return {
+                ...p,
+                anthropicAmount,
+                openaiAmount,
+                amount: anthropicAmount + openaiAmount,
+                // requests came exclusively from Anthropic's per-user cost report —
+                // meaningless once Anthropic's gone, unaffected if OpenAI's removed instead.
+                requests: isAnthropic ? 0 : p.requests,
+                // Same "can't un-mix an already-combined number" reasoning as
+                // totals.previous.requests above — this was already summed server-side.
+                previousAmount: null,
+              };
+            })
+            .filter((p) => p.amount > 0)
+            .sort((a, b) => b.amount - a.amount);
+        }
+
+        // Every other endpoint is exclusively backed by one provider — clearing to null
+        // matches exactly what a fresh fetch would return with that provider disabled, and
+        // every render function here already handles a null/missing piece of state.
+        if (isAnthropic) {
+          state.seats =
+            state.efficiency =
+            state.segments =
+            state.toolAcceptance =
+            state.skills =
+            state.efficiencyByModel =
+            state.teams =
+            state.teamSeries =
+              null;
+        } else {
+          state.openaiProjects = null;
+        }
+
+        // Re-cache the corrected data for the range currently on screen so switching away
+        // and back within this session doesn't need a network round trip either — every
+        // OTHER cached range still holds the old (both-providers) numbers and was already
+        // cleared by clearStaleProviderMixState, same as before this change.
+        const key = currentRangeKey();
+        if (state.cost) writeRangeCache("cost-summary", key, state.cost);
+        if (state.people) writeRangeCache("people", key, { people: state.people });
+      }
+
+      (function initProviderChips() {
+        const PROVIDER_NAMES = { anthropic: "Anthropic", openai: "OpenAI" };
+        const CHEVRON_DOWN_SVG =
+          '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+        const PLUS_SVG =
+          '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+
+        function closeAllMenus() {
+          ["anthropic", "openai"].forEach((key) => {
+            const menu = document.getElementById("providerMenu-" + key);
+            if (menu) menu.hidden = true;
+          });
+        }
+
+        function providerInfo(key) {
+          return (
+            (window.__ATS_PROVIDERS__ || {})[key] || {
+              connected: false,
+              masked: null,
+            }
+          );
+        }
+
+        // Re-reads window.__ATS_PROVIDERS__ every call (not a snapshot taken once at page
+        // load) so this can also be called right after a remove/change action to reflect the
+        // new state in place, without a full page reload.
+        function renderChip(key) {
+          const chip = document.getElementById("providerChip-" + key);
+          const menu = document.getElementById("providerMenu-" + key);
+          if (!chip || !menu) return;
+          const info = providerInfo(key);
+          chip
+            .querySelector(".provider-chip-dot")
+            .classList.toggle("connected", info.connected);
+          chip.querySelector(".provider-chip-label").textContent = info.connected
+            ? PROVIDER_NAMES[key]
+            : "Connect " + PROVIDER_NAMES[key];
+          chip.querySelector(".provider-chip-caret").innerHTML = info.connected
+            ? CHEVRON_DOWN_SVG
+            : PLUS_SVG;
+          if (info.connected) {
+            menu.querySelector(".provider-menu-key").textContent = info.masked || "";
+          }
+        }
+
+        function clearStaleProviderMixState() {
+          // The provider mix just changed — any cached totals or dismissed nudges from
+          // before are stale (same cleanup as the setup flow's proceed() in server.mjs).
+          try {
+            Object.keys(sessionStorage)
+              .filter((k) => k.indexOf("atsCache:v1:") === 0)
+              .forEach((k) => sessionStorage.removeItem(k));
+          } catch (e) {
+            // sessionStorage unavailable — nothing to clear
+          }
+          try {
+            Object.keys(localStorage)
+              .filter((k) => k.indexOf("atsDismissedConnectBanner:v1:") === 0)
+              .forEach((k) => localStorage.removeItem(k));
+          } catch (e) {
+            // localStorage unavailable — nothing to clear
+          }
+        }
+
+        ["anthropic", "openai"].forEach((key) => {
+          const chip = document.getElementById("providerChip-" + key);
+          const btn = document.getElementById("providerChipBtn-" + key);
+          const menu = document.getElementById("providerMenu-" + key);
+          if (!chip || !btn || !menu) return;
+          renderChip(key);
+
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (!providerInfo(key).connected) {
+              location.href = "/connect";
+              return;
+            }
+            const willOpen = menu.hidden;
+            closeAllMenus();
+            menu.hidden = !willOpen;
+          });
+
+          const changeBtn = menu.querySelector('[data-action="change"]');
+          changeBtn.addEventListener("click", () => {
+            location.href = "/connect?provider=" + key;
+          });
+
+          const removeBtn = menu.querySelector('[data-action="remove"]');
+          removeBtn.addEventListener("click", async () => {
+            if (
+              !confirm(
+                "Remove your " +
+                  PROVIDER_NAMES[key] +
+                  " key? You'll need to reconnect it to see " +
+                  PROVIDER_NAMES[key] +
+                  " data again.",
+              )
+            )
+              return;
+            menu.hidden = true;
+            removeBtn.disabled = true;
+            removeBtn.querySelector("span").textContent = "Removing…";
+            // See cancelBackgroundLoads above: frees up the browser's own per-origin
+            // connection slots (not a server-side delay — applyProviderKeys in server.mjs
+            // already responds in milliseconds) so this POST doesn't sit queued behind a
+            // full range load or background prefetch that's still in flight.
+            cancelBackgroundLoads();
+            try {
+              const res = await fetch("/remove-key", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ provider: key }),
+              });
+              if (!res.ok) throw new Error("remove-key failed");
+              clearStaleProviderMixState();
+              const otherKey = key === "anthropic" ? "openai" : "anthropic";
+              const anotherProviderRemains = providerInfo(otherKey).connected;
+              // /remove-key applies the change to the running server synchronously (see
+              // applyProviderKeys in server.mjs) before responding, so there's no relaunch
+              // to wait for — safe to act on the new state immediately.
+              if (anotherProviderRemains) {
+                // Still have data to show. Removing a provider can only subtract from
+                // numbers already sitting in `state` from the last load — nothing a fresh
+                // fetch could add — so recompute in place instead of hitting the network
+                // again; see dropProviderFromLoadedState above for the full reasoning.
+                window.__ATS_PROVIDERS__ = window.__ATS_PROVIDERS__ || {};
+                window.__ATS_PROVIDERS__[key] = { connected: false, masked: null };
+                renderChip(key);
+                removeBtn.disabled = false;
+                removeBtn.querySelector("span").textContent = "Remove key";
+                if (state.cost) {
+                  dropProviderFromLoadedState(key);
+                  renderKpis();
+                  renderChart();
+                  renderProductsSpend();
+                  renderModelsSpend();
+                  renderOverviewChart();
+                  renderInvestigation();
+                  updateConnectionStatus(state.cost.totals);
+                  renderConnectNudge(state.cost.totals);
+                  renderPeople();
+                  renderToolAcceptance();
+                  renderSkills();
+                  renderModelCaching();
+                  renderTeams();
+                  renderOpenAiProjects();
+                } else {
+                  // Nothing loaded yet to subtract from (e.g. removed right as the page was
+                  // still loading, before cancelBackgroundLoads above could even deliver a
+                  // first real response) — nothing to reuse, so this one case does need a
+                  // real fetch.
+                  loadData();
+                }
+              } else {
+                // Nothing left connected — there's no dashboard to render in place
+                // anymore, so this really does need the fresh onboarding page.
+                location.reload();
+              }
+            } catch (e) {
+              alert("Could not remove the key — try again.");
+              removeBtn.disabled = false;
+              removeBtn.querySelector("span").textContent = "Remove key";
+            }
+          });
+        });
+
+        document.addEventListener("click", closeAllMenus);
+      })();
+    </script>
+  </body>
+</html>
