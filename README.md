@@ -16,6 +16,48 @@ A dashboard for tracking your team's AI token spend (Anthropic + OpenAI) - no da
 
 </details>
 
+<details>
+<summary>Prefer letting an AI assistant set this up for you?</summary>
+
+If you have [Claude Code](https://claude.com/claude-code) or the [Codex CLI](https://github.com/openai/codex) installed, you can hand them the whole job. Unlike a web chat, they run in your terminal with access to your files and to run commands, so they can install, start the tool, and fix errors as they come up.
+
+The same prompt works both for the initial setup and every time after, when you just want to run the tool again.
+
+1. Open Terminal or PowerShell wherever you'd like the project folder to be created (e.g. your Desktop).
+
+2. Run `claude` or `codex`, then paste this prompt as your first message:
+
+   ```
+   Clone and set up the "Moss AI Token Cost Tracker" tool for me — a local
+   dashboard for tracking Anthropic/OpenAI token spend. Act as my setup
+   assistant using your file system and terminal access:
+
+   1. First check whether the current folder (or a `moss-ai-token-cost-tracker`
+      subfolder) already contains this tool (look for server.mjs and
+      index.html). If it's already there, skip straight to step 3.
+   2. Otherwise, clone the repo:
+      git clone https://github.com/getmoss/moss-ai-token-cost-tracker.git
+      then work from inside that folder, and check whether Git, nvm, and
+      Node.js 24.14.1 (per this repo's README) are installed, installing or
+      switching to whatever is missing.
+   3. Ask me whether I want to run it in production mode (connecting my real
+      Anthropic/OpenAI accounts with API keys) or demo mode (mocked data, so
+      I can just see how the dashboard looks without any API keys). Wait for
+      my answer before continuing.
+   4. Run `npm start` for production mode, or `npm run demo` for demo mode,
+      based on my answer.
+   5. Watch the terminal output for errors. If something fails, diagnose the
+      root cause, explain it to me in plain language, and either fix it or
+      tell me exactly what to run.
+   6. Tell me the URL to open in my browser once the server is running.
+   7. Later, if I ask you to stop or restart the tool, do that for me.
+
+   Important: never read, print, or send the contents of my .env file, and
+   never share any API keys or company data outside this terminal session.
+   ```
+
+</details>
+
 ## Set up and run the tool
 
 This requires a one-time technical setup below. Complete it once, then just repeat the "Start the tool" steps whenever you want to use the dashboard again.
