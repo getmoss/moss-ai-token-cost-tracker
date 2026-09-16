@@ -43,8 +43,9 @@ The same prompt works both for the initial setup and every time after, when you 
       Anthropic/OpenAI accounts with API keys) or demo mode (mocked data, so
       I can just see how the dashboard looks without any API keys). Wait for
       my answer before continuing.
-   4. Run `npm start` for production mode, or `npm run demo` for demo mode,
-      based on my answer.
+   4. Double check that everything needed is set up correctly, and then run
+      `npm start` for production mode, or `npm run demo` for demo mode, based
+      on my answer.
    5. Watch the terminal output for errors. If something fails, diagnose the
       root cause, explain it to me in plain language, and either fix it or
       tell me exactly what to run.
