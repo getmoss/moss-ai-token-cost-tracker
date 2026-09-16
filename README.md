@@ -16,8 +16,7 @@ A dashboard for tracking your team's AI token spend (Anthropic + OpenAI) - no da
 
 </details>
 
-<details>
-<summary>Prefer letting an AI assistant set this up for you?</summary>
+## Prefer letting an AI assistant set this up for you?
 
 If you have [Claude Code](https://claude.com/claude-code) or the [Codex CLI](https://github.com/openai/codex) installed, you can hand them the whole job. Unlike a web chat, they run in your terminal with access to your files and to run commands, so they can install, start the tool, and fix errors as they come up.
 
@@ -55,8 +54,6 @@ The same prompt works both for the initial setup and every time after, when you 
    Important: never read, print, or send the contents of my .env file, and
    never share any API keys or company data outside this terminal session.
    ```
-
-</details>
 
 ## Set up and run the tool
 
