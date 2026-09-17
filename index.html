@@ -322,7 +322,7 @@
         <div class="table-block" style="padding: 20px">
           <div
             class="chart-head"
-            style="border-bottom: none; padding: 0 0 11px"
+            style="border-bottom: none; padding: 0 0 24px"
           >
             <h3
               id="investigationTableTitle"
@@ -393,11 +393,18 @@
                     id="investigationPricingColumn"
                     style="display: none"
                   >
-                    Current token price · USD per 1m tokens
+                    Token price · USD per 1m tokens
                   </th>
                   <th class="num sortable" data-sort="requests">Requests sent</th>
                   <th class="num sortable" data-sort="costPer1k">Avg. cost per 1K requests</th>
-                  <th class="num sortable" data-sort="costPerMillionTokens">Cost per 1M tokens</th>
+                  <th
+                    class="num sortable"
+                    data-sort="costPerMillionTokens"
+                    id="investigationTokenCostColumn"
+                    style="display: none"
+                  >
+                    Cost per 1M tokens
+                  </th>
                 </tr>
               </thead>
               <tbody id="investigationBody"></tbody>
@@ -997,9 +1004,13 @@
         );
         const max = niceMax(Math.max(...totals, 1));
 
-        const x = xScale(labels.length, plotW, margin.left);
+        // A band scale, not xScale's point scale — bars need a slot fully inside
+        // the plot area, not a point centered exactly on the left/right edges
+        // (which would hang half the first/last bar off into the axis-label
+        // margin, overlapping the Y-axis numbers).
+        const step = plotW / labels.length;
+        const x = (i) => margin.left + step * (i + 0.5);
         const y = yScale(max, plotH, margin.top);
-        const step = labels.length > 1 ? plotW / (labels.length - 1) : plotW;
         const barWidth = Math.min(56, step * 0.55);
 
         for (let i = 0; i <= 4; i++) {
@@ -1225,12 +1236,18 @@
       function renderInvestigationTable() {
         const dimension = investigationState.dimension;
         const isModel = dimension === "model";
+        // Only these three dimensions have a real token-count source (see
+        // server.mjs: usage_report can be grouped by model/team/person, but not
+        // by product or by skill) — Product category and API key/workflow have
+        // no data for this column at all, so it's hidden rather than shown full
+        // of "—" with no room to spare in an already-dense table.
+        const hasTokenCost = ["model", "team", "person"].includes(dimension);
         const def = DIMENSIONS[dimension];
         const body = document.getElementById("investigationBody");
         const seeAllBtn = document.getElementById("investigationSeeAllBtn");
         const titleCase =
           def.short.charAt(0).toUpperCase() + def.short.slice(1);
-        const colCount = isModel ? 9 : 8;
+        const colCount = 7 + (isModel ? 1 : 0) + (hasTokenCost ? 1 : 0);
         document.getElementById("investigationNameColumn").textContent =
           def.label;
         document.getElementById("investigationBenchmarkColumn").textContent =
@@ -1239,6 +1256,9 @@
           isModel ? "" : "none";
         document.getElementById("investigationPricingNote").style.display =
           isModel ? "block" : "none";
+        document.getElementById(
+          "investigationTokenCostColumn",
+        ).style.display = hasTokenCost ? "" : "none";
 
         const rows = investigationFullRows();
         body.innerHTML = "";
@@ -1401,14 +1421,16 @@
           costPer1kCell.textContent =
             costPer1k == null ? "—" : money(costPer1k);
 
-          const costPerMillionTokensCell = document.createElement("td");
-          costPerMillionTokensCell.className = "num";
-          costPerMillionTokensCell.textContent =
-            costPerMillionTokens == null ? "—" : money(costPerMillionTokens);
-
           row.append(nameCell, spendCell, trendCell, shareCell, benchmarkCell);
           if (pricingCell) row.appendChild(pricingCell);
-          row.append(requestsCell, costPer1kCell, costPerMillionTokensCell);
+          row.append(requestsCell, costPer1kCell);
+          if (hasTokenCost) {
+            const costPerMillionTokensCell = document.createElement("td");
+            costPerMillionTokensCell.className = "num";
+            costPerMillionTokensCell.textContent =
+              costPerMillionTokens == null ? "—" : money(costPerMillionTokens);
+            row.appendChild(costPerMillionTokensCell);
+          }
           body.appendChild(row);
         });
       }
