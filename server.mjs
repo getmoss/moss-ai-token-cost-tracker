@@ -274,6 +274,7 @@ const MIME = {
   ".mjs": "text/javascript",
   ".css": "text/css",
   ".json": "application/json",
+  ".svg": "image/svg+xml",
 };
 
 // A build-time-only flag (never read from .env — see build-mac-demo.sh, which bakes this in
@@ -1728,7 +1729,7 @@ async function handleTeams(res, searchParams) {
     resolveRange(searchParams);
 
   // Fetched once and reused for both the flat team table (below) and the
-  // Investigation tab's top-4 daily spend+requests chart — a second
+  // Investigation tab's top-5 daily spend+requests chart — a second
   // fetchCostTotalsByDimension call here would just re-fetch the exact same
   // cost_report buckets under Anthropic's 60/min rate limit for no reason.
   const [costBuckets, previousCostBuckets, usageBuckets, names] =
@@ -1778,6 +1779,9 @@ async function handleTeams(res, searchParams) {
         savingsPct:
           t.totalListAmount > 0 ? (savings / t.totalListAmount) * 100 : null,
         cacheHitRate: usage?.cacheHitRate ?? null,
+        totalTokens: usage
+          ? usage.totalInputTokens + usage.outputTokens
+          : null,
         requests: t.totalRequests,
         previousSpend: prev ? prev.totalSpend : null,
         previousRequests: prev ? prev.totalRequests : null,
@@ -1787,7 +1791,7 @@ async function handleTeams(res, searchParams) {
 
   const teamSeries = {
     labels,
-    series: series.slice(0, 4).map((t) => ({
+    series: series.slice(0, 5).map((t) => ({
       name: nameFor(t.key),
       spend: t.spend,
       requests: t.requests,
@@ -1916,6 +1920,7 @@ async function handleCostSummary(res, searchParams) {
     previousOpenaiBuckets,
     openaiUsageBuckets,
     previousOpenaiUsageBuckets,
+    modelUsageBuckets,
   ] = await Promise.all([
     fetchCostBuckets(startingAt, endingAt),
     fetchCostBuckets(prevStartingAt, prevEndingAt),
@@ -1924,6 +1929,9 @@ async function handleCostSummary(res, searchParams) {
     fetchOpenAiCostBuckets(prevStartingAtUnix, prevEndingAtUnix, []),
     fetchOpenAiUsageBuckets(startingAtUnix, endingAtUnix),
     fetchOpenAiUsageBuckets(prevStartingAtUnix, prevEndingAtUnix),
+    // Anthropic's cost_report has no token counts — usage_report grouped by
+    // model is the only source for the Model tab's "Cost per 1M tokens".
+    fetchUsageGroupedBy(startingAt, endingAt, "model"),
   ]);
 
   const current = aggregateCostBuckets(currentBuckets);
@@ -1935,6 +1943,14 @@ async function handleCostSummary(res, searchParams) {
   const previousOpenaiUsage = aggregateOpenAiUsageBuckets(
     previousOpenaiUsageBuckets,
   );
+  const usageByModel = aggregateUsageGrouped(modelUsageBuckets, "model");
+  const byModelWithTokens = current.byModel.map((m) => {
+    const usage = usageByModel.get(m.name);
+    return {
+      ...m,
+      totalTokens: usage ? usage.totalInputTokens + usage.outputTokens : null,
+    };
+  });
 
   // The Analytics API only has data back to a fixed org-wide start date (see
   // cachedFetchJsonRanged), so a same-length "previous period" comparison can come back
@@ -1984,7 +2000,7 @@ async function handleCostSummary(res, searchParams) {
     labels: current.labels,
     overall: current.daily,
     byProduct: withPrevious(current.byProduct, previous.byProduct),
-    byModel: withPrevious(current.byModel, previous.byModel),
+    byModel: withPrevious(byModelWithTokens, previous.byModel),
     byContextWindow,
     byProvider,
     totals: {
@@ -2062,6 +2078,7 @@ async function handlePeople(res, searchParams) {
       usage && usage.totalTokens > 0
         ? usage.cacheReadInputTokens / usage.totalTokens
         : null;
+    person.totalTokens = usage ? usage.totalTokens : null;
     person.anthropicAmount = person.amount;
     person.openaiAmount = person.email
       ? (openaiByEmail.get(person.email) ?? 0)
@@ -2082,6 +2099,7 @@ async function handlePeople(res, searchParams) {
       listAmount: 0,
       requests: 0,
       cacheHitRate: null,
+      totalTokens: null,
       anthropicAmount: 0,
       openaiAmount,
       previousAmount: previousAmountByEmail.get(email) ?? null,

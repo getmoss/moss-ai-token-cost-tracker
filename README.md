@@ -33,7 +33,8 @@ The same prompt works both for the initial setup and every time after, when you 
 
    1. First check whether the current folder (or a `moss-ai-token-cost-tracker`
       subfolder) already contains this tool (look for server.mjs and
-      index.html). If it's already there, skip straight to step 3.
+      index.html). If it's already there, run `git pull` inside that folder
+      to get the latest changes, then skip straight to step 3.
    2. Otherwise, clone the repo:
       git clone https://github.com/getmoss/moss-ai-token-cost-tracker.git
       then work from inside that folder, and check whether Git, nvm, and

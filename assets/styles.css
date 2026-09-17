@@ -275,6 +275,20 @@
         font-size: 14px;
         max-width: 780px;
       }
+      .page-intro p.hero-copy {
+        white-space: nowrap;
+        max-width: none;
+      }
+      .nowrap-desktop {
+        white-space: nowrap;
+        max-width: none;
+      }
+      @media (max-width: 1260px) {
+        .page-intro p.hero-copy,
+        .nowrap-desktop {
+          white-space: normal;
+        }
+      }
       .data-note {
         white-space: nowrap;
         border: 1px solid var(--border);
@@ -292,6 +306,46 @@
         gap: 24px;
         padding: 24px 24px 16px;
         border-bottom: 1px solid var(--border);
+      }
+      .section-heading[role="button"] {
+        cursor: pointer;
+      }
+      .chevron {
+        display: inline-flex;
+        flex-shrink: 0;
+        transition: transform 0.18s ease;
+      }
+      .card.is-open .chevron {
+        transform: rotate(180deg);
+      }
+      /* Height-animation trick: the outer .collapse is a 1-row grid that
+         tweens between 1fr (natural content height) and 0fr; .collapse-inner
+         clips to that shrinking row via overflow:hidden. Both need to exist
+         (rather than animating .collapse itself) because a grid item's
+         intrinsic size can't be clipped by its own overflow. */
+      .collapse {
+        display: grid;
+        grid-template-rows: 1fr;
+        transition: grid-template-rows 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .card.accordion:not(.is-open) .collapse {
+        grid-template-rows: 0fr;
+      }
+      .collapse-inner {
+        overflow: hidden;
+        min-height: 0;
+      }
+      .coming-soon {
+        display: inline-flex;
+        align-items: center;
+        background: var(--surface-soft);
+        color: var(--text-secondary);
+        border-radius: 999px;
+        padding: 5px 9px;
+        font-size: 10px;
+        font-weight: 780;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
       }
       .section-copy {
         max-width: 780px;
@@ -414,6 +468,13 @@
         font-size: 20px;
         font-weight: 780;
         letter-spacing: -0.02em;
+      }
+      .kpi-value-converted {
+        margin-left: 7px;
+        font-size: 12px;
+        font-weight: 650;
+        letter-spacing: normal;
+        color: rgba(0, 0, 0, 0.45);
       }
       .kpi-sub {
         display: block;
@@ -595,6 +656,11 @@
       .table-toggle:hover {
         background: var(--brand-soft);
       }
+      .below-table-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
 
       .chart-wrap {
         position: relative;
@@ -618,11 +684,28 @@
         fill: var(--text-muted);
         font-size: 11px;
       }
+      .axis-label-converted {
+        fill: var(--text-muted);
+        opacity: 0.6;
+        font-size: 9px;
+      }
+      .axis-weekday {
+        fill: var(--text-muted);
+        font-size: 9px;
+        font-weight: 750;
+        letter-spacing: 0.04em;
+      }
       .series-line {
         fill: none;
         stroke-width: 2;
         stroke-linecap: round;
         stroke-linejoin: round;
+      }
+      .stack-segment {
+        transition: opacity 0.15s ease;
+      }
+      .stack-segment:hover {
+        opacity: 0.82;
       }
       .series-dot {
         fill: var(--surface-1);
@@ -631,6 +714,10 @@
       .series-end-label {
         font-size: 11px;
         font-weight: 650;
+      }
+      .series-end-label-converted {
+        font-size: 9px;
+        font-weight: 600;
       }
       .hover-col {
         fill: transparent;
@@ -780,28 +867,6 @@
       }
       .investigation-placeholder:empty {
         display: none;
-      }
-      .insight-strip {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 16px;
-        border: 1px solid #e8dfc9;
-        border-radius: 8px;
-        background: #fffaf0;
-        color: #604d25;
-        font-size: 12px;
-        margin: 16px 24px 0;
-      }
-      .insight-strip:empty {
-        display: none;
-      }
-      .insight-strip b {
-        flex: 0 0 auto;
-        font-size: 10px;
-        color: #7c5912;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
       }
       .connect-banner {
         display: flex;

@@ -13,7 +13,6 @@
       </div>
       <div class="app-bar-title-group">
         <div class="demo-badge" id="demoBadge" hidden>Demo &middot; sample data</div>
-        <div class="app-bar-title">AI Token Cost Tracker</div>
       </div>
       <div class="app-bar-right">
         <div class="connection-status">
@@ -125,35 +124,48 @@
       <div class="page-intro">
         <div>
           <div class="eyebrow">AI spend for finance</div>
-          <h1>Bring AI token spend under track</h1>
-          <p style="margin-bottom: 8px">
+          <h1>Moss AI Token Cost Tracker</h1>
+          <p class="hero-copy" style="margin-bottom: 8px">
             AI costs grow across providers because every employee and
             automated workflow can start the meter, creating a variable cost
-            that can rise faster than finance can see what is driving the
+            that can rise faster than finance can see what's driving the
             bill.
           </p>
-          <p>
-            See how your company's AI spend changes over time, then trace
-            each movement to the provider, model choice, team, person or
-            workflow behind it.
+          <p class="hero-copy">
+            See how your company's AI spend changes over time, trace each
+            movement to the provider, model choice, team, person or workflow
+            behind it, and identify potential cost-saving opportunities.
           </p>
         </div>
         <div class="data-note">Live data · USD</div>
       </div>
 
-      <section class="card" id="overviewChartCard">
-        <div class="section-heading">
+      <section class="card accordion is-open" id="overviewChartCard">
+        <div
+          class="section-heading"
+          role="button"
+          tabindex="0"
+          aria-expanded="true"
+          aria-controls="overviewChartCardBody"
+        >
           <div class="section-copy">
             <div class="step-label"><b>1</b> Company overview</div>
-            <h2>How is AI spend changing across your company and providers?</h2>
-            <p>
-              See the three signals together: what you spend, how often AI is
-              used and how many employees are using it.
-            </p>
+            <h2>How AI spend is developing across your company and its providers.</h2>
+            <div class="collapse">
+              <div class="collapse-inner">
+                <p>
+                  See the three signals together: what you spend, how often
+                  AI is used and how many employees are adopting it.
+                </p>
+              </div>
+            </div>
           </div>
+          <span class="chevron" aria-hidden="true"><img src="/assets/icons/arrow-down.svg" alt="" width="18" height="18" /></span>
         </div>
 
-        <div class="section-body">
+        <div class="collapse">
+        <div class="collapse-inner">
+        <div class="section-body" id="overviewChartCardBody">
           <div class="connect-banner" id="connectBanner" hidden>
             <a class="connect-banner-icon" href="/connect" aria-hidden="true" tabindex="-1">
               <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -223,6 +235,9 @@
                   <input type="date" id="rangeFrom" aria-label="From date" />
                   <span>&ndash;</span>
                   <input type="date" id="rangeTo" aria-label="To date" />
+                  <button type="button" class="table-toggle" id="rangeApplyBtn">
+                    Apply
+                  </button>
                 </span>
               </div>
             </div>
@@ -249,20 +264,36 @@
             </div>
           </div>
         </div>
+        </div>
+        </div>
       </section>
 
-      <section class="card" id="investigationCard">
-        <div class="section-heading">
+      <section class="card accordion is-open" id="investigationCard">
+        <div
+          class="section-heading"
+          role="button"
+          tabindex="0"
+          aria-expanded="true"
+          aria-controls="investigationCardBody"
+        >
           <div class="section-copy">
             <div class="step-label"><b>2</b> Organisational allocation</div>
             <h2>Trace where AI spend is coming from.</h2>
-            <p>
-              Start with the company total above, then investigate spikes and
-              anomalies by tracing the bill back to the tools, models, teams,
-              people and automated work behind it.
-            </p>
+            <div class="collapse">
+              <div class="collapse-inner">
+                <p>
+                  Start with the company total above, then investigate
+                  spikes and anomalies by tracing the bill back to the
+                  tools, models, teams, people and automated work behind it.
+                </p>
+              </div>
+            </div>
           </div>
+          <span class="chevron" aria-hidden="true"><img src="/assets/icons/arrow-down.svg" alt="" width="18" height="18" /></span>
         </div>
+        <div class="collapse">
+        <div class="collapse-inner">
+        <div class="section-body" id="investigationCardBody">
         <nav
           class="tabs"
           id="dimensionTabs"
@@ -287,51 +318,6 @@
             <p id="dimensionDescription"></p>
           </div>
         </div>
-        <div
-          class="chart-meta"
-          id="investigationChartMeta"
-          style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-            gap: 16px;
-            flex-wrap: wrap;
-          "
-        >
-          <span
-            id="investigationChartTitle"
-            style="
-              font-size: 12px;
-              color: var(--text-secondary);
-              font-weight: 730;
-            "
-          ></span>
-          <div class="legend" id="investigationLegend"></div>
-        </div>
-        <div class="chart-wrap" id="investigationChartWrap">
-          <svg
-            id="investigationChart"
-            viewBox="0 0 1100 340"
-            role="img"
-            aria-label="Combined spend and requests trend"
-          ></svg>
-          <div
-            class="tooltip"
-            id="investigationTooltip"
-            role="status"
-            aria-live="polite"
-          ></div>
-        </div>
-        <div
-          class="investigation-placeholder"
-          id="investigationPlaceholder"
-          hidden
-        ></div>
-
-        <div class="insight-strip" id="investigationInsight" hidden>
-          <b>What to notice</b><span id="investigationInsightText"></span>
-        </div>
 
         <div class="table-block" style="padding: 20px">
           <div
@@ -344,9 +330,53 @@
             ></h3>
             <div style="display: flex; align-items: center; gap: 12px">
               <span class="count-tag" id="investigationTableNote"></span>
-              <button class="table-toggle" id="investigationSeeAllBtn" hidden>
-                See all
-              </button>
+              <div
+                class="segmented"
+                id="allocationPeriodPicker"
+                role="group"
+                aria-label="Reporting period"
+              >
+                <button type="button" data-days="7" aria-selected="true">
+                  1 week
+                </button>
+                <button type="button" data-days="28" aria-selected="false">
+                  4 weeks
+                </button>
+                <button type="button" data-days="180" aria-selected="false">
+                  6 months
+                </button>
+                <button
+                  type="button"
+                  data-days="custom"
+                  aria-selected="false"
+                >
+                  Custom&hellip;
+                </button>
+              </div>
+              <span
+                class="custom-range"
+                id="allocationCustomRangeWrap"
+                hidden
+              >
+                <input
+                  type="date"
+                  id="allocationRangeFrom"
+                  aria-label="From date"
+                />
+                <span>&ndash;</span>
+                <input
+                  type="date"
+                  id="allocationRangeTo"
+                  aria-label="To date"
+                />
+                <button
+                  type="button"
+                  class="table-toggle"
+                  id="allocationRangeApplyBtn"
+                >
+                  Apply
+                </button>
+              </span>
             </div>
           </div>
           <div class="table-view-wrap">
@@ -366,7 +396,8 @@
                     Current token price · USD per 1m tokens
                   </th>
                   <th class="num sortable" data-sort="requests">Requests sent</th>
-                  <th class="num sortable" data-sort="costPer1k">Cost per 1,000 requests</th>
+                  <th class="num sortable" data-sort="costPer1k">Avg. cost per 1K requests</th>
+                  <th class="num sortable" data-sort="costPerMillionTokens">Cost per 1M tokens</th>
                 </tr>
               </thead>
               <tbody id="investigationBody"></tbody>
@@ -388,26 +419,120 @@
             usage. This pricing reference is Anthropic-only for now — OpenAI
             model pricing isn't integrated yet.
           </p>
+          <div class="below-table-actions">
+            <button class="table-toggle" id="investigationSeeAllBtn" hidden>
+              Show all rows
+            </button>
+            <button
+              class="table-toggle"
+              id="investigationViewChartBtn"
+              aria-expanded="false"
+            >
+              View as chart
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="chart-card"
+          id="investigationChartPanel"
+          style="margin: 0 20px 20px"
+          hidden
+        >
+          <div
+            class="chart-meta"
+            id="investigationChartMeta"
+            style="
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 14px 20px;
+              gap: 16px;
+              flex-wrap: wrap;
+            "
+          >
+            <span
+              id="investigationChartTitle"
+              style="
+                font-size: 12px;
+                color: var(--text-secondary);
+                font-weight: 730;
+              "
+            ></span>
+            <div
+              class="segmented"
+              id="investigationMetricPicker"
+              role="tablist"
+              aria-label="Stacked chart metric"
+            >
+              <button role="tab" data-metric="spend" aria-selected="true">
+                Spend
+              </button>
+              <button role="tab" data-metric="requests" aria-selected="false">
+                Requests
+              </button>
+            </div>
+            <div class="legend" id="investigationLegend"></div>
+          </div>
+          <div class="chart-wrap" id="investigationChartWrap">
+            <svg
+              id="investigationChart"
+              viewBox="0 0 1100 340"
+              role="img"
+              aria-label="Combined spend and requests trend"
+            ></svg>
+            <div
+              class="tooltip"
+              id="investigationTooltip"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </div>
+          <div
+            class="investigation-placeholder"
+            id="investigationPlaceholder"
+            hidden
+          ></div>
+        </div>
+        </div>
+        </div>
         </div>
       </section>
 
-      <section class="card future-card" aria-label="Saving opportunities coming soon">
-        <div class="section-heading">
+      <section class="card accordion" id="savingsCard" aria-label="Saving opportunities">
+        <div
+          class="section-heading"
+          role="button"
+          tabindex="0"
+          aria-expanded="false"
+        >
           <div class="section-copy">
-            <div class="step-label"><b>3</b> Saving opportunities</div>
+            <div class="step-label">
+              <b>3</b> Saving opportunities
+              <span class="coming-soon">Coming soon</span>
+            </div>
             <h2>Where can we spend less without cutting useful AI work?</h2>
-            <p>
-              Find the workloads, models and usage habits where a change
-              could lower cost without getting in the way of productive use.
-            </p>
-            <p>Coming soon</p>
+            <div class="collapse">
+              <div class="collapse-inner">
+                <p>
+                  Find the workloads, models and usage habits where a change
+                  could lower cost without getting in the way of productive
+                  use.
+                </p>
+                <p>Coming soon</p>
+              </div>
+            </div>
           </div>
+          <span class="chevron" aria-hidden="true"><img src="/assets/icons/arrow-down.svg" alt="" width="18" height="18" /></span>
         </div>
       </section>
       <section class="card future-card" aria-label="Planning coming later">
         <div class="section-heading">
           <div class="section-copy">
-            <div class="step-label"><b>4</b> Planning</div>
+            <div class="step-label">
+              <b>4</b> Planning
+              <span class="coming-soon">Coming soon</span>
+            </div>
             <h2>How might our AI spend develop?</h2>
             <p>
               Build a baseline forecast from spend, requests and adoption,
@@ -436,6 +561,10 @@
         foldOther,
         isoToday,
         isoDaysAgo,
+        convertedLabel,
+        weekdayAbbr,
+        fxLabel,
+        EUR_RATE,
       } from "/lib/format.mjs";
       import { createSvgElement, xScale, yScale, niceMax } from "/lib/chart-dom.mjs";
       import { readRangeCache, writeRangeCache } from "/lib/range-cache.mjs";
@@ -472,6 +601,15 @@
         teams: null,
         teamSeries: null,
         openaiProjects: null,
+        // Organisational allocation's own copies, loaded on its own independent
+        // range (see investigationState.period/customRange below) — kept separate
+        // from cost/teams/people/skills above so the two sections' ranges never
+        // clobber each other.
+        allocationCost: null,
+        allocationTeams: null,
+        allocationTeamSeries: null,
+        allocationPeople: null,
+        allocationSkills: null,
         visibility: {
           byProduct: new Set(),
           byModel: new Set(),
@@ -490,26 +628,19 @@
       // Tables long enough to warrant a "See all" toggle collapse to this
       // many rows by default (mirrors the native Claude dashboard's cards).
       const ROW_LIMIT = 5;
+      // Organisational allocation's own table shows fewer rows by default
+      // than the other (currently unused) card tables above.
+      const INVESTIGATION_ROW_LIMIT = 3;
 
       // The preset period-picker options (everything except "Custom…"), used both to
       // validate ?period= on load and to know which ranges to prefetch in the background.
       const PRESET_RANGES = [7, 28, 180];
 
-      // Restores period/customRange from ?period=&from=&to= so a page refresh keeps
-      // whatever range the user had selected, instead of always resetting to 7 days.
-      function readRangeFromUrl() {
-        const params = new URLSearchParams(location.search);
-        const period = params.get("period");
-        const from = params.get("from");
-        const to = params.get("to");
-        if (period === "custom" && from && to) {
-          state.period = "custom";
-          state.customRange = { from, to };
-        } else if (period && PRESET_RANGES.includes(Number(period))) {
-          state.period = Number(period);
-        }
-      }
-      readRangeFromUrl();
+      // Restores period/customRange from ?period=&from=&to= (Company overview) and
+      // ?allocationPeriod=&allocationFrom=&allocationTo= (Organisational allocation)
+      // so a page refresh keeps whatever ranges the user had selected, instead of
+      // always resetting both to 7 days. Called once investigationState exists
+      // (see below) — not here — since it also restores investigationState.
 
       // ANTHROPIC_ENABLED/OPENAI_ENABLED in server.mjs, injected into window.__ATS_PROVIDERS__
       // (see loadIndexHtml) — the authoritative "is this provider actually connected" fact.
@@ -617,13 +748,43 @@
         return state.period;
       }
 
+      // Same three helpers as above, but for Organisational allocation's own
+      // independent range (investigationState.period/customRange) instead of
+      // the page's main state.period/customRange.
+      function allocationRangeKey() {
+        return investigationState.period === "custom" &&
+          investigationState.customRange
+          ? `custom:${investigationState.customRange.from}:${investigationState.customRange.to}`
+          : String(investigationState.period);
+      }
+
+      function allocationRangeQuery() {
+        return investigationState.period === "custom" &&
+          investigationState.customRange
+          ? `from=${investigationState.customRange.from}&to=${investigationState.customRange.to}`
+          : `days=${investigationState.period}`;
+      }
+
+      function allocationRangeDays() {
+        if (
+          investigationState.period === "custom" &&
+          investigationState.customRange
+        ) {
+          const ms =
+            new Date(`${investigationState.customRange.to}T00:00:00Z`) -
+            new Date(`${investigationState.customRange.from}T00:00:00Z`);
+          return Math.round(ms / (24 * 60 * 60 * 1000)) + 1;
+        }
+        return investigationState.period;
+      }
+
       // previousValue is null when the backend couldn't produce a full equal-length prior
       // period (see server.mjs's hasFullPreviousPeriod checks) — distinct from a present-but-
       // zero value, which just yields no computable % change.
       function deltaLine(
         currentValue,
         previousValue,
-        { points = false, goodDirection = null, formatAbs = null } = {},
+        { points = false, formatAbs = null } = {},
       ) {
         if (previousValue == null) {
           return `<span class="trend-empty">not enough history yet for a comparison</span>`;
@@ -635,7 +796,7 @@
         const absPart = formatAbs
           ? ` (${formatAbs(currentValue - previousValue)})`
           : "";
-        return `${trendBadge(diff, { unit: points ? "pp" : "%", goodDirection, extra: absPart })} vs prior ${currentRangeDays()}d`;
+        return `${trendBadge(diff, { unit: points ? "pp" : "%", extra: absPart })} vs prior ${currentRangeDays()}d`;
       }
       const TOOL_LABEL = {
         edit_tool: "Edit",
@@ -661,9 +822,11 @@
           label: "AI model",
           short: "models",
           noun: "model",
-          question: "Are more expensive models pushing up the bill?",
+          question:
+            "Are more expensive models or the way we use them pushing up the bill?",
           description:
-            "Compare company spend and requests by model with current provider prices per 1 million input and output tokens. This shows the rates behind each model and how your model mix affects the bill.",
+            "Compare company spend and requests by model with current provider prices per 1M input and output tokens to see how model choice and your mix of input, output and cached tokens affect the bill.",
+          nowrapDesktop: true,
         },
         team: {
           label: "Team",
@@ -684,6 +847,7 @@
           unavailableNote:
             "A daily spend/requests trend isn't available for individual people — Anthropic's API only reports per-person cost as a period total, not a daily series. See the ranked table below instead.",
           benchmarkLabel: "vs team member average",
+          nowrapDesktop: true,
         },
         skill: {
           label: "API key / workflow",
@@ -691,20 +855,64 @@
           noun: "skill",
           question: "Where is automated AI usage adding most to the bill?",
           description:
-            "Compare automated workloads by spend, growth and cost per request to find agents that may need tighter guardrails or could deliver the same result with a lower-cost model.",
+            "Compare automated workflows by spend, growth and cost per request to find agents that may need tighter guardrails or could deliver the same result with a lower-cost model.",
           unavailableNote:
             "A daily spend/requests trend isn't available for skills — Anthropic's API only reports per-skill cost as a period total, not a daily series. See the ranked table below instead.",
           benchmarkLabel: "vs workflow average",
+          nowrapDesktop: true,
         },
       };
-      const investigationState = { dimension: "product", sort: { key: "spend", dir: "desc" } };
+      const investigationState = {
+        dimension: "product",
+        sort: { key: "spend", dir: "desc" },
+        metric: "spend",
+        // Organisational allocation's own independent timeframe — same shape as
+        // state.period/state.customRange, deliberately not shared with them.
+        period: 7,
+        customRange: null,
+      };
+
+      // Restores period/customRange from ?period=&from=&to= (Company overview) and
+      // ?allocationPeriod=&allocationFrom=&allocationTo= (Organisational allocation)
+      // so a page refresh keeps whatever ranges the user had selected, instead of
+      // always resetting both to 7 days.
+      function readRangeFromUrl() {
+        const params = new URLSearchParams(location.search);
+        const period = params.get("period");
+        const from = params.get("from");
+        const to = params.get("to");
+        if (period === "custom" && from && to) {
+          state.period = "custom";
+          state.customRange = { from, to };
+        } else if (period && PRESET_RANGES.includes(Number(period))) {
+          state.period = Number(period);
+        }
+
+        const allocationPeriod = params.get("allocationPeriod");
+        const allocationFrom = params.get("allocationFrom");
+        const allocationTo = params.get("allocationTo");
+        if (allocationPeriod === "custom" && allocationFrom && allocationTo) {
+          investigationState.period = "custom";
+          investigationState.customRange = {
+            from: allocationFrom,
+            to: allocationTo,
+          };
+        } else if (
+          allocationPeriod &&
+          PRESET_RANGES.includes(Number(allocationPeriod))
+        ) {
+          investigationState.period = Number(allocationPeriod);
+        }
+      }
+      readRangeFromUrl();
       const SORT_LABELS = {
         spend: "spend",
         trend: "vs previous period",
         share: "share of total spend",
         benchmark: "vs average",
         requests: "requests sent",
-        costPer1k: "cost per 1,000 requests",
+        costPer1k: "avg. cost per 1k requests",
+        costPerMillionTokens: "cost per 1m tokens",
       };
       // Product/Model already carry a daily spend+requests series (from
       // cost_report). Team gets its own daily series from /api/teams
@@ -719,17 +927,17 @@
       function investigationRowsForDimension() {
         const dimension = investigationState.dimension;
         if (dimension === "product" || dimension === "model") {
-          if (!state.cost) return null;
+          if (!state.allocationCost) return null;
           const raw =
             dimension === "product"
-              ? state.cost.byProduct.map((s) => ({
+              ? state.allocationCost.byProduct.map((s) => ({
                   ...s,
                   name: productLabel(s.name),
                 }))
-              : state.cost.byModel;
-          const top = raw.slice(0, 4); // already sorted desc by spend
+              : state.allocationCost.byModel;
+          const top = raw.slice(0, 5); // already sorted desc by spend
           return {
-            labels: state.cost.labels,
+            labels: state.allocationCost.labels,
             rows: top.map((s, i) => ({
               name: s.name,
               color: colorFor(i),
@@ -739,10 +947,10 @@
           };
         }
         if (dimension === "team") {
-          if (!state.teamSeries) return null;
+          if (!state.allocationTeamSeries) return null;
           return {
-            labels: state.teamSeries.labels,
-            rows: state.teamSeries.series.map((s, i) => ({
+            labels: state.allocationTeamSeries.labels,
+            rows: state.allocationTeamSeries.series.map((s, i) => ({
               name: s.name,
               color: colorFor(i),
               spend: s.spend,
@@ -767,30 +975,36 @@
         }
       }
 
-      // Spend (solid, left axis) + requests (dashed, right axis) for the
-      // same top-N rows, one color per row shared across both lines —
-      // mirrors the mockup's dual-axis combined chart.
-      function drawCombinedChart(labels, rows) {
+      // Stacked bars, one per day, segmented by the top-N rows for the
+      // current dimension — metric ("spend" or "requests") picks which of
+      // each row's two daily arrays gets stacked. Company overview's own
+      // chart (renderOverviewChart) stays a line chart; this is Organisational
+      // allocation-only, per spec.
+      function renderStackedChart(labels, rows, metric) {
         const svg = document.getElementById("investigationChart");
         svg.innerHTML = "";
         const width = 1100,
           height = 340;
-        const margin = { top: 16, right: 56, bottom: 28, left: 64 };
+        const isCurrency = metric === "spend";
+        const format = isCurrency ? money : compactNumber;
+        const margin = { top: 16, right: 20, bottom: 40, left: 64 };
         const plotW = width - margin.left - margin.right;
         const plotH = height - margin.top - margin.bottom;
         svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
-        const spendMax = Math.max(...rows.flatMap((r) => r.spend), 1) * 1.15;
-        const requestsMax =
-          Math.max(...rows.flatMap((r) => r.requests), 1) * 1.15;
+        const totals = labels.map((_, i) =>
+          rows.reduce((sum, r) => sum + r[metric][i], 0),
+        );
+        const max = niceMax(Math.max(...totals, 1));
 
         const x = xScale(labels.length, plotW, margin.left);
-        const ySpend = yScale(spendMax, plotH, margin.top);
-        const yRequests = yScale(requestsMax, plotH, margin.top);
+        const y = yScale(max, plotH, margin.top);
+        const step = labels.length > 1 ? plotW / (labels.length - 1) : plotW;
+        const barWidth = Math.min(56, step * 0.55);
 
         for (let i = 0; i <= 4; i++) {
-          const spendValue = (spendMax / 4) * i;
-          const py = ySpend(spendValue);
+          const value = (max / 4) * i;
+          const py = y(value);
           svg.appendChild(
             createSvgElement("line", {
               class: "gridline",
@@ -800,27 +1014,37 @@
               y2: py,
             }),
           );
-          const leftLabel = createSvgElement("text", {
+          const label = createSvgElement("text", {
             class: "axis-label",
             x: margin.left - 10,
             y: py + 4,
             "text-anchor": "end",
           });
-          leftLabel.textContent = money(spendValue);
-          svg.appendChild(leftLabel);
-          const rightLabel = createSvgElement("text", {
-            class: "axis-label",
-            x: width - margin.right + 10,
-            y: py + 4,
-            "text-anchor": "start",
-          });
-          rightLabel.textContent = compactNumber((requestsMax / 4) * i);
-          svg.appendChild(rightLabel);
+          label.textContent = format(value);
+          svg.appendChild(label);
+          if (isCurrency && value > 0) {
+            const eurLabel = createSvgElement("text", {
+              class: "axis-label-converted",
+              x: margin.left - 10,
+              y: py + 15,
+              "text-anchor": "end",
+            });
+            eurLabel.textContent = fxLabel(value, EUR_RATE, "€");
+            svg.appendChild(eurLabel);
+          }
         }
 
         const labelStep = Math.ceil(labels.length / 8);
         labels.forEach((d, i) => {
           if (i % labelStep !== 0 && i !== labels.length - 1) return;
+          const weekday = createSvgElement("text", {
+            class: "axis-weekday",
+            x: x(i),
+            y: height - 20,
+            "text-anchor": "middle",
+          });
+          weekday.textContent = weekdayAbbr(d);
+          svg.appendChild(weekday);
           const label = createSvgElement("text", {
             class: "axis-label",
             x: x(i),
@@ -831,41 +1055,26 @@
           svg.appendChild(label);
         });
 
-        rows.forEach((r) => {
-          const spendPoints = r.spend
-            .map((v, i) => `${x(i)},${ySpend(v)}`)
-            .join(" ");
-          svg.appendChild(
-            createSvgElement("polyline", {
-              class: "series-line",
-              points: spendPoints,
-              stroke: r.color,
-            }),
-          );
-          const requestPoints = r.requests
-            .map((v, i) => `${x(i)},${yRequests(v)}`)
-            .join(" ");
-          svg.appendChild(
-            createSvgElement("polyline", {
-              points: requestPoints,
-              fill: "none",
-              stroke: r.color,
-              "stroke-width": 2,
-              "stroke-dasharray": "6 5",
-              opacity: 0.75,
-            }),
-          );
+        labels.forEach((_, i) => {
+          let running = 0;
+          rows.forEach((r) => {
+            const v = r[metric][i];
+            const yTop = y(running + v);
+            const yBottom = y(running);
+            svg.appendChild(
+              createSvgElement("rect", {
+                class: "stack-segment",
+                x: x(i) - barWidth / 2,
+                y: yTop,
+                width: barWidth,
+                height: Math.max(0, yBottom - yTop),
+                fill: r.color,
+                rx: 1,
+              }),
+            );
+            running += v;
+          });
         });
-
-        const crosshair = createSvgElement("line", {
-          class: "crosshair",
-          x1: 0,
-          x2: 0,
-          y1: margin.top,
-          y2: height - margin.bottom,
-          opacity: 0,
-        });
-        svg.appendChild(crosshair);
 
         const tooltip = document.getElementById("investigationTooltip");
         const chartWrap = document.getElementById("investigationChartWrap");
@@ -882,20 +1091,14 @@
             role: "img",
           });
           const summary = rows
-            .map(
-              (r) =>
-                `${r.name}: ${money(r.spend[i])} · ${compactNumber(r.requests[i])} req`,
-            )
+            .map((r) => `${r.name}: ${format(r[metric][i])}`)
             .join(", ");
           hit.setAttribute("aria-label", `${d}: ${summary}`);
           const show = () => {
-            crosshair.setAttribute("x1", x(i));
-            crosshair.setAttribute("x2", x(i));
-            crosshair.setAttribute("opacity", 1);
             tooltip.innerHTML = "";
             const dateEl = document.createElement("div");
             dateEl.className = "tooltip-date";
-            dateEl.textContent = d;
+            dateEl.textContent = `${weekdayAbbr(d)} ${d}`;
             tooltip.appendChild(dateEl);
             rows.forEach((r) => {
               const row = document.createElement("div");
@@ -908,7 +1111,7 @@
               name.textContent = r.name;
               const value = document.createElement("span");
               value.className = "tooltip-value";
-              value.textContent = `${money(r.spend[i])} · ${compactNumber(r.requests[i])} req`;
+              value.textContent = format(r[metric][i]);
               row.append(key, name, value);
               tooltip.appendChild(row);
             });
@@ -920,7 +1123,6 @@
             tooltip.style.opacity = "1";
           };
           const hide = () => {
-            crosshair.setAttribute("opacity", 0);
             tooltip.style.opacity = "0";
           };
           hit.addEventListener("pointerenter", show);
@@ -932,14 +1134,14 @@
         });
       }
 
-      // Full (not just top-4) row list per dimension, for the ranked table —
+      // Full (not just top-5) row list per dimension, for the ranked table —
       // separate from investigationRowsForDimension() above, which only
-      // returns the top 4 rows needed for the combined chart.
+      // returns the top 5 rows needed for the stacked chart.
       function investigationFullRows() {
         const dimension = investigationState.dimension;
         if (dimension === "product") {
-          if (!state.cost) return null;
-          return state.cost.byProduct.map((p) => ({
+          if (!state.allocationCost) return null;
+          return state.allocationCost.byProduct.map((p) => ({
             name: productLabel(p.name),
             sub: "",
             spend: p.totalSpend,
@@ -948,28 +1150,30 @@
           }));
         }
         if (dimension === "model") {
-          if (!state.cost) return null;
-          return state.cost.byModel.map((m) => ({
+          if (!state.allocationCost) return null;
+          return state.allocationCost.byModel.map((m) => ({
             name: m.name,
             sub: "",
             spend: m.totalSpend,
             previousSpend: m.previousSpend,
             requests: m.requests,
+            totalTokens: m.totalTokens,
           }));
         }
         if (dimension === "team") {
-          if (!state.teams) return null;
-          return state.teams.map((t) => ({
+          if (!state.allocationTeams) return null;
+          return state.allocationTeams.map((t) => ({
             name: t.name,
             sub: "",
             spend: t.spend,
             previousSpend: t.previousSpend,
             requests: t.requests,
+            totalTokens: t.totalTokens,
           }));
         }
         if (dimension === "person") {
-          if (!state.people) return null;
-          return state.people.map((p) => ({
+          if (!state.allocationPeople) return null;
+          return state.allocationPeople.map((p) => ({
             name: p.name,
             sub: p.email && p.email !== p.name ? p.email : "",
             spend: p.amount,
@@ -977,15 +1181,16 @@
             requests: p.requests,
             anthropicAmount: p.anthropicAmount,
             openaiAmount: p.openaiAmount,
+            totalTokens: p.totalTokens,
           }));
         }
         if (dimension === "skill") {
-          if (!state.skills) return null;
+          if (!state.allocationSkills) return null;
           // "Spend" here is overage cost, not list value — see the earlier
           // discussion on this dashboard's Skills card: list value counts
           // seat-covered usage too and doesn't tie to actual billed spend,
           // while overage cost is the closest thing to a real dollar figure.
-          return state.skills.map((s) => ({
+          return state.allocationSkills.map((s) => ({
             name: s.name,
             sub: "",
             spend: s.overageSpend,
@@ -1000,49 +1205,6 @@
       // not hardcoded copy like the mockup's fake insight text. Names come
       // from external API data, so this builds nodes with textContent rather
       // than an HTML template string.
-      function renderInvestigationInsight(sorted, totalSpend, noun) {
-        const strip = document.getElementById("investigationInsight");
-        const text = document.getElementById("investigationInsightText");
-        text.innerHTML = "";
-
-        if (!sorted.length || totalSpend <= 0) {
-          strip.hidden = true;
-          return;
-        }
-
-        const top = sorted[0];
-        const topShare = (top.spend / totalSpend) * 100;
-
-        const growing = sorted
-          .map((r) => ({
-            row: r,
-            trend: r.previousSpend ? pctChange(r.spend, r.previousSpend) : null,
-          }))
-          .filter((r) => r.trend != null && r.trend > 0);
-        const fastest = growing.length
-          ? growing.reduce((a, b) => (b.trend > a.trend ? b : a))
-          : null;
-
-        const topName = document.createElement("strong");
-        topName.textContent = top.name;
-        text.append(
-          topName,
-          ` is the largest ${noun} at ${topShare.toFixed(0)}% of spend.`,
-        );
-
-        if (fastest && fastest.row.name !== top.name) {
-          const fastName = document.createElement("strong");
-          fastName.textContent = fastest.row.name;
-          text.append(
-            " ",
-            fastName,
-            ` has the fastest growth, up ${fastest.trend.toFixed(0)}% vs the prior period.`,
-          );
-        }
-
-        strip.hidden = false;
-      }
-
       function updateSortHeaders() {
         document.querySelectorAll("#investigationTable th.sortable").forEach((th) => {
           th.querySelector(".sort-arrow")?.remove();
@@ -1068,7 +1230,7 @@
         const seeAllBtn = document.getElementById("investigationSeeAllBtn");
         const titleCase =
           def.short.charAt(0).toUpperCase() + def.short.slice(1);
-        const colCount = isModel ? 8 : 7;
+        const colCount = isModel ? 9 : 8;
         document.getElementById("investigationNameColumn").textContent =
           def.label;
         document.getElementById("investigationBenchmarkColumn").textContent =
@@ -1085,7 +1247,6 @@
           document.getElementById("investigationTableTitle").textContent =
             titleCase;
           document.getElementById("investigationTableNote").textContent = "";
-          document.getElementById("investigationInsight").hidden = true;
           seeAllBtn.hidden = true;
           const row = document.createElement("tr");
           const cell = document.createElement("td");
@@ -1101,7 +1262,6 @@
           document.getElementById("investigationTableTitle").textContent =
             titleCase;
           document.getElementById("investigationTableNote").textContent = "";
-          document.getElementById("investigationInsight").hidden = true;
           seeAllBtn.hidden = true;
           const row = document.createElement("tr");
           const cell = document.createElement("td");
@@ -1115,8 +1275,7 @@
 
         // Every sortable column computed once up front, before sorting —
         // share/benchmark/costPer1k all depend on the full unsorted list's
-        // totals, and the insight strip always reflects true top-by-spend
-        // regardless of which column the table is currently sorted by.
+        // totals.
         const totalSpend = rows.reduce((sum, r) => sum + r.spend, 0);
         const averageSpend = totalSpend / rows.length;
         const enriched = rows.map((r) => ({
@@ -1125,10 +1284,9 @@
           share: totalSpend > 0 ? (r.spend / totalSpend) * 100 : 0,
           benchmark: averageSpend > 0 ? (r.spend / averageSpend - 1) * 100 : null,
           costPer1k: r.requests > 0 ? (r.spend / r.requests) * 1000 : null,
+          costPerMillionTokens:
+            r.totalTokens > 0 ? (r.spend / r.totalTokens) * 1_000_000 : null,
         }));
-        const bySpendDesc = enriched.slice().sort((a, b) => b.spend - a.spend);
-        renderInvestigationInsight(bySpendDesc, totalSpend, def.noun);
-
         const { key: sortKey, dir: sortDir } = investigationState.sort;
         const sorted = enriched.sort((a, b) => compareRows(a, b, sortKey, sortDir));
         updateSortHeaders();
@@ -1137,21 +1295,22 @@
           "Full spend breakdown";
         document.getElementById("investigationTableNote").textContent = state
           .expanded.investigation
-          ? `${titleCase} · full breakdown · sorted by ${SORT_LABELS[sortKey]} (${sortDir === "asc" ? "low to high" : "high to low"}) · current vs prior ${currentRangeDays()}d`
-          : `${titleCase} · top ${Math.min(ROW_LIMIT, sorted.length)} of ${sorted.length} · sorted by ${SORT_LABELS[sortKey]} (${sortDir === "asc" ? "low to high" : "high to low"}) · current vs prior ${currentRangeDays()}d`;
+          ? `${titleCase} · full breakdown · sorted by ${SORT_LABELS[sortKey]} (${sortDir === "asc" ? "low to high" : "high to low"}) · current vs prior ${allocationRangeDays()}d`
+          : `${titleCase} · top ${Math.min(INVESTIGATION_ROW_LIMIT, sorted.length)} of ${sorted.length} · sorted by ${SORT_LABELS[sortKey]} (${sortDir === "asc" ? "low to high" : "high to low"}) · current vs prior ${allocationRangeDays()}d`;
 
-        seeAllBtn.hidden = sorted.length <= ROW_LIMIT;
+        seeAllBtn.hidden = sorted.length <= INVESTIGATION_ROW_LIMIT;
         seeAllBtn.textContent = state.expanded.investigation
-          ? `Return to top ${ROW_LIMIT}`
-          : `View all ${sorted.length}`;
+          ? `Show top ${INVESTIGATION_ROW_LIMIT} rows`
+          : "Show all rows";
         const visible = state.expanded.investigation
           ? sorted
-          : sorted.slice(0, ROW_LIMIT);
+          : sorted.slice(0, INVESTIGATION_ROW_LIMIT);
 
         visible.forEach((r, i) => {
           const share = r.share;
           const benchmarkPct = r.benchmark;
           const costPer1k = r.costPer1k;
+          const costPerMillionTokens = r.costPerMillionTokens;
           const color = colorFor(i);
 
           const row = document.createElement("tr");
@@ -1196,7 +1355,7 @@
           trendCell.innerHTML =
             r.trend == null
               ? `<span class="trend-empty">n/a</span>`
-              : trendBadge(r.trend, { goodDirection: "down" }) || "—";
+              : trendBadge(r.trend) || "—";
 
           const shareCell = document.createElement("td");
           shareCell.className = "num share-cell";
@@ -1212,10 +1371,10 @@
 
           const benchmarkCell = document.createElement("td");
           benchmarkCell.className = "num";
-          benchmarkCell.textContent =
+          benchmarkCell.innerHTML =
             benchmarkPct == null
               ? "—"
-              : `${benchmarkPct >= 0 ? "+" : ""}${benchmarkPct.toFixed(0)}%`;
+              : `<span class="${benchmarkPct >= 0 ? "trend-good" : "trend-bad"}">${benchmarkPct >= 0 ? "+" : ""}${benchmarkPct.toFixed(0)}%</span>`;
 
           let pricingCell = null;
           if (isModel) {
@@ -1242,9 +1401,14 @@
           costPer1kCell.textContent =
             costPer1k == null ? "—" : money(costPer1k);
 
+          const costPerMillionTokensCell = document.createElement("td");
+          costPerMillionTokensCell.className = "num";
+          costPerMillionTokensCell.textContent =
+            costPerMillionTokens == null ? "—" : money(costPerMillionTokens);
+
           row.append(nameCell, spendCell, trendCell, shareCell, benchmarkCell);
           if (pricingCell) row.appendChild(pricingCell);
-          row.append(requestsCell, costPer1kCell);
+          row.append(requestsCell, costPer1kCell, costPerMillionTokensCell);
           body.appendChild(row);
         });
       }
@@ -1252,8 +1416,14 @@
       function renderInvestigation() {
         const def = DIMENSIONS[investigationState.dimension];
         document.getElementById("dimensionQuestion").textContent = def.question;
-        document.getElementById("dimensionDescription").textContent =
-          def.description;
+        const dimensionDescription = document.getElementById(
+          "dimensionDescription",
+        );
+        dimensionDescription.textContent = def.description;
+        dimensionDescription.classList.toggle(
+          "nowrap-desktop",
+          !!def.nowrapDesktop,
+        );
 
         const chartMeta = document.getElementById("investigationChartMeta");
         const chartWrap = document.getElementById("investigationChartWrap");
@@ -1269,10 +1439,12 @@
           chartMeta.hidden = false;
           chartWrap.hidden = false;
           placeholder.hidden = true;
+          const metricLabel =
+            investigationState.metric === "spend" ? "Spend" : "Requests";
           document.getElementById("investigationChartTitle").textContent =
-            `Spend and requests over time · Top ${data.rows.length} ${def.short} rows · Last ${currentRangeDays()} days`;
+            `${metricLabel} by ${def.short} · Top ${data.rows.length} rows · Last ${allocationRangeDays()} days`;
           renderInvestigationLegend(data.rows);
-          drawCombinedChart(data.labels, data.rows);
+          renderStackedChart(data.labels, data.rows, investigationState.metric);
         }
 
         renderInvestigationTable();
@@ -1294,7 +1466,6 @@
       const ALL_CARD_IDS = [
         "overviewKpiBlock",
         "overviewChartBody",
-        "investigationCard",
         "chartCard",
         "peopleCard",
         "toolAcceptanceCard",
@@ -1341,16 +1512,26 @@
       // this runs synchronously so a cached range never even flashes the loading state.
       // `apply`/loading-class updates only fire while `key` is still the active range, so
       // background prefetch calls (key !== currentRangeKey()) safely just populate the cache.
-      function loadPiece(endpoint, key, url, cardIds, apply) {
+      // isStillCurrent lets a caller track a range other than the page's main
+      // currentRangeKey() — Organisational allocation's own independent range,
+      // for instance — while reusing the same cache/dedup machinery.
+      function loadPiece(
+        endpoint,
+        key,
+        url,
+        cardIds,
+        apply,
+        isStillCurrent = () => currentRangeKey() === key,
+      ) {
         const finish = () => {
-          if (currentRangeKey() === key)
+          if (isStillCurrent())
             cardIds.forEach((id) =>
               document.getElementById(id)?.classList.remove("loading"),
             );
         };
         const cached = readRangeCache(endpoint, key);
         if (cached !== undefined) {
-          if (currentRangeKey() === key) {
+          if (isStillCurrent()) {
             apply(cached);
             finish();
           }
@@ -1378,7 +1559,7 @@
         inFlightRequests.set(flightKey, request);
 
         return request.then((data) => {
-          if (currentRangeKey() !== key) return data; // a newer range was selected while this was in flight
+          if (!isStillCurrent()) return data; // a newer range was selected while this was in flight
           if (data !== undefined) apply(data);
           finish();
           return data;
@@ -1399,7 +1580,6 @@
             [
               "overviewKpiBlock",
               "overviewChartBody",
-              "investigationCard",
               "chartCard",
               "productsCard",
               "modelsCard",
@@ -1411,7 +1591,6 @@
               renderProductsSpend();
               renderModelsSpend();
               renderOverviewChart();
-              renderInvestigation();
               updateConnectionStatus(data.totals);
               renderConnectNudge(data.totals);
             },
@@ -1420,12 +1599,11 @@
             "people",
             key,
             `/api/people?${q}`,
-            ["peopleCard", "investigationCard"],
+            ["peopleCard"],
             (data) => {
               state.people = data.people;
               renderKpis();
               renderPeople();
-              renderInvestigation();
             },
           ),
           loadPiece("efficiency", key, `/api/efficiency?${q}`, [], (data) => {
@@ -1461,11 +1639,10 @@
             "skills",
             key,
             `/api/skills?${q}`,
-            ["skillsCard", "investigationCard"],
+            ["skillsCard"],
             (data) => {
               state.skills = data.skills;
               renderSkills();
-              renderInvestigation();
             },
           ),
           loadPiece(
@@ -1482,12 +1659,11 @@
             "teams",
             key,
             `/api/teams?${q}`,
-            ["teamsCard", "investigationCard"],
+            ["teamsCard"],
             (data) => {
               state.teams = data.teams;
               state.teamSeries = data.teamSeries;
               renderTeams();
-              renderInvestigation();
             },
           ),
           loadPiece(
@@ -1499,6 +1675,61 @@
               state.openaiProjects = data.projects;
               renderOpenAiProjects();
             },
+          ),
+        ];
+      }
+
+      // Organisational allocation's own data pipeline, keyed by allocationRangeKey()/
+      // allocationRangeQuery() instead of the page's main range — only the 4 endpoints
+      // its tabs actually read (Product/Model tabs share cost-summary's shape with
+      // Company overview, but need it fetched for a potentially different range).
+      function loadAllocationRangeData(key, q) {
+        const isStillCurrent = () => allocationRangeKey() === key;
+        return [
+          loadPiece(
+            "cost-summary",
+            key,
+            `/api/cost-summary?${q}`,
+            ["investigationCard"],
+            (data) => {
+              state.allocationCost = data;
+              renderInvestigation();
+            },
+            isStillCurrent,
+          ),
+          loadPiece(
+            "teams",
+            key,
+            `/api/teams?${q}`,
+            ["investigationCard"],
+            (data) => {
+              state.allocationTeams = data.teams;
+              state.allocationTeamSeries = data.teamSeries;
+              renderInvestigation();
+            },
+            isStillCurrent,
+          ),
+          loadPiece(
+            "people",
+            key,
+            `/api/people?${q}`,
+            ["investigationCard"],
+            (data) => {
+              state.allocationPeople = data.people;
+              renderInvestigation();
+            },
+            isStillCurrent,
+          ),
+          loadPiece(
+            "skills",
+            key,
+            `/api/skills?${q}`,
+            ["investigationCard"],
+            (data) => {
+              state.allocationSkills = data.skills;
+              renderInvestigation();
+            },
+            isStillCurrent,
           ),
         ];
       }
@@ -1531,6 +1762,21 @@
         await Promise.allSettled(loadRangeData(key, q));
       }
 
+      async function loadAllocationData() {
+        const key = allocationRangeKey();
+        const q = allocationRangeQuery();
+        state.allocationCost =
+          state.allocationTeams =
+          state.allocationTeamSeries =
+          state.allocationPeople =
+          state.allocationSkills =
+            null;
+        document.getElementById("investigationCard")?.classList.add("loading");
+        renderInvestigation(); // starts the table/chart in their own loading state
+
+        await Promise.allSettled(loadAllocationRangeData(key, q));
+      }
+
       // Warms the sessionStorage cache for every preset period the user hasn't looked at yet,
       // one range at a time (so it doesn't compete with the visible range's own requests or
       // burst the Admin API's rate limit), so switching periods is instant once this settles.
@@ -1548,6 +1794,17 @@
         }
       }
 
+      // Same idea as prefetchOtherRanges(), for Organisational allocation's own range.
+      async function prefetchOtherAllocationRanges() {
+        const generation = backgroundGeneration;
+        for (const days of PRESET_RANGES) {
+          if (generation !== backgroundGeneration) return;
+          const key = String(days);
+          if (key === allocationRangeKey()) continue;
+          await Promise.allSettled(loadAllocationRangeData(key, `days=${days}`));
+        }
+      }
+
       function renderKpis() {
         const t = state.cost?.totals;
         const topPerson = state.people?.[0];
@@ -1561,6 +1818,7 @@
             info: "The cash your company actually paid for AI token usage.",
             ready: !!t,
             value: t && money(t.spend),
+            convertedValue: t && convertedLabel(t.spend),
             sub:
               t &&
               (t.anthropicSpend > 0 && t.openaiSpend > 0
@@ -1569,7 +1827,6 @@
             delta:
               t &&
               deltaLine(t.spend, t.previous ? t.previous.spend : null, {
-                goodDirection: "down",
                 formatAbs: signedMoney,
               }),
           },
@@ -1611,7 +1868,6 @@
                 seats.previous ? seats.previous.monthlyAdoptionRate : null,
                 {
                   points: true,
-                  goodDirection: "up",
                 },
               ),
           },
@@ -1677,6 +1933,12 @@
             value.appendChild(spinner);
           } else {
             value.textContent = k.value;
+            if (k.convertedValue) {
+              const converted = document.createElement("span");
+              converted.className = "kpi-value-converted";
+              converted.textContent = k.convertedValue;
+              value.appendChild(converted);
+            }
             sub.innerHTML = k.sub; // fixed template above, not raw API text
             if (k.delta) delta.innerHTML = k.delta; // fixed template above, not raw API text
           }
@@ -1809,9 +2071,10 @@
                 ? 200
                 : 130
               : 20,
-          bottom: 28,
+          bottom: 40,
           left: 64,
         };
+        const isCurrency = format === money;
         const plotW = width - margin.left - margin.right;
         const plotH = height - margin.top - margin.bottom;
 
@@ -1861,11 +2124,29 @@
           });
           label.textContent = format(value);
           svg.appendChild(label);
+          if (isCurrency && value > 0) {
+            const eurLabel = createSvgElement("text", {
+              class: "axis-label-converted",
+              x: margin.left - 10,
+              y: py + 15,
+              "text-anchor": "end",
+            });
+            eurLabel.textContent = fxLabel(value, EUR_RATE, "€");
+            svg.appendChild(eurLabel);
+          }
         }
 
         const labelStep = Math.ceil(labels.length / 8);
         labels.forEach((d, i) => {
           if (i % labelStep !== 0 && i !== labels.length - 1) return;
+          const weekday = createSvgElement("text", {
+            class: "axis-weekday",
+            x: x(i),
+            y: height - 20,
+            "text-anchor": "middle",
+          });
+          weekday.textContent = weekdayAbbr(d);
+          svg.appendChild(weekday);
           const label = createSvgElement("text", {
             class: "axis-label",
             x: x(i),
@@ -1913,6 +2194,17 @@
             });
             label.textContent = `${s.name} ${format(lastV)}`;
             svg.appendChild(label);
+            if (isCurrency) {
+              const eurGbpLabel = createSvgElement("text", {
+                class: "series-end-label-converted",
+                x: x(lastI) + 8,
+                y: y(lastV) + 16,
+                fill: s.color,
+                opacity: 0.5,
+              });
+              eurGbpLabel.textContent = convertedLabel(lastV);
+              svg.appendChild(eurGbpLabel);
+            }
           }
         });
 
@@ -2684,15 +2976,49 @@
         });
       });
 
-      document.querySelectorAll("[data-metric]").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          state.overview.metric = btn.dataset.metric;
-          document
-            .querySelectorAll("[data-metric]")
-            .forEach((t) => t.setAttribute("aria-selected", String(t === btn)));
-          renderOverviewChart();
+      document
+        .querySelectorAll("#overviewMetricPicker [data-metric]")
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.overview.metric = btn.dataset.metric;
+            document
+              .querySelectorAll("#overviewMetricPicker [data-metric]")
+              .forEach((t) =>
+                t.setAttribute("aria-selected", String(t === btn)),
+              );
+            renderOverviewChart();
+          });
         });
-      });
+
+      document
+        .querySelectorAll("#investigationMetricPicker [data-metric]")
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            investigationState.metric = btn.dataset.metric;
+            document
+              .querySelectorAll("#investigationMetricPicker [data-metric]")
+              .forEach((t) =>
+                t.setAttribute("aria-selected", String(t === btn)),
+              );
+            renderInvestigation();
+          });
+        });
+
+      document
+        .querySelectorAll(".card.accordion > .section-heading")
+        .forEach((heading) => {
+          const toggle = () => {
+            const card = heading.closest(".card");
+            const isOpen = card.classList.toggle("is-open");
+            heading.setAttribute("aria-expanded", String(isOpen));
+          };
+          heading.addEventListener("click", toggle);
+          heading.addEventListener("keydown", (e) => {
+            if (e.key !== "Enter" && e.key !== " ") return;
+            e.preventDefault();
+            toggle();
+          });
+        });
 
       document.querySelectorAll("[data-dimension]").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -2709,6 +3035,17 @@
         .addEventListener("click", () => {
           state.expanded.investigation = !state.expanded.investigation;
           renderInvestigationTable();
+        });
+      document
+        .getElementById("investigationViewChartBtn")
+        .addEventListener("click", (e) => {
+          const panel = document.getElementById("investigationChartPanel");
+          const isOpen = panel.hidden;
+          panel.hidden = !isOpen;
+          e.currentTarget.textContent = isOpen
+            ? "Hide chart"
+            : "View as chart";
+          e.currentTarget.setAttribute("aria-expanded", String(isOpen));
         });
       document.querySelectorAll("#investigationTable th.sortable").forEach((th) => {
         th.addEventListener("click", () => {
@@ -2731,12 +3068,11 @@
         renderChart();
       });
 
-      const periodButtons = document.querySelectorAll(
-        "#periodPicker [data-days]",
-      );
+      const periodButtons = document.querySelectorAll("#periodPicker [data-days]");
       const customRangeWrap = document.getElementById("customRangeWrap");
       const rangeFromInput = document.getElementById("rangeFrom");
       const rangeToInput = document.getElementById("rangeTo");
+      const rangeApplyBtn = document.getElementById("rangeApplyBtn");
 
       rangeFromInput.max = isoToday();
       rangeToInput.max = isoToday();
@@ -2751,6 +3087,18 @@
           params.set("period", String(state.period));
           params.delete("from");
           params.delete("to");
+        }
+        if (
+          investigationState.period === "custom" &&
+          investigationState.customRange
+        ) {
+          params.set("allocationPeriod", "custom");
+          params.set("allocationFrom", investigationState.customRange.from);
+          params.set("allocationTo", investigationState.customRange.to);
+        } else {
+          params.set("allocationPeriod", String(investigationState.period));
+          params.delete("allocationFrom");
+          params.delete("allocationTo");
         }
         history.replaceState(
           null,
@@ -2811,11 +3159,98 @@
         });
       });
 
+      // Only the Apply button fires a fetch — reacting to every date-input change
+      // means one request per keystroke/date-picker click, most of them thrown away
+      // the moment the user picks the next date.
       rangeFromInput.addEventListener("change", () => {
         rangeToInput.min = rangeFromInput.value;
-        applyCustomRange();
       });
-      rangeToInput.addEventListener("change", applyCustomRange);
+      rangeApplyBtn.addEventListener("click", applyCustomRange);
+
+      // Organisational allocation's own independent timeframe — same pattern as
+      // the block above, but reading/writing investigationState.period/customRange
+      // and triggering loadAllocationData() instead of the page's main state/loadData().
+      const allocationPeriodButtons = document.querySelectorAll(
+        "#allocationPeriodPicker [data-days]",
+      );
+      const allocationCustomRangeWrap = document.getElementById(
+        "allocationCustomRangeWrap",
+      );
+      const allocationRangeFromInput = document.getElementById(
+        "allocationRangeFrom",
+      );
+      const allocationRangeToInput = document.getElementById(
+        "allocationRangeTo",
+      );
+      const allocationRangeApplyBtn = document.getElementById(
+        "allocationRangeApplyBtn",
+      );
+
+      allocationRangeFromInput.max = isoToday();
+      allocationRangeToInput.max = isoToday();
+
+      function setActiveAllocationPeriodButton() {
+        const activeValue =
+          investigationState.period === "custom"
+            ? "custom"
+            : String(investigationState.period);
+        allocationPeriodButtons.forEach((btn) =>
+          btn.setAttribute(
+            "aria-selected",
+            String(btn.dataset.days === activeValue),
+          ),
+        );
+      }
+
+      // Reflect a range restored from the URL (readRangeFromUrl, above) into the controls.
+      if (
+        investigationState.period === "custom" &&
+        investigationState.customRange
+      ) {
+        allocationCustomRangeWrap.hidden = false;
+        allocationRangeFromInput.value = investigationState.customRange.from;
+        allocationRangeToInput.value = investigationState.customRange.to;
+        allocationRangeToInput.min = investigationState.customRange.from;
+      }
+      setActiveAllocationPeriodButton();
+
+      function applyAllocationCustomRange() {
+        const from = allocationRangeFromInput.value;
+        const to = allocationRangeToInput.value;
+        if (!from || !to || from > to) return; // wait for a valid, correctly-ordered pair
+        investigationState.period = "custom";
+        investigationState.customRange = { from, to };
+        setActiveAllocationPeriodButton();
+        syncUrl();
+        loadAllocationData();
+      }
+
+      allocationPeriodButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.dataset.days === "custom") {
+            allocationCustomRangeWrap.hidden = false;
+            if (!investigationState.customRange) {
+              allocationRangeFromInput.value = isoDaysAgo(28);
+              allocationRangeToInput.value = isoToday();
+            }
+            applyAllocationCustomRange();
+            return;
+          }
+          allocationCustomRangeWrap.hidden = true;
+          investigationState.period = Number(btn.dataset.days);
+          setActiveAllocationPeriodButton();
+          syncUrl();
+          loadAllocationData();
+        });
+      });
+
+      allocationRangeFromInput.addEventListener("change", () => {
+        allocationRangeToInput.min = allocationRangeFromInput.value;
+      });
+      allocationRangeApplyBtn.addEventListener(
+        "click",
+        applyAllocationCustomRange,
+      );
 
       // Several cards below are currently commented out of the page —
       // this guards every listener targeting them so toggling a card in/out
@@ -2864,6 +3299,12 @@
           prefetchOtherRanges().catch((err) => console.error(err));
         });
 
+      loadAllocationData()
+        .catch((err) => console.error(err))
+        .finally(() => {
+          prefetchOtherAllocationRanges().catch((err) => console.error(err));
+        });
+
       // Set only by loadIndexHtml() in the demo build (see build-mac-demo.sh) — real builds
       // never inject this, so the badge stays hidden and this is a no-op there.
       if (window.__ATS_MOCK_MODE__) {
@@ -2885,12 +3326,15 @@
       // shape every render function here already tolerates (see the "Anthropic made fully
       // optional" work). Only cost-summary and people genuinely blend both providers'
       // numbers together and need a real subtraction rather than a plain clear.
-      function dropProviderFromLoadedState(provider) {
-        const isAnthropic = provider === "anthropic";
-        const providerName = isAnthropic ? "Anthropic" : "OpenAI";
-
-        if (state.cost) {
-          const c = state.cost;
+      // Shared by dropProviderFromLoadedState below for both the overview's own
+      // state slice and Organisational allocation's independent copy — cost and
+      // people are the only two endpoints that genuinely blend both providers'
+      // numbers together (see the comment above dropProviderFromLoadedState).
+      // `cost` is mutated in place (it's an object); `people` is returned since
+      // arrays are replaced wholesale, not mutated.
+      function correctCostAndPeopleForProviderDrop(cost, people, isAnthropic, providerName) {
+        if (cost) {
+          const c = cost;
           const byProvider = c.byProvider ?? [];
           const entry = byProvider.find((p) => p.name === providerName);
           const removedSpend = entry ? entry.totalSpend : 0;
@@ -2932,8 +3376,9 @@
           }
         }
 
-        if (state.people) {
-          state.people = state.people
+        let correctedPeople = people;
+        if (people) {
+          correctedPeople = people
             .map((p) => {
               const anthropicAmount = isAnthropic ? 0 : p.anthropicAmount;
               const openaiAmount = isAnthropic ? p.openaiAmount : 0;
@@ -2953,6 +3398,19 @@
             .filter((p) => p.amount > 0)
             .sort((a, b) => b.amount - a.amount);
         }
+        return correctedPeople;
+      }
+
+      function dropProviderFromLoadedState(provider) {
+        const isAnthropic = provider === "anthropic";
+        const providerName = isAnthropic ? "Anthropic" : "OpenAI";
+
+        state.people = correctCostAndPeopleForProviderDrop(
+          state.cost,
+          state.people,
+          isAnthropic,
+          providerName,
+        );
 
         // Every other endpoint is exclusively backed by one provider — clearing to null
         // matches exactly what a fresh fetch would return with that provider disabled, and
@@ -2978,6 +3436,26 @@
         const key = currentRangeKey();
         if (state.cost) writeRangeCache("cost-summary", key, state.cost);
         if (state.people) writeRangeCache("people", key, { people: state.people });
+
+        // Organisational allocation's own copy — same correction, its own (possibly
+        // different) range, so it never shows stale mixed-provider numbers either.
+        state.allocationPeople = correctCostAndPeopleForProviderDrop(
+          state.allocationCost,
+          state.allocationPeople,
+          isAnthropic,
+          providerName,
+        );
+        if (isAnthropic) {
+          state.allocationTeams = state.allocationTeamSeries = state.allocationSkills =
+            null;
+        }
+        const allocationKey = allocationRangeKey();
+        if (state.allocationCost)
+          writeRangeCache("cost-summary", allocationKey, state.allocationCost);
+        if (state.allocationPeople)
+          writeRangeCache("people", allocationKey, {
+            people: state.allocationPeople,
+          });
       }
 
       (function initProviderChips() {

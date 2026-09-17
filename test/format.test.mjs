@@ -15,6 +15,11 @@ import {
   foldOther,
   isoToday,
   isoDaysAgo,
+  convertedLabel,
+  weekdayAbbr,
+  fxLabel,
+  EUR_RATE,
+  GBP_RATE,
 } from "../lib/format.mjs";
 
 test("money: under $1000 shows two decimal places, no k suffix", () => {
@@ -74,20 +79,13 @@ test("trendBadge: null or non-finite diffValue renders nothing", () => {
   assert.equal(trendBadge(NaN), "");
 });
 
-test("trendBadge: goodDirection flips which arrow direction is styled as good/bad", () => {
-  assert.match(trendBadge(5, { goodDirection: "up" }), /trend-good/);
-  assert.match(trendBadge(-5, { goodDirection: "up" }), /trend-bad/);
-  assert.match(trendBadge(5, { goodDirection: "down" }), /trend-bad/);
-  assert.match(trendBadge(-5, { goodDirection: "down" }), /trend-good/);
-});
-
-test("trendBadge: no goodDirection is neutral regardless of sign, and the arrow/value reflect direction/magnitude", () => {
+test("trendBadge: color is literal sign — increase is always green, decrease is always red", () => {
   const up = trendBadge(5.4);
-  assert.match(up, /trend-neutral/);
+  assert.match(up, /trend-good/);
   assert.match(up, /▲/);
   assert.match(up, /5\.4%/);
   const down = trendBadge(-5.4);
-  assert.match(down, /trend-neutral/);
+  assert.match(down, /trend-bad/);
   assert.match(down, /▼/);
   assert.match(down, /5\.4%/);
 });
@@ -161,4 +159,23 @@ test("isoToday/isoDaysAgo: both format as YYYY-MM-DD, and isoDaysAgo(0) matches 
   assert.match(isoToday(), /^\d{4}-\d{2}-\d{2}$/);
   assert.match(isoDaysAgo(5), /^\d{4}-\d{2}-\d{2}$/);
   assert.equal(isoDaysAgo(0), isoToday());
+});
+
+test("fxLabel: converts a single currency at the given rate, compacting above 1000", () => {
+  assert.equal(fxLabel(4400, EUR_RATE, "€"), "€3.8k");
+  assert.equal(fxLabel(42, GBP_RATE, "£"), "£31");
+});
+
+test("convertedLabel: compacts both currencies above 1000 and shows plain values below it", () => {
+  assert.equal(convertedLabel(4400), "€3.8k · £3.3k");
+  assert.equal(convertedLabel(42), "€36 · £31");
+});
+
+test("convertedLabel: a negative amount keeps its sign in both currencies", () => {
+  assert.equal(convertedLabel(-1200), "-€1.0k · -£888");
+});
+
+test("weekdayAbbr: maps an ISO date to its three-letter weekday, independent of local timezone", () => {
+  assert.equal(weekdayAbbr("2026-09-15"), "TUE");
+  assert.equal(weekdayAbbr("2026-09-13"), "SUN");
 });
