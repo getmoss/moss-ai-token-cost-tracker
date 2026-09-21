@@ -375,6 +375,19 @@ function mockDimensionCombos(groupBy) {
 }
 
 // Shared by every cost_report/usage_report caller via fetchAllBuckets, below.
+// Engineering's mock spend gets a deliberate, guaranteed boost in the most recent 7
+// calendar days (independent of whatever `dayIndex`-relative range is being requested) —
+// otherwise whether the Saving opportunities panel's alert thresholds ever actually trip
+// in demo mode is left up to the same per-day pseudo-random weights as every other combo,
+// which (see /tmp analysis during development) only clears the default 30%/$250 spike
+// thresholds by chance. This keeps the demo's "Team spend spike" case reliable without
+// making any other mock series less realistic.
+function mockRecentWeekBoost(combo, dateIso) {
+  if (combo.rbac_group_id !== "team-engineering") return 1;
+  const daysAgo = Math.floor((Date.now() - new Date(dateIso).getTime()) / DAY_MS);
+  return daysAgo < 7 ? 1.6 : 1;
+}
+
 function mockCostReportBuckets(startingAt, endingAt, groupBy) {
   const combos = mockDimensionCombos(groupBy);
   return mockDaysInRange(startingAt, endingAt).map(({ dateIso, dayIndex }) => {
@@ -388,7 +401,8 @@ function mockCostReportBuckets(startingAt, endingAt, groupBy) {
         1.4,
         dateIso,
       );
-      const amountDollars = (dayTotal / combos.length) * weight;
+      const amountDollars =
+        (dayTotal / combos.length) * weight * mockRecentWeekBoost(combo, dateIso);
       const requests = Math.max(
         1,
         Math.round(
@@ -546,6 +560,27 @@ function mockOpenAiCostBuckets(startingAtUnix, endingAtUnix, groupBy) {
           ),
         },
       }));
+    } else if (groupBy?.includes("line_item")) {
+      // Line item strings match the real Costs API's own format (parsed by
+      // parseOpenAiLineItem) — model names line up with OPENAI_MODEL_PRICING
+      // in lib/format.mjs so the demo's per-model rate table has something
+      // real to show against those list prices.
+      const models = ["gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"];
+      const tokenTypes = ["input", "cached input", "output"];
+      results = models.flatMap((model) =>
+        tokenTypes.map((tokenType) => ({
+          line_item: `${model}, ${tokenType}`,
+          amount: {
+            value: mockDailyValue(
+              `oai_lineitem:${model}:${tokenType}`,
+              dayIndex,
+              1,
+              40,
+              dateIso,
+            ),
+          },
+        })),
+      );
     } else {
       results = [
         {
@@ -1457,12 +1492,26 @@ async function handleEfficiency(res, searchParams) {
   const previous = previousUsage
     ? {
         cacheHitRate: previousUsage.cacheHitRate,
+        totalInputTokens: previousUsage.totalInputTokens,
+        outputTokens: previousUsage.outputTokens,
+        // Additive alongside actualInputCost/hypotheticalInputCost above — the Saving
+        // opportunities rate panel's blendedRate() (lib/savings.mjs) needs the output side
+        // of the bill too, not just the cache-discountable input side computeCachingSavings
+        // already covers.
+        outputCost: prevTokenTypeCosts.get("output_tokens") ?? 0,
+        tokenTypeCosts: Object.fromEntries(prevTokenTypeCosts),
         ...computeCachingSavings(previousUsage, prevTokenTypeCosts),
       }
     : null;
 
   sendJson(res, 200, {
     ...usage,
+    outputCost: tokenTypeCosts.get("output_tokens") ?? 0,
+    // Raw $ per token_type (uncached_input_tokens, cache_read_input_tokens,
+    // cache_creation.ephemeral_5m/1h_input_tokens, output_tokens) — additive
+    // to the blended actualInputCost/hypotheticalInputCost below, for the
+    // Saving opportunities rate panel's per-token-type breakdown table.
+    tokenTypeCosts: Object.fromEntries(tokenTypeCosts),
     ...computeCachingSavings(usage, tokenTypeCosts),
     previous,
   });
@@ -1680,10 +1729,16 @@ async function fetchSkills(startingAt, limit, endingAt = null) {
 }
 
 async function handleSkills(res, searchParams) {
-  const { startingAt, prevStartingAt, prevEndingAt } =
+  const { startingAt, endingAt, prevStartingAt, prevEndingAt } =
     resolveRange(searchParams);
+  // An explicit ?from=&to= (e.g. the Saving opportunities panel fetching a
+  // specific past week) must bound the "current" period fetch too — only the
+  // default, no-args case (the Allocation tab's normal preset ranges) should
+  // keep deferring to the API's own "most recent available day" (see
+  // fetchSkills's own comment on why ending_date is otherwise omitted).
+  const explicitTo = isValidDateParam(searchParams.get("to"));
   const [skills, previousSkills] = await Promise.all([
-    fetchSkills(startingAt, 50),
+    fetchSkills(startingAt, 50, explicitTo ? endingAt : null),
     // Confirmed live: adjacent /skills windows sharing a boundary date
     // partition cleanly (no double-count) — prevEndingAt equals the current
     // period's own starting_date, so this is an exact "immediately before" window.
@@ -1949,6 +2004,14 @@ async function handleCostSummary(res, searchParams) {
     return {
       ...m,
       totalTokens: usage ? usage.totalInputTokens + usage.outputTokens : null,
+      // Per-token-type breakdown, additive to totalTokens above — the Saving
+      // opportunities rate panel's per-model list-price reference
+      // (modelListPriceCost in lib/savings.mjs) needs each type's own count,
+      // not just the total.
+      uncachedInputTokens: usage?.uncachedInputTokens ?? null,
+      cacheReadInputTokens: usage?.cacheReadInputTokens ?? null,
+      cacheCreationTokens: usage?.cacheCreationTokens ?? null,
+      outputTokens: usage?.outputTokens ?? null,
     };
   });
 
@@ -2114,6 +2177,35 @@ async function handleOpenAiProjects(res, searchParams) {
   const { startingAtUnix, endingAtUnix } = resolveRange(searchParams);
   const projects = await fetchOpenAiProjectCosts(startingAtUnix, endingAtUnix);
   sendJson(res, 200, { projects });
+}
+
+// Only consumer today is the Saving opportunities "Token and model rate" panel's per-model
+// reference table — deliberately its own endpoint rather than folded into /api/cost-summary
+// (which every section fetches on every load) since the underlying line_item grouping is
+// nothing else needs. Dollar amounts only: unlike Anthropic, OpenAI's Costs/Usage APIs never
+// expose token *counts* per model, so there's no $/1M-token figure to compute here, only a
+// $ mix by model and token type (see OPENAI_MODEL_PRICING's own comment in lib/format.mjs).
+export function aggregateOpenAiCostByModel(buckets) {
+  const byModel = new Map();
+  for (const bucket of buckets) {
+    for (const row of bucket.results) {
+      const { model, tokenType } = parseOpenAiLineItem(row.line_item ?? "");
+      const amount = row.amount?.value ?? 0;
+      if (!byModel.has(model)) byModel.set(model, { name: model, spend: 0, byTokenType: {} });
+      const m = byModel.get(model);
+      m.spend += amount;
+      m.byTokenType[tokenType] = (m.byTokenType[tokenType] ?? 0) + amount;
+    }
+  }
+  return [...byModel.values()].sort((a, b) => b.spend - a.spend);
+}
+
+async function handleOpenAiModelCosts(res, searchParams) {
+  const { startingAtUnix, endingAtUnix } = resolveRange(searchParams);
+  const buckets = await fetchOpenAiCostBuckets(startingAtUnix, endingAtUnix, [
+    "line_item",
+  ]);
+  sendJson(res, 200, { models: aggregateOpenAiCostByModel(buckets) });
 }
 
 // The packaged build has no source tree to read index.html from — it's embedded as a SEA
@@ -3659,6 +3751,8 @@ const server = createServer(async (req, res) => {
       return await handleSkills(res, url.searchParams);
     if (url.pathname === "/api/openai-projects")
       return await handleOpenAiProjects(res, url.searchParams);
+    if (url.pathname === "/api/openai-model-costs")
+      return await handleOpenAiModelCosts(res, url.searchParams);
     return await serveStatic(req, res, url.pathname);
   } catch (error) {
     if (error.code === "ENOENT") {

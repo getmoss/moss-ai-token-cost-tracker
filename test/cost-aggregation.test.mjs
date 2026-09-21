@@ -6,6 +6,7 @@ import {
   toDollars,
   computeCachingSavings,
   parseOpenAiLineItem,
+  aggregateOpenAiCostByModel,
 } from "../server.mjs";
 
 test("toDollars: converts a cents-as-decimal-string amount to dollars", () => {
@@ -250,4 +251,34 @@ test("parseOpenAiLineItem: an empty string falls back to the 'Other (tools)' sha
     priority: false,
     longContext: false,
   });
+});
+
+test("aggregateOpenAiCostByModel: sums $ per model, split by token type, sorted by spend descending", () => {
+  const buckets = [
+    {
+      results: [
+        { line_item: "gpt-5.6-sol, input", amount: { value: 4 } },
+        { line_item: "gpt-5.6-sol, output", amount: { value: 20 } },
+        { line_item: "gpt-5.6-luna, input", amount: { value: 1 } },
+      ],
+    },
+    {
+      results: [{ line_item: "gpt-5.6-sol, input", amount: { value: 2 } }],
+    },
+  ];
+  const result = aggregateOpenAiCostByModel(buckets);
+  assert.equal(result.length, 2);
+  assert.equal(result[0].name, "gpt-5.6-sol");
+  assert.equal(result[0].spend, 26);
+  assert.deepEqual(result[0].byTokenType, { input: 6, output: 20 });
+  assert.equal(result[1].name, "gpt-5.6-luna");
+  assert.equal(result[1].spend, 1);
+});
+
+test("aggregateOpenAiCostByModel: a row with no line_item falls back to the 'Other (tools)' bucket rather than throwing", () => {
+  const buckets = [{ results: [{ amount: { value: 5 } }] }];
+  const result = aggregateOpenAiCostByModel(buckets);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].name, "Other (tools)");
+  assert.equal(result[0].spend, 5);
 });

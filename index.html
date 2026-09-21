@@ -150,12 +150,12 @@
         >
           <div class="section-copy">
             <div class="step-label"><b>1</b> Company overview</div>
-            <h2>How AI spend is developing across your company and its providers.</h2>
+            <h2>How AI spend is developing across your company and its providers</h2>
             <div class="collapse">
               <div class="collapse-inner">
                 <p>
                   See the three signals together: what you spend, how often
-                  AI is used and how many employees are adopting it.
+                  AI is used and how many employees are adopting it
                 </p>
               </div>
             </div>
@@ -278,13 +278,13 @@
         >
           <div class="section-copy">
             <div class="step-label"><b>2</b> Organisational allocation</div>
-            <h2>Trace where AI spend is coming from.</h2>
+            <h2>Trace where AI spend is coming from</h2>
             <div class="collapse">
               <div class="collapse-inner">
                 <p>
                   Start with the company total above, then investigate
                   spikes and anomalies by tracing the bill back to the
-                  tools, models, teams, people and automated work behind it.
+                  tools, models, teams, people and automated work behind it
                 </p>
               </div>
             </div>
@@ -506,18 +506,16 @@
         </div>
       </section>
 
-      <section class="card accordion" id="savingsCard" aria-label="Saving opportunities">
+      <section class="card accordion is-open" id="savingsCard" aria-label="Saving opportunities">
         <div
           class="section-heading"
           role="button"
           tabindex="0"
-          aria-expanded="false"
+          aria-expanded="true"
+          aria-controls="savingsCardBody"
         >
           <div class="section-copy">
-            <div class="step-label">
-              <b>3</b> Saving opportunities
-              <span class="coming-soon">Coming soon</span>
-            </div>
+            <div class="step-label"><b>3</b> Saving opportunities</div>
             <h2>Where can we spend less without cutting useful AI work?</h2>
             <div class="collapse">
               <div class="collapse-inner">
@@ -526,11 +524,251 @@
                   could lower cost without getting in the way of productive
                   use.
                 </p>
-                <p>Coming soon</p>
               </div>
             </div>
           </div>
           <span class="chevron" aria-hidden="true"><img src="/assets/icons/arrow-down.svg" alt="" width="18" height="18" /></span>
+        </div>
+
+        <div class="collapse">
+        <div class="collapse-inner">
+        <div class="section-body" id="savingsCardBody">
+        <div class="loading-block" id="savingsLoadingBlock">
+        <div class="saving-body">
+
+          <section class="saving-panel" aria-labelledby="briefingTitle">
+            <div class="saving-panel-head">
+              <div>
+                <div class="saving-panel-kicker">1 &middot; Briefing</div>
+                <h3 class="saving-panel-title" id="briefingTitle">
+                  What needs attention this week?
+                </h3>
+                <p class="saving-panel-copy">
+                  Only material cases appear here based on historical usage
+                  averages. Adjust the thresholds in Alert settings and
+                  confirm each case before making major decisions.
+                </p>
+              </div>
+              <button
+                class="table-toggle"
+                id="baselineToggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="baselineDetail"
+              >
+                Alert settings
+              </button>
+            </div>
+
+            <div class="briefing-summary">
+              <div>
+                <div class="briefing-label">
+                  Spent this week above expected weekly spend
+                </div>
+                <div class="briefing-currency-row">
+                  <div class="briefing-amount" id="briefingAmount">&mdash;</div>
+                  <div class="briefing-converted" id="briefingConverted"></div>
+                </div>
+              </div>
+              <div class="case-count">
+                <div class="case-number" id="caseNumber">&mdash;</div>
+                <div class="case-label">cases to look into</div>
+              </div>
+            </div>
+
+            <div class="driver-label">Three main cost drivers</div>
+            <div class="driver-grid" id="driverGrid"></div>
+
+            <div class="baseline-detail" id="baselineDetail">
+            <div class="baseline-detail-inner">
+            <div class="baseline-detail-box">
+              <p class="baseline-explain">
+                The current range is calculated from each person&rsquo;s,
+                team&rsquo;s or workflow&rsquo;s average spend over the
+                historical baseline below, compared against the most recent
+                complete week.
+              </p>
+              <div class="settings-grid">
+                <div class="setting-field">
+                  <label for="baselineWeeks">Historical baseline</label>
+                  <select id="baselineWeeks">
+                    <option value="4">4 complete weeks</option>
+                    <option value="6">6 complete weeks</option>
+                    <option value="8">8 complete weeks</option>
+                    <option value="12">12 complete weeks</option>
+                  </select>
+                </div>
+                <div class="setting-field">
+                  <label for="changeThreshold">Minimum change</label>
+                  <select id="changeThreshold">
+                    <option value="20">20%</option>
+                    <option value="30" selected>30%</option>
+                    <option value="40">40%</option>
+                    <option value="50">50%</option>
+                  </select>
+                </div>
+                <div class="setting-field">
+                  <label for="spendThreshold">Minimum extra spend &middot; USD</label>
+                  <select id="spendThreshold">
+                    <option value="100">$100</option>
+                    <option value="250" selected>$250</option>
+                    <option value="500">$500</option>
+                    <option value="1000">$1,000</option>
+                  </select>
+                  <div class="setting-hint" id="spendConversionHint"></div>
+                </div>
+                <div class="setting-field">
+                  <label for="trendThreshold">Sustained growth</label>
+                  <select id="trendThreshold">
+                    <option value="2">2 consecutive weeks</option>
+                    <option value="3" selected>3 consecutive weeks</option>
+                    <option value="4">4 consecutive weeks</option>
+                    <option value="6">6 consecutive weeks</option>
+                  </select>
+                </div>
+                <div class="setting-field">
+                  <label for="requestFloor">Minimum activity floor</label>
+                  <select id="requestFloor">
+                    <option value="50">50 requests</option>
+                    <option value="100" selected>100 requests</option>
+                    <option value="250">250 requests</option>
+                    <option value="500">500 requests</option>
+                  </select>
+                  <div class="setting-hint">
+                    Avoids alerts from very small samples
+                  </div>
+                </div>
+              </div>
+              <div class="settings-apply">
+                <button class="primary-btn" id="settingsApply" type="button">
+                  Apply settings
+                </button>
+              </div>
+            </div>
+            </div>
+            </div>
+
+            <div class="alert-expand-row">
+              <div class="alert-expand-copy">
+                See all people, teams, products and workflows that might need
+                attention
+              </div>
+              <button
+                class="table-toggle"
+                id="alertsToggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="alertArea"
+              >
+                Show all alerts
+              </button>
+            </div>
+
+            <div class="alert-area" id="alertArea">
+            <div class="alert-area-inner">
+            <div class="alert-area-box">
+              <section class="alert-group model-updates" id="modelUpdatesGroup" hidden>
+                <div class="alert-group-head">
+                  <div>
+                    <div class="alert-group-name">
+                      <span class="alert-icon">A</span><span>AI model updates</span>
+                    </div>
+                    <div class="alert-group-sub">
+                      Official provider releases, pricing changes and
+                      retirement notices matched with company usage
+                    </div>
+                  </div>
+                  <div class="alert-group-count" id="modelUpdatesCount"></div>
+                </div>
+                <div class="alert-cards" id="modelUpdatesCards"></div>
+              </section>
+
+              <div class="alert-columns">
+                <section class="alert-group">
+                  <div class="alert-group-head">
+                    <div>
+                      <div class="alert-group-name">
+                        <span class="alert-icon">P</span><span>People &amp; teams</span>
+                      </div>
+                      <div class="alert-group-sub">
+                        Spend, cost-per-request and model-choice shifts
+                      </div>
+                    </div>
+                    <div class="alert-group-count" id="peopleTeamsCount"></div>
+                  </div>
+                  <div class="alert-cards" id="peopleTeamsCards"></div>
+                </section>
+
+                <section class="alert-group">
+                  <div class="alert-group-head">
+                    <div>
+                      <div class="alert-group-name">
+                        <span class="alert-icon">W</span><span>Products &amp; workflows</span>
+                      </div>
+                      <div class="alert-group-sub">
+                        Volume, routing and cost-per-call trends
+                      </div>
+                    </div>
+                    <div class="alert-group-count" id="productsWorkflowsCount"></div>
+                  </div>
+                  <div class="alert-cards" id="productsWorkflowsCards"></div>
+                </section>
+              </div>
+            </div>
+            </div>
+            </div>
+          </section>
+
+          <section class="saving-panel" aria-labelledby="rateTitle">
+            <div class="saving-panel-head">
+              <div>
+                <div class="saving-panel-kicker">2 &middot; Token and model rate</div>
+                <h3 class="saving-panel-title" id="rateTitle">
+                  Are our own token rates becoming more expensive?
+                </h3>
+                <p class="saving-panel-copy">
+                  Compare the blended rate your company actually paid this
+                  week with T&minus;1 and the provider list-price rate for
+                  the exact model and token mix used.
+                </p>
+              </div>
+              <button class="table-toggle" id="modelGuideOpen" type="button">
+                Which model fits the job?
+              </button>
+            </div>
+
+            <div class="rate-grid" id="rateGrid"></div>
+
+            <div class="rate-detail-row">
+              <button
+                class="text-toggle"
+                id="ratesToggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="rateTables"
+              >
+                View input, output and cache rates
+              </button>
+              <button
+                class="table-toggle"
+                id="perModelOpen"
+                type="button"
+                aria-expanded="false"
+                aria-controls="perModelInline"
+              >
+                Show per model
+              </button>
+            </div>
+
+            <div class="rate-tables" id="rateTables"></div>
+            <p class="rate-note" id="rateNote"></p>
+            <div class="per-model-inline" id="perModelInline"></div>
+          </section>
+
+        </div>
+        </div>
+        </div>
+        </div>
         </div>
       </section>
       <section class="card future-card" aria-label="Planning coming later">
@@ -552,6 +790,55 @@
       </section>
     </main>
 
+    <div
+      class="modal-backdrop"
+      id="modelGuideModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modelGuideTitle"
+    >
+      <div class="modal">
+        <div class="modal-head">
+          <div>
+            <div class="modal-kicker" id="modelGuideKicker">Current model guide</div>
+            <h2 class="modal-title" id="modelGuideTitle">
+              Choose enough capability for the job
+            </h2>
+            <p class="modal-copy">
+              Provider positioning and current standard text-token prices.
+              Validate task quality before changing a production route.
+            </p>
+          </div>
+          <button
+            class="modal-close"
+            type="button"
+            id="modelGuideClose"
+            aria-label="Close model guide"
+          >
+            &times;
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="modal-tabs" id="modelGuideTabs" aria-label="Model guide provider">
+            <button type="button" data-model-provider="anthropic" aria-selected="true">
+              Anthropic
+            </button>
+            <button type="button" data-model-provider="openai" aria-selected="false">
+              OpenAI
+            </button>
+          </div>
+          <div class="selection-rule">
+            <strong>Selection rule</strong>
+            <span>
+              Set the quality target first. Then use the least expensive,
+              fastest model that still meets it.
+            </span>
+          </div>
+          <div id="modelGuidePanes"></div>
+        </div>
+      </div>
+    </div>
+
     <script type="module">
       import {
         money,
@@ -572,9 +859,21 @@
         weekdayAbbr,
         fxLabel,
         EUR_RATE,
+        openaiModelPricingFor,
+        MODEL_LIFECYCLE_EVENTS,
       } from "/lib/format.mjs";
       import { createSvgElement, xScale, yScale, niceMax } from "/lib/chart-dom.mjs";
       import { readRangeCache, writeRangeCache } from "/lib/range-cache.mjs";
+      import {
+        weeklyTotalsFromDaily,
+        currentWeek,
+        matchLifecycleEvents,
+        blendedRate,
+        modelListPriceCost,
+        detectHigherCostModelPattern,
+        computeAlerts,
+        summarizeAlerts,
+      } from "/lib/savings.mjs";
 
       const COLOR_VARS = [
         "--series-1",
@@ -1827,6 +2126,791 @@
         }
       }
 
+      // ---- Saving opportunities (#savingsCard) ---------------------------------------------
+      // Independent of Company overview/Organisational allocation's period pickers — this
+      // panel always evaluates "this week vs. a historical baseline" per the Alert settings
+      // fields, using its own fetches, loaded lazily the first time the accordion opens rather
+      // than on every page load.
+
+      state.savings = {
+        settings: {
+          baselineWeeks: 4,
+          changeThresholdPct: 30,
+          minDeltaUsd: 250,
+          trendWeeks: 3,
+          requestFloor: 100,
+        },
+        loaded: false,
+        loading: false,
+        raw: null, // last fetched inputs, so "Apply settings" can recompute without refetching
+        data: null,
+      };
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c],
+        );
+      }
+
+      // weeksAgo=0 is the most recent complete 7-day window ending today; weeksAgo=1 is the 7
+      // days immediately before that, and so on — every fetch below is built from these
+      // non-overlapping windows so weekly totals never double-count a day.
+      function savingsWeekWindow(weeksAgo) {
+        return { from: isoDaysAgo(weeksAgo * 7 + 6), to: isoDaysAgo(weeksAgo * 7) };
+      }
+
+      // A daily array whose length isn't a multiple of 7 (the org's history floor cut off part
+      // of the oldest requested week) is trimmed from the front — the most recent, complete
+      // weeks are what the baseline/current-week comparison needs, not the oldest partial one.
+      function trimToWeeks(dailyArr) {
+        const remainder = dailyArr.length % 7;
+        return remainder ? dailyArr.slice(remainder) : dailyArr;
+      }
+
+      async function fetchSavingsJson(namespace, from, to, url) {
+        const cacheKey = `${from}:${to}`;
+        const cached = readRangeCache(namespace, cacheKey);
+        if (cached !== undefined) return cached;
+        const res = await fetch(url);
+        const data = await res.json();
+        writeRangeCache(namespace, cacheKey, data);
+        return data;
+      }
+
+      // Fetches `weeks` non-overlapping week windows from one endpoint (oldest week first,
+      // current week last) and reduces each response to a flat row array via `mapRows`.
+      async function fetchWeeklyRows(endpoint, weeks, mapRows) {
+        const calls = [];
+        for (let i = weeks - 1; i >= 0; i--) {
+          const { from, to } = savingsWeekWindow(i);
+          calls.push(
+            fetchSavingsJson(`savings-${endpoint}`, from, to, `/api/${endpoint}?from=${from}&to=${to}`)
+              .then(mapRows)
+              .catch((err) => {
+                console.error(err);
+                return [];
+              }),
+          );
+        }
+        return Promise.all(calls);
+      }
+
+      // Turns N weeks of flat row arrays (oldest first) into one entity per distinct key, each
+      // with aligned spendWeeks/requestWeeks arrays — the shape lib/savings.mjs's detectSpike
+      // etc. expect. A key missing from a given week (e.g. a workflow with no activity that
+      // week) is treated as a real 0, not a gap.
+      function alignWeeklyEntities(weeksOfRows, { keyOf, nameOf, spendOf, requestsOf }) {
+        const byKey = new Map();
+        weeksOfRows.forEach((rows, weekIndex) => {
+          for (const row of rows) {
+            const key = keyOf(row);
+            if (key == null) continue;
+            if (!byKey.has(key)) {
+              byKey.set(key, {
+                id: key,
+                name: nameOf(row),
+                spendWeeks: new Array(weeksOfRows.length).fill(0),
+                requestWeeks: new Array(weeksOfRows.length).fill(0),
+              });
+            }
+            const entity = byKey.get(key);
+            entity.spendWeeks[weekIndex] = spendOf(row) ?? 0;
+            entity.requestWeeks[weekIndex] = requestsOf(row) ?? 0;
+          }
+        });
+        return [...byKey.values()];
+      }
+
+      async function loadSavingsData() {
+        const block = document.getElementById("savingsLoadingBlock");
+        state.savings.loading = true;
+        block?.classList.add("loading");
+        try {
+          const { baselineWeeks } = state.savings.settings;
+          const weeks = baselineWeeks + 1;
+          const days = weeks * 7;
+          const fullTo = isoToday();
+          const fullFrom = isoDaysAgo(days - 1);
+          const week0 = savingsWeekWindow(0);
+
+          const [
+            costSummary,
+            teamsWeeks,
+            peopleWeeks,
+            skillsWeeks,
+            currentWeekEfficiency,
+            currentWeekCost,
+            openaiModelCosts,
+          ] = await Promise.all([
+            fetchSavingsJson(
+              "savings-cost-summary",
+              fullFrom,
+              fullTo,
+              `/api/cost-summary?from=${fullFrom}&to=${fullTo}`,
+            ),
+            fetchWeeklyRows("teams", weeks, (d) => d.teams ?? []),
+            fetchWeeklyRows("people", weeks, (d) => d.people ?? []),
+            fetchWeeklyRows("skills", weeks, (d) => d.skills ?? []),
+            fetchSavingsJson(
+              "savings-efficiency",
+              week0.from,
+              week0.to,
+              `/api/efficiency?from=${week0.from}&to=${week0.to}`,
+            ),
+            fetchSavingsJson(
+              "savings-cost-summary-week0",
+              week0.from,
+              week0.to,
+              `/api/cost-summary?from=${week0.from}&to=${week0.to}`,
+            ),
+            providerConnected("openai")
+              ? fetchSavingsJson(
+                  "savings-openai-model-costs",
+                  week0.from,
+                  week0.to,
+                  `/api/openai-model-costs?from=${week0.from}&to=${week0.to}`,
+                )
+              : Promise.resolve({ models: [] }),
+          ]);
+
+          state.savings.raw = {
+            costSummary,
+            teamsWeeks,
+            peopleWeeks,
+            skillsWeeks,
+            currentWeekEfficiency,
+            currentWeekCost,
+            openaiModelCosts,
+          };
+          state.savings.data = buildSavingsData(state.savings.raw);
+          state.savings.loaded = true;
+        } catch (err) {
+          console.error(err);
+          state.savings.data = null;
+        } finally {
+          state.savings.loading = false;
+          block?.classList.remove("loading");
+          renderSavings();
+        }
+      }
+
+      function buildSavingsData({
+        costSummary,
+        teamsWeeks,
+        peopleWeeks,
+        skillsWeeks,
+        currentWeekEfficiency,
+        currentWeekCost,
+        openaiModelCosts,
+      }) {
+        const settings = state.savings.settings;
+
+        const productEntities = (costSummary?.byProduct ?? []).map((p) => ({
+          kind: "product",
+          id: p.name,
+          name: productLabel(p.name),
+          spendWeeks: weeklyTotalsFromDaily(trimToWeeks(p.spend)),
+          requestWeeks: weeklyTotalsFromDaily(trimToWeeks(p.requestsDaily ?? p.spend.map(() => 0))),
+        }));
+        const modelEntities = (costSummary?.byModel ?? []).map((m) => ({
+          kind: "model",
+          id: m.name,
+          name: m.name,
+          spendWeeks: weeklyTotalsFromDaily(trimToWeeks(m.spend)),
+          requestWeeks: weeklyTotalsFromDaily(trimToWeeks(m.requestsDaily ?? m.spend.map(() => 0))),
+        }));
+        const teamEntities = alignWeeklyEntities(teamsWeeks, {
+          keyOf: (r) => r.id,
+          nameOf: (r) => r.name,
+          spendOf: (r) => r.spend,
+          requestsOf: (r) => r.requests,
+        }).map((e) => ({ ...e, kind: "team" }));
+        const peopleEntities = alignWeeklyEntities(peopleWeeks, {
+          keyOf: (r) => r.email ?? r.name,
+          nameOf: (r) => r.name,
+          spendOf: (r) => r.amount,
+          requestsOf: (r) => r.requests,
+        }).map((e) => ({ ...e, kind: "person" }));
+        // "spend" for a workflow is its overageSpend, matching the Organisational allocation
+        // tab's own convention for the same dimension (see renderInvestigationTable's
+        // `spend: s.overageSpend` for the skill/workflow row).
+        const skillEntities = alignWeeklyEntities(skillsWeeks, {
+          keyOf: (r) => r.name,
+          nameOf: (r) => r.name,
+          spendOf: (r) => r.overageSpend,
+          requestsOf: (r) => r.invocations,
+        }).map((e) => ({ ...e, kind: "workflow" }));
+
+        const alertSettings = {
+          minChangePct: settings.changeThresholdPct,
+          minDeltaUsd: settings.minDeltaUsd,
+          requestFloor: settings.requestFloor,
+          trendWeeks: settings.trendWeeks,
+        };
+        const alerts = computeAlerts(
+          [...peopleEntities, ...teamEntities, ...skillEntities, ...productEntities],
+          alertSettings,
+        );
+
+        // "Higher-cost model pattern" — company-wide only (see detectHigherCostModelPattern's
+        // own comment in lib/savings.mjs for why this can't be scoped to a person/team).
+        const rankedModels = modelEntities
+          .map((m) => {
+            const pricing = modelPricingFor(m.id);
+            return pricing ? { ...m, avgPricePerMillion: (pricing.input + pricing.output) / 2 } : null;
+          })
+          .filter(Boolean);
+        const modelPattern =
+          rankedModels.length > 1
+            ? detectHigherCostModelPattern(rankedModels, { minShareChangePct: 5 })
+            : null;
+        const modelPatternImpact = modelPattern
+          ? modelPattern.current - (modelPattern.baseline ?? modelPattern.current)
+          : null;
+        if (modelPattern && modelPatternImpact >= settings.minDeltaUsd) {
+          alerts.push({
+            id: "model-mix-shift",
+            category: "people",
+            type: "higherCostModelPattern",
+            title: "Higher-cost model pattern",
+            entity: modelPattern,
+            impactUsd: modelPatternImpact,
+            metric: modelPattern,
+          });
+        }
+
+        // AI model updates (category A) — cross-check the curated MODEL_LIFECYCLE_EVENTS
+        // reference (lib/format.mjs) against this week's actual per-model spend.
+        const modelWeeklySpend = new Map(modelEntities.map((m) => [m.id, currentWeek(m.spendWeeks)]));
+        const lifecycleAlerts = matchLifecycleEvents(MODEL_LIFECYCLE_EVENTS, modelWeeklySpend);
+
+        // "3 main cost drivers" picks one per conceptual group (people/team, product/workflow,
+        // AI model update) — remapped to those 3 buckets here rather than in lib/savings.mjs's
+        // own `category` field, which stays "person"-vs-"team"-vs-"workflow" for alert-group
+        // routing below.
+        const driverPool = [
+          ...alerts.map((a) => ({ ...a, category: a.category === "workflow" ? "workflow" : "people" })),
+          ...lifecycleAlerts.map((e) => ({
+            id: e.id,
+            category: "model",
+            title: e.title,
+            impactUsd: e.currentWeeklySpend,
+            entity: e,
+            isLifecycle: true,
+          })),
+        ];
+        const { topDrivers, caseCount } = summarizeAlerts(driverPool);
+        // The headline "spent above expected" total deliberately excludes lifecycle alerts —
+        // their $ figure is "weekly spend affected", not "spend above baseline", a different
+        // kind of number that would misleadingly inflate this total if summed in.
+        const totalAboveExpected = alerts.reduce((sum, a) => sum + Math.max(0, a.impactUsd ?? 0), 0);
+
+        const rate = buildRateComparison({ currentWeekEfficiency, currentWeekCost, openaiModelCosts });
+
+        return { alerts, lifecycleAlerts, topDrivers, caseCount, totalAboveExpected, rate };
+      }
+
+      function buildRateComparison({ currentWeekEfficiency, currentWeekCost, openaiModelCosts }) {
+        const eff = currentWeekEfficiency;
+        let anthropic = null;
+        if (eff && providerConnected("anthropic")) {
+          const current = blendedRate({
+            actualInputCost: eff.actualInputCost,
+            hypotheticalInputCost: eff.hypotheticalInputCost,
+            outputCost: eff.outputCost,
+            totalInputTokens: eff.totalInputTokens,
+            outputTokens: eff.outputTokens,
+          });
+          const previous = eff.previous
+            ? blendedRate({
+                actualInputCost: eff.previous.actualInputCost,
+                hypotheticalInputCost: eff.previous.hypotheticalInputCost,
+                outputCost: eff.previous.outputCost,
+                totalInputTokens: eff.previous.totalInputTokens,
+                outputTokens: eff.previous.outputTokens,
+              })
+            : null;
+          const changePct =
+            current.companyRate != null && previous?.companyRate != null
+              ? pctChange(current.companyRate, previous.companyRate)
+              : null;
+
+          const uncachedRate =
+            eff.uncachedInputTokens > 0
+              ? ((eff.tokenTypeCosts?.uncached_input_tokens ?? 0) / eff.uncachedInputTokens) * 1e6
+              : null;
+          const rateFor = (tokenKey, tokens, hasDiscount) => {
+            const amount = eff.tokenTypeCosts?.[tokenKey] ?? 0;
+            const companyRate = tokens > 0 ? (amount / tokens) * 1e6 : null;
+            return { companyRate, providerRate: hasDiscount ? uncachedRate : companyRate };
+          };
+          const tokenRows = [
+            { label: "Fresh input", ...rateFor("uncached_input_tokens", eff.uncachedInputTokens, false) },
+            { label: "Cache read", ...rateFor("cache_read_input_tokens", eff.cacheReadInputTokens, true) },
+            {
+              label: "Cache write",
+              ...rateFor("cache_creation.ephemeral_5m_input_tokens", eff.cacheCreationTokens, true),
+            },
+            { label: "Output", ...rateFor("output_tokens", eff.outputTokens, false) },
+          ];
+
+          const models = (currentWeekCost?.byModel ?? [])
+            .map((m) => {
+              const pricing = modelPricingFor(m.name);
+              if (!pricing || !m.totalTokens) return null;
+              const listCost = modelListPriceCost(pricing, m);
+              return {
+                name: m.name,
+                companyRate: (m.totalSpend / m.totalTokens) * 1e6,
+                providerRate: (listCost / m.totalTokens) * 1e6,
+              };
+            })
+            .filter(Boolean);
+
+          anthropic = { current, previous, changePct, tokenRows, models };
+        }
+
+        let openai = null;
+        if (providerConnected("openai")) {
+          const providerRow = (currentWeekCost?.byProvider ?? []).find((p) => p.name === "OpenAI");
+          const spend = providerRow?.totalSpend ?? 0;
+          const requests = providerRow?.totalRequests ?? 0;
+          const models = (openaiModelCosts?.models ?? []).map((m) => ({
+            ...m,
+            pricing: openaiModelPricingFor(m.name),
+          }));
+          openai = { spend, requests, costPerRequest: requests > 0 ? spend / requests : null, models };
+        }
+
+        return { anthropic, openai };
+      }
+
+      function pctText(v) {
+        return Number.isFinite(v) ? `${Math.round(Math.abs(v))}%` : "a large amount";
+      }
+
+      // Copy generator for the 8 computeAlerts() alert types — see lib/savings.mjs's
+      // computeAlerts for what each `type` means and when it fires.
+      function alertCopy(alert) {
+        const name = alert.entity?.name ?? "This item";
+        const m = alert.metric ?? {};
+        switch (alert.type) {
+          case "personalSpendSpike":
+            return {
+              observation: `${name} spent ${pctText(m.changePct)} above their normal weekly range.`,
+              likelyReason:
+                "A project, deadline, more intensive work or a change in the models or tools used.",
+              recommendation:
+                "Check whether the person’s work changed that week. Higher usage and spend can reflect valuable work, so understand the increase before suggesting changes.",
+            };
+          case "teamSpendSpike":
+            return {
+              observation: `${name} spent ${pctText(m.changePct)} above its normal weekly range.`,
+              likelyReason:
+                "A project launch, deadline, broader team usage or several employees working more intensively.",
+              recommendation:
+                "Confirm with the team whether a specific project or temporary change explains the increase.",
+            };
+          case "costPerRequestJump":
+            return {
+              observation: `${name}’s average cost per request rose ${pctText(m.changePct)} above its normal range.`,
+              likelyReason:
+                "A shift toward a more expensive model, longer prompts or context, or less use of caching.",
+              recommendation:
+                "Review recent model choice and prompt length; confirm caching is still being used where it applies.",
+            };
+          case "higherCostModelPattern":
+            return {
+              observation: `${name} gained ${Math.round(m.shareDelta ?? 0)} percentage points of company spend share this week, at an above-median price.`,
+              likelyReason:
+                "Work is routing to a higher-cost model more often than usual, rather than pure volume growth.",
+              recommendation:
+                "Confirm the higher-cost model is actually needed for this work, or route it to a cheaper model that still meets the quality bar.",
+            };
+          case "workflowSpendSpike":
+            return {
+              observation: `${name} spent above its normal weekly range.`,
+              likelyReason:
+                "The workflow handled more work, changed configuration or ran more often than usual.",
+              recommendation:
+                "Confirm whether a project or workload change explains the increase. If not, review what changed in the workflow.",
+            };
+          case "requestBurst":
+            return {
+              observation: `${name} sent ${pctText(m.changePct)} more requests than its normal weekly range.`,
+              likelyReason:
+                "More genuine demand, a scheduling change, duplicate triggers, retries or repeated agent steps.",
+              recommendation:
+                "Check expected workload, schedules and workflow logs to determine what caused the additional calls.",
+            };
+          case "callsMoreExpensive":
+            return {
+              observation: `${name}’s average cost per call rose ${pctText(m.changePct)} above its normal range.`,
+              likelyReason: "A shift toward a more expensive model or longer prompts/context per call.",
+              recommendation: "Review the workflow’s model choice and prompt/context length for this period.",
+            };
+          case "sustainedGrowth":
+            return {
+              observation: `${name}’s spend has risen for ${m.trendWeeks ?? state.savings.settings.trendWeeks} consecutive weeks.`,
+              likelyReason: "Steady organic growth in usage, or a gradual configuration/workload change.",
+              recommendation:
+                "Confirm the growth is expected; if not, review the workflow’s recent runs and configuration.",
+            };
+          default:
+            return { observation: "", likelyReason: "", recommendation: "" };
+        }
+      }
+
+      function driverTypeLabel(driver) {
+        if (driver.category === "model") return "AI model update";
+        if (driver.category === "workflow") return "Product & workflow";
+        return "People & teams";
+      }
+
+      function renderBriefingSummary() {
+        const amountEl = document.getElementById("briefingAmount");
+        const convertedEl = document.getElementById("briefingConverted");
+        const caseEl = document.getElementById("caseNumber");
+        const data = state.savings.data;
+        if (!data) {
+          amountEl.textContent = "—";
+          convertedEl.textContent = "";
+          caseEl.textContent = "—";
+          return;
+        }
+        amountEl.textContent = money(data.totalAboveExpected);
+        convertedEl.textContent = convertedLabel(data.totalAboveExpected);
+        caseEl.textContent = String(data.caseCount);
+      }
+
+      function renderDriverCards() {
+        const grid = document.getElementById("driverGrid");
+        const data = state.savings.data;
+        if (!data || data.topDrivers.length === 0) {
+          grid.innerHTML =
+            '<p class="no-alerts-note">No cost drivers above the current thresholds this week.</p>';
+          return;
+        }
+        grid.innerHTML = data.topDrivers
+          .map((driver) => {
+            const copy = driver.isLifecycle ? driver.entity : alertCopy(driver);
+            const impactLabel = driver.isLifecycle
+              ? `${money(driver.impactUsd)}<span class="small-currency">${convertedLabel(driver.impactUsd)} current weekly spend affected</span>`
+              : `${signedMoney(driver.impactUsd)}<span class="small-currency">${convertedLabel(driver.impactUsd)} above normal range</span>`;
+            return `
+              <article class="driver-card">
+                <div class="driver-type">${escapeHtml(driverTypeLabel(driver))}</div>
+                <div class="driver-name">${escapeHtml(driver.title)}</div>
+                <div class="driver-impact">${impactLabel}</div>
+                <ul class="driver-points">
+                  <li><strong>Likely reason:</strong> ${escapeHtml(copy.likelyReason)}</li>
+                  <li><strong>Recommendation:</strong> ${escapeHtml(copy.recommendation)}</li>
+                </ul>
+              </article>`;
+          })
+          .join("");
+      }
+
+      function alertCardHtml(alert) {
+        const copy = alertCopy(alert);
+        const impact =
+          alert.impactUsd > 0
+            ? `${signedMoney(alert.impactUsd)} above range<span>${convertedLabel(alert.impactUsd)}</span>`
+            : "";
+        const entityName = alert.entity?.name ? ` · ${escapeHtml(alert.entity.name)}` : "";
+        return `
+          <article class="alert-card">
+            <div class="alert-card-title">
+              <h4>${escapeHtml(alert.title)}${entityName}</h4>
+              <div class="alert-impact${impact ? "" : " unquantified"}">${impact || "See details"}</div>
+            </div>
+            <ul class="alert-points">
+              <li><strong>Observation:</strong> ${escapeHtml(copy.observation)}</li>
+              <li><strong>Likely reason:</strong> ${escapeHtml(copy.likelyReason)}</li>
+              <li><strong>Recommendation:</strong> ${escapeHtml(copy.recommendation)}</li>
+            </ul>
+          </article>`;
+      }
+
+      function lifecycleCardHtml(event) {
+        return `
+          <article class="alert-card">
+            <div class="alert-card-title">
+              <h4>${escapeHtml(event.title)}</h4>
+              <div class="alert-impact">${money(event.currentWeeklySpend)} weekly spend affected<span>${convertedLabel(event.currentWeeklySpend)}</span></div>
+            </div>
+            <ul class="alert-points">
+              <li><strong>Observation:</strong> ${escapeHtml(event.observation)} <a class="source-link" href="${escapeHtml(event.sourceUrl)}" target="_blank" rel="noreferrer">Official source</a>.</li>
+              <li><strong>Likely reason:</strong> ${escapeHtml(event.likelyReason)}</li>
+              <li><strong>Recommendation:</strong> ${escapeHtml(event.recommendation)}</li>
+            </ul>
+          </article>`;
+      }
+
+      function renderAlertGroups() {
+        const data = state.savings.data;
+        const modelGroup = document.getElementById("modelUpdatesGroup");
+        const modelCards = document.getElementById("modelUpdatesCards");
+        const modelCount = document.getElementById("modelUpdatesCount");
+        const peopleCards = document.getElementById("peopleTeamsCards");
+        const peopleCount = document.getElementById("peopleTeamsCount");
+        const workflowCards = document.getElementById("productsWorkflowsCards");
+        const workflowCount = document.getElementById("productsWorkflowsCount");
+        const alertsToggle = document.getElementById("alertsToggle");
+
+        if (!data) {
+          modelGroup.hidden = true;
+          peopleCards.innerHTML = "";
+          workflowCards.innerHTML = "";
+          alertsToggle.textContent = "Show all alerts";
+          return;
+        }
+
+        const peopleAlerts = data.alerts.filter(
+          (a) => a.entity?.kind === "person" || a.entity?.kind === "team" || a.type === "higherCostModelPattern",
+        );
+        const workflowAlerts = data.alerts.filter(
+          (a) => a.entity?.kind === "workflow" || a.entity?.kind === "product",
+        );
+
+        modelGroup.hidden = data.lifecycleAlerts.length === 0;
+        modelCards.innerHTML = data.lifecycleAlerts.map(lifecycleCardHtml).join("");
+        modelCount.textContent = `${data.lifecycleAlerts.length} update${data.lifecycleAlerts.length === 1 ? "" : "s"} this week`;
+
+        peopleCards.innerHTML = peopleAlerts.length
+          ? peopleAlerts.map(alertCardHtml).join("")
+          : '<p class="no-alerts-note">No people or team alerts above the current thresholds this week.</p>';
+        peopleCount.textContent = `${peopleAlerts.length} alert${peopleAlerts.length === 1 ? "" : "s"}`;
+
+        workflowCards.innerHTML = workflowAlerts.length
+          ? workflowAlerts.map(alertCardHtml).join("")
+          : '<p class="no-alerts-note">No product or workflow alerts above the current thresholds this week.</p>';
+        workflowCount.textContent = `${workflowAlerts.length} alert${workflowAlerts.length === 1 ? "" : "s"}`;
+
+        const isOpen = alertsToggle.getAttribute("aria-expanded") === "true";
+        alertsToggle.textContent = isOpen
+          ? "Hide alerts"
+          : `Show all ${data.caseCount} alert${data.caseCount === 1 ? "" : "s"}`;
+      }
+
+      function rateCardHtml({ providerLabel, color, companyRate, providerRate, changePct, unit = "/1M tokens" }) {
+        const changeHtml =
+          changePct != null
+            ? `<div class="rate-change">${changePct >= 0 ? "↑" : "↓"} ${Math.abs(changePct).toFixed(1)}% vs T&minus;1</div>`
+            : "";
+        const providerFigure =
+          providerRate != null
+            ? `<div class="rate-figure">
+                <div class="rate-label">Provider model average &middot; same mix</div>
+                <div class="rate-main">${money(providerRate)} <small>${unit}</small></div>
+              </div>`
+            : "";
+        return `
+          <article class="rate-card" style="--provider-color:${color}">
+            <div class="provider-name"><span class="provider-dot"></span>${escapeHtml(providerLabel)}</div>
+            <div class="rate-compare">
+              <div class="rate-figure">
+                <div class="rate-label">Your company model average</div>
+                <div class="rate-main">${companyRate != null ? money(companyRate) : "&mdash;"} <small>${unit}</small></div>
+                <div class="rate-footer">${changeHtml}</div>
+              </div>
+              ${providerFigure}
+            </div>
+          </article>`;
+      }
+
+      function anthropicRateTableHtml(tokenRows) {
+        const rows = tokenRows
+          .map(
+            (r) => `<tr>
+              <td><strong>${escapeHtml(r.label)}</strong></td>
+              <td>${r.companyRate != null ? money(r.companyRate) : "&mdash;"}</td>
+              <td>${r.providerRate != null ? money(r.providerRate) : "&mdash;"}</td>
+            </tr>`,
+          )
+          .join("");
+        return `
+          <div class="rate-table">
+            <div class="rate-table-head"><div class="provider-name"><span class="provider-dot" style="--provider-color:var(--series-2)"></span>Anthropic &middot; this week</div></div>
+            <table>
+              <thead><tr><th>Token type</th><th>Company avg.</th><th>Provider avg.<br>same mix</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+      }
+
+      function openaiRateTableHtml(models) {
+        const totals = {};
+        models.forEach((m) =>
+          Object.entries(m.byTokenType || {}).forEach(([type, amount]) => {
+            totals[type] = (totals[type] ?? 0) + amount;
+          }),
+        );
+        const entries = Object.entries(totals);
+        const rows = entries
+          .map(([type, amount]) => `<tr><td><strong>${escapeHtml(type)}</strong></td><td>${money(amount)}</td></tr>`)
+          .join("");
+        return `
+          <div class="rate-table">
+            <div class="rate-table-head"><div class="provider-name"><span class="provider-dot" style="--provider-color:var(--openai)"></span>ChatGPT / OpenAI &middot; this week</div></div>
+            <table>
+              <thead><tr><th>Token type</th><th>Company spend</th></tr></thead>
+              <tbody>${rows || '<tr><td colspan="2">No data</td></tr>'}</tbody>
+            </table>
+          </div>`;
+      }
+
+      function perModelTableHtml(rate) {
+        const anthropicRows = (rate.anthropic?.models ?? [])
+          .map(
+            (m) => `<tr>
+              <td class="provider-cell">Anthropic</td>
+              <td class="model-cell">${escapeHtml(m.name)}</td>
+              <td>${money(m.companyRate)}</td>
+              <td>${money(m.providerRate)}</td>
+            </tr>`,
+          )
+          .join("");
+        const openaiRows = (rate.openai?.models ?? [])
+          .map(
+            (m) => `<tr>
+              <td class="provider-cell">ChatGPT / OpenAI</td>
+              <td class="model-cell">${escapeHtml(m.name)}</td>
+              <td>${money(m.spend)}<br /><small>this week</small></td>
+              <td>${m.pricing ? `$${m.pricing.input} in / $${m.pricing.output} out` : "&mdash;"}</td>
+            </tr>`,
+          )
+          .join("");
+        const rows = anthropicRows + openaiRows;
+        return `
+          <div class="per-model-table-title">Average token cost by model<span class="per-model-table-note">Anthropic: USD per 1M tokens, company effective average vs. provider published price. OpenAI: USD spend this week vs. provider published per-token price &mdash; no per-model token counts are available to compute a $/1M-token figure.</span></div>
+          <div class="per-model-table">
+            <table>
+              <thead><tr><th>Provider</th><th>Model</th><th>Company</th><th>Provider</th></tr></thead>
+              <tbody>${rows || '<tr><td colspan="4">No per-model data yet.</td></tr>'}</tbody>
+            </table>
+          </div>`;
+      }
+
+      function renderRatePanel() {
+        const grid = document.getElementById("rateGrid");
+        const tables = document.getElementById("rateTables");
+        const perModel = document.getElementById("perModelInline");
+        const note = document.getElementById("rateNote");
+        const rate = state.savings.data?.rate;
+
+        if (!rate || (!rate.anthropic && !rate.openai)) {
+          grid.innerHTML = '<p class="no-alerts-note">No token-rate data available for this week yet.</p>';
+          tables.innerHTML = "";
+          perModel.innerHTML = "";
+          note.textContent = "";
+          return;
+        }
+
+        const cards = [];
+        if (rate.anthropic) {
+          cards.push(
+            rateCardHtml({
+              providerLabel: "Anthropic",
+              color: "var(--series-2)",
+              companyRate: rate.anthropic.current.companyRate,
+              providerRate: rate.anthropic.current.providerRate,
+              changePct: rate.anthropic.changePct,
+            }),
+          );
+        }
+        if (rate.openai) {
+          cards.push(
+            rateCardHtml({
+              providerLabel: "ChatGPT / OpenAI",
+              color: "var(--openai)",
+              companyRate: rate.openai.costPerRequest,
+              unit: "/request",
+              providerRate: null,
+            }),
+          );
+        }
+        grid.innerHTML = cards.join("");
+
+        const tableParts = [];
+        if (rate.anthropic) tableParts.push(anthropicRateTableHtml(rate.anthropic.tokenRows));
+        if (rate.openai) tableParts.push(openaiRateTableHtml(rate.openai.models));
+        tables.innerHTML = tableParts.join("");
+
+        perModel.innerHTML = perModelTableHtml(rate);
+
+        const noteParts = [
+          "Company figures reflect this week’s actual usage. “Provider, same mix” is what the same token volumes would cost with no caching discount, at today’s published rates.",
+        ];
+        if (rate.openai) {
+          noteParts.push(
+            "OpenAI’s Costs/Usage APIs don’t expose token counts, only $ amounts and request counts — so OpenAI is shown as $ per request and $ spend by model rather than $ per 1M tokens.",
+          );
+        }
+        note.textContent = noteParts.join(" ");
+      }
+
+      function renderSavings() {
+        renderBriefingSummary();
+        renderDriverCards();
+        renderAlertGroups();
+        renderRatePanel();
+      }
+
+      const MODEL_GUIDE_COPY = {
+        anthropic: [
+          { id: "claude-fable-5", name: "Claude Fable 5.1", tier: "Frontier specialist", use: "Demanding reasoning and long-horizon agents when Opus 5 at higher effort still falls short." },
+          { id: "claude-opus-5", name: "Claude Opus 5", tier: "Highest general use", use: "Complex agentic coding and difficult enterprise work. Anthropic’s recommended starting point for most workloads." },
+          { id: "claude-sonnet-5", name: "Claude Sonnet 5", tier: "Balanced", use: "Everyday coding, analysis, content and tool use with a strong speed-to-intelligence balance." },
+          { id: "claude-haiku-4-5", name: "Claude Haiku 4.5", tier: "Fastest", use: "Real-time, high-volume and cost-sensitive work, including smaller sub-agent tasks." },
+        ],
+        openai: [
+          { id: "gpt-6-astra", name: "GPT-6 Astra", tier: "Highest capability", use: "Hardest end-to-end work: complex reasoning, coding, computer use, research and finished documents." },
+          { id: "gpt-5.6-sol", name: "GPT-5.6 Sol", tier: "Advanced", use: "Complex professional work where a flagship model is needed, but Astra-level capability is unnecessary." },
+          { id: "gpt-5.6-terra", name: "GPT-5.6 Terra", tier: "Balanced", use: "Everyday knowledge work and moderate-complexity automations balancing intelligence and cost." },
+          { id: "gpt-5.6-luna", name: "GPT-5.6 Luna", tier: "High-volume", use: "Cost-sensitive repetitive work such as extraction, classification and straightforward summaries." },
+        ],
+      };
+      const MODEL_GUIDE_SOURCES = {
+        anthropic:
+          'Current generally available models and prices from the official <a class="source-link" href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Anthropic model overview</a> and <a class="source-link" href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noreferrer">pricing page</a>.',
+        openai:
+          'Current general-purpose models and prices from the official <a class="source-link" href="https://developers.openai.com/api/docs/models" target="_blank" rel="noreferrer">OpenAI model catalogue</a> and <a class="source-link" href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">pricing page</a>.',
+      };
+
+      function modelGuidePane(provider) {
+        const pricingFor = provider === "anthropic" ? modelPricingFor : openaiModelPricingFor;
+        const rows = MODEL_GUIDE_COPY[provider]
+          .map((entry) => {
+            const price = pricingFor(entry.id);
+            const priceText = price
+              ? `$${price.input} input &middot; $${price.cached} cached &middot; $${price.output} output<small>USD per 1M tokens</small>`
+              : "";
+            return `
+              <div class="model-row">
+                <div class="model-tier">${escapeHtml(entry.tier)}</div>
+                <div class="model-name">${escapeHtml(entry.name)}</div>
+                <div class="model-use">${escapeHtml(entry.use)}</div>
+                <div class="model-price">${priceText}</div>
+              </div>`;
+          })
+          .join("");
+        return `
+          <div class="model-pane${provider === "anthropic" ? " active" : ""}" data-model-pane="${provider}">
+            <div class="model-list">${rows}</div>
+            <div class="model-source">${MODEL_GUIDE_SOURCES[provider]}</div>
+          </div>`;
+      }
+
+      function renderModelGuideModal() {
+        const container = document.getElementById("modelGuidePanes");
+        if (container.dataset.rendered) return; // static reference content — render once
+        container.innerHTML = modelGuidePane("anthropic") + modelGuidePane("openai");
+        container.dataset.rendered = "true";
+      }
+
       function renderKpis() {
         const t = state.cost?.totals;
         const topPerson = state.people?.[0];
@@ -3033,6 +4117,9 @@
             const card = heading.closest(".card");
             const isOpen = card.classList.toggle("is-open");
             heading.setAttribute("aria-expanded", String(isOpen));
+            if (isOpen && card.id === "savingsCard" && !state.savings.loaded && !state.savings.loading) {
+              loadSavingsData();
+            }
           };
           heading.addEventListener("click", toggle);
           heading.addEventListener("keydown", (e) => {
@@ -3069,6 +4156,88 @@
             : "View as chart";
           e.currentTarget.setAttribute("aria-expanded", String(isOpen));
         });
+
+      document.getElementById("baselineToggle").addEventListener("click", (e) => {
+        const open = document.getElementById("baselineDetail").classList.toggle("visible");
+        e.currentTarget.setAttribute("aria-expanded", String(open));
+        e.currentTarget.textContent = open ? "Close settings" : "Alert settings";
+      });
+      document.getElementById("alertsToggle").addEventListener("click", (e) => {
+        const open = document.getElementById("alertArea").classList.toggle("visible");
+        e.currentTarget.setAttribute("aria-expanded", String(open));
+        renderAlertGroups(); // re-derives this button's own label from the aria-expanded set above
+      });
+      document.getElementById("ratesToggle").addEventListener("click", (e) => {
+        const open = document.getElementById("rateTables").classList.toggle("visible");
+        e.currentTarget.setAttribute("aria-expanded", String(open));
+        e.currentTarget.textContent = open
+          ? "Hide input, output and cache rates"
+          : "View input, output and cache rates";
+      });
+      document.getElementById("perModelOpen").addEventListener("click", (e) => {
+        const open = document.getElementById("perModelInline").classList.toggle("visible");
+        e.currentTarget.setAttribute("aria-expanded", String(open));
+        e.currentTarget.textContent = open ? "Hide per model" : "Show per model";
+      });
+      document.getElementById("spendThreshold").addEventListener("change", (e) => {
+        document.getElementById("spendConversionHint").textContent =
+          `Approx. ${convertedLabel(Number(e.currentTarget.value))}`;
+      });
+      document.getElementById("settingsApply").addEventListener("click", async (e) => {
+        const s = state.savings.settings;
+        const newBaselineWeeks = Number(document.getElementById("baselineWeeks").value);
+        s.changeThresholdPct = Number(document.getElementById("changeThreshold").value);
+        s.minDeltaUsd = Number(document.getElementById("spendThreshold").value);
+        s.trendWeeks = Number(document.getElementById("trendThreshold").value);
+        s.requestFloor = Number(document.getElementById("requestFloor").value);
+        const baselineChanged = newBaselineWeeks !== s.baselineWeeks;
+        s.baselineWeeks = newBaselineWeeks;
+
+        const original = e.currentTarget.textContent;
+        if (baselineChanged || !state.savings.raw) {
+          await loadSavingsData();
+        } else {
+          state.savings.data = buildSavingsData(state.savings.raw);
+          renderSavings();
+        }
+        e.currentTarget.textContent = "Settings applied";
+        window.setTimeout(() => {
+          e.currentTarget.textContent = original;
+        }, 1400);
+      });
+
+      function openModal(id) {
+        document.getElementById(id).classList.add("visible");
+        document.body.style.overflow = "hidden";
+      }
+      function closeModal(id) {
+        document.getElementById(id).classList.remove("visible");
+        if (!document.querySelector(".modal-backdrop.visible")) document.body.style.overflow = "";
+      }
+      document.getElementById("modelGuideOpen").addEventListener("click", () => {
+        renderModelGuideModal();
+        openModal("modelGuideModal");
+      });
+      document.getElementById("modelGuideClose").addEventListener("click", () => closeModal("modelGuideModal"));
+      document.getElementById("modelGuideModal").addEventListener("click", (e) => {
+        if (e.target.id === "modelGuideModal") closeModal("modelGuideModal");
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          document.querySelectorAll(".modal-backdrop.visible").forEach((m) => closeModal(m.id));
+        }
+      });
+      document.getElementById("modelGuideTabs").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-model-provider]");
+        if (!btn) return;
+        document
+          .querySelectorAll("#modelGuideTabs button")
+          .forEach((b) => b.setAttribute("aria-selected", String(b === btn)));
+        document
+          .querySelectorAll("#modelGuidePanes .model-pane")
+          .forEach((pane) => pane.classList.toggle("active", pane.dataset.modelPane === btn.dataset.modelProvider));
+      });
+
       document.querySelectorAll("#investigationTable th.sortable").forEach((th) => {
         th.addEventListener("click", () => {
           const key = th.dataset.sort;
@@ -3326,6 +4495,11 @@
         .finally(() => {
           prefetchOtherAllocationRanges().catch((err) => console.error(err));
         });
+
+      // Open by default (unlike Planning, which stays collapsed) — loads immediately rather
+      // than waiting for the accordion-open handler that lazy-loads it if a user collapses
+      // and reopens this card later.
+      loadSavingsData().catch((err) => console.error(err));
 
       // Set only by loadIndexHtml() in the demo build (see build-mac-demo.sh) — real builds
       // never inject this, so the badge stays hidden and this is a no-op there.
