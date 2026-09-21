@@ -1206,11 +1206,19 @@
 
       .briefing-summary {
         display: flex;
-        align-items: flex-end;
+        align-items: center;
         justify-content: space-between;
         gap: 18px;
         padding: 18px;
         flex-wrap: wrap;
+      }
+      .briefing-summary-box {
+        flex: 1;
+        min-width: 260px;
+        padding: 14px 18px;
+        background: #e4effd;
+        border: 1px solid #c4e0ff;
+        border-radius: 8px;
       }
       .briefing-label {
         color: var(--text-secondary);
