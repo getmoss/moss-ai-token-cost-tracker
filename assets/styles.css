@@ -59,6 +59,10 @@
         --series-4: #c89b32;
         --series-5: #8b65a5;
         --series-6: #4b9db5;
+        --planning-usage: #4678ad;
+        --planning-adoption: #c47a31;
+        --ai-slider-track: #e3e2e2;
+        --ai-slider-marker: #717171;
       }
 
       * {
@@ -1898,3 +1902,494 @@
           text-align: left;
         }
       }
+
+/* Planning (#planningCard) — forecast chart + scenario controls. New
+   .planning- / .control-centre / .scenario- classes reuse the existing
+   design tokens (--border, --surface-1, --surface-soft, --text-primary,
+   --text-secondary, --text-muted, --brand, --good) rather than a second
+   palette, same approach the Saving-opportunities block above took.
+   --planning-usage/--planning-adoption/--ai-slider-track/--ai-slider-marker
+   (in :root) are the only new literal colors — no existing token represents
+   the Usage/Adoption chart lines or the scenario sliders' track/baseline-
+   position marker, the same situation --anthropic/--openai are already in. */
+#planningCardBody {
+  padding-top: 0;
+}
+.planning-body {
+  padding: 22px;
+  display: grid;
+  gap: 16px;
+}
+
+.planning-kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.planning-kpi {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  padding: 16px;
+}
+.planning-kpi-title {
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.planning-compare {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+.planning-value-block {
+  min-width: 0;
+  padding-right: 12px;
+}
+.planning-value-block + .planning-value-block {
+  padding: 0 0 0 12px;
+  border-left: 1px solid var(--border);
+}
+.planning-value-label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.planning-value {
+  display: block;
+  font-size: 22px;
+  line-height: 1.05;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+.planning-value.scenario {
+  color: var(--brand);
+}
+.planning-value-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+.planning-value-currencies {
+  display: block;
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.planning-value-delta {
+  display: block;
+  color: var(--good);
+  font-size: 9px;
+  font-weight: 700;
+  margin-top: 5px;
+}
+.planning-value-delta.neutral {
+  color: var(--text-muted);
+}
+.planning-value-meta .planning-value-delta {
+  margin-top: 0;
+}
+
+.planning-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.planning-toolbar-right {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.planning-field label {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 9px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.planning-field select,
+.planning-field input[type="date"] {
+  height: 35px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-1);
+  color: var(--text-primary);
+  padding: 0 9px;
+  font-size: 11px;
+}
+.planning-custom-field {
+  display: none;
+}
+.planning-custom-field.visible {
+  display: block;
+}
+
+.planning-chart-shell {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-1);
+  overflow: hidden;
+}
+.planning-chart-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.planning-chart-title {
+  font-size: 12px;
+  font-weight: 700;
+}
+.planning-chart-note {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+.planning-legend {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  flex-wrap: wrap;
+  color: var(--text-secondary);
+  font-size: 9px;
+}
+.planning-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.planning-swatch {
+  width: 15px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--swatch);
+}
+.planning-swatch.dashed {
+  height: 0;
+  border-top: 2px dashed var(--swatch);
+  background: transparent;
+  border-radius: 0;
+}
+.planning-chart {
+  position: relative;
+  padding: 8px 8px 4px;
+}
+.planning-chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 390px;
+}
+/* 50% wider than the shared .tooltip's 160px default — the baseline/scenario row labels here
+   ("Spend · baseline") are longer than the single-word labels the Overview chart's tooltip
+   shows, and wrap awkwardly at the shared width. */
+#planningTooltip {
+  min-width: 240px;
+}
+
+.planning-actual,
+.planning-baseline,
+.planning-scenario {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.planning-actual {
+  stroke-width: 1.6;
+  opacity: 0.52;
+}
+.planning-baseline {
+  stroke-width: 2;
+  stroke-dasharray: 7 5;
+}
+.planning-scenario {
+  stroke-width: 2.4;
+}
+.planning-variance-band {
+  stroke: none;
+}
+.planning-forecast-divider {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  opacity: 0.6;
+}
+.planning-divider-label {
+  fill: var(--text-muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+.planning-point {
+  fill: var(--surface-1);
+  stroke-width: 2;
+}
+.planning-axis-title {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.035em;
+}
+.planning-colour-axis {
+  font-size: 9px;
+  font-weight: 700;
+}
+.planning-colour-axis-line {
+  stroke-width: 2;
+  opacity: 0.7;
+}
+.planning-end-label {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.control-centre {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+  overflow: hidden;
+}
+.control-centre-head {
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.control-centre-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  letter-spacing: -0.015em;
+}
+.control-centre-copy {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.4;
+}
+.scenario-result {
+  margin-top: 6px;
+  color: var(--brand);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.scenario-grid {
+  padding: 14px 16px 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.scenario-control {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface-1);
+  padding: 12px;
+  cursor: pointer;
+}
+.scenario-control-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
+}
+.scenario-control-title {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+}
+.scenario-control-note {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 8px;
+}
+.scenario-control-value {
+  color: var(--brand);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: right;
+  white-space: nowrap;
+}
+.scenario-control-head-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+.scenario-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.scenario-reset-btn:not(:disabled):hover {
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+.scenario-reset-btn svg {
+  transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.scenario-reset-btn:not(:disabled):active svg {
+  transform: rotate(-70deg);
+}
+.scenario-reset-btn:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+.scenario-control input[type="range"] {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  accent-color: var(--brand);
+}
+/* The vertical grey tick marking each slider's live-data default — deliberately not a filled
+   dot, so it reads as a track marking rather than a second thumb. */
+.scenario-baseline-marker {
+  position: absolute;
+  z-index: 2;
+  left: var(--baseline-position, 50%);
+  top: 50%;
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+  background: var(--ai-slider-marker);
+  box-shadow: 0 0 0 2px var(--surface-1);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.scenario-scale {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 8px;
+  margin-top: 4px;
+}
+
+@media (max-width: 760px) {
+  .planning-kpis,
+  .scenario-grid {
+    grid-template-columns: 1fr;
+  }
+  .planning-compare {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .planning-value-block {
+    padding-right: 0;
+  }
+  .planning-value-block + .planning-value-block {
+    padding: 10px 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--border);
+  }
+  .planning-chart-header,
+  .control-centre-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+.scenario-control.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Custom-drawn slider track/fill/thumb shared by all six scenario controls — originally
+   imported from the Claude Design project "Card design improvements" (AI Adoption Slider
+   Card.dc.html) for the AI adoption card alone, then adopted by the other five so every
+   scenario control renders and behaves identically instead of falling back to native
+   <input type="range"> styling. A transparent range input is layered on top for interaction
+   (updateSliderVisual() in index.html keeps each fill width and thumb position in sync with
+   its input's value). */
+.ai-slider-track-wrap {
+  position: relative;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+.ai-slider-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--ai-slider-track);
+}
+.ai-slider-fill {
+  position: absolute;
+  left: 0;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--brand);
+  width: 0;
+}
+.ai-slider-input {
+  -webkit-appearance: none;
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+.ai-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1px;
+  height: 1px;
+}
+.ai-slider-input::-moz-range-thumb {
+  width: 1px;
+  height: 1px;
+  border: none;
+}
+.ai-slider-thumb {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--brand);
+  border: 2px solid var(--surface-1);
+  box-shadow: var(--shadow);
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  pointer-events: none;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 120ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ai-slider-input:hover ~ .ai-slider-thumb {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+.ai-slider-input:active ~ .ai-slider-thumb {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+.ai-slider-input:focus-visible ~ .ai-slider-thumb {
+  box-shadow: 0 0 0 3px var(--brand-soft), var(--shadow);
+}

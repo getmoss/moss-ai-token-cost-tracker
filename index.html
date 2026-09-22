@@ -771,21 +771,279 @@
         </div>
         </div>
       </section>
-      <section class="card future-card" aria-label="Planning coming later">
-        <div class="section-heading">
+      <section class="card accordion is-open" id="planningCard" aria-label="Planning">
+        <div
+          class="section-heading"
+          role="button"
+          tabindex="0"
+          aria-expanded="true"
+          aria-controls="planningCardBody"
+        >
           <div class="section-copy">
-            <div class="step-label">
-              <b>4</b> Planning
-              <span class="coming-soon">Coming soon</span>
-            </div>
+            <div class="step-label"><b>4</b> Planning</div>
             <h2>How might our AI spend develop?</h2>
-            <p>
-              Build a baseline forecast from spend, requests and adoption,
-              then adjust usage, token prices and provider or model mix to
-              test different futures.
-            </p>
-            <p>Coming later</p>
+            <div class="collapse">
+              <div class="collapse-inner">
+                <p>
+                  Build a baseline forecast from spend, requests and
+                  adoption, then adjust usage, token prices, provider or
+                  model mix to test different futures.
+                </p>
+              </div>
+            </div>
           </div>
+          <span class="chevron" aria-hidden="true"><img src="/assets/icons/arrow-down.svg" alt="" width="18" height="18" /></span>
+        </div>
+
+        <div class="collapse">
+        <div class="collapse-inner">
+        <div class="section-body" id="planningCardBody">
+        <div class="loading-block" id="planningLoadingBlock">
+        <div class="planning-body">
+
+          <div class="planning-kpis">
+            <article class="planning-kpi">
+              <div class="planning-kpi-title">Average weekly AI cost progression</div>
+              <div class="planning-compare">
+                <div class="planning-value-block">
+                  <span class="planning-value-label">Baseline forecast</span>
+                  <span class="planning-value" id="planningGrowthBaseline">&mdash;</span>
+                  <span class="planning-value-delta neutral">Average rise per week</span>
+                </div>
+                <div class="planning-value-block">
+                  <span class="planning-value-label">Adjusted scenario</span>
+                  <span class="planning-value scenario" id="planningGrowthScenario">&mdash;</span>
+                  <span class="planning-value-delta neutral" id="planningGrowthDelta">Matches baseline</span>
+                </div>
+              </div>
+            </article>
+            <article class="planning-kpi">
+              <div class="planning-kpi-title">Projected monthly AI cost six months from now</div>
+              <div class="planning-compare">
+                <div class="planning-value-block">
+                  <span class="planning-value-label">Baseline forecast</span>
+                  <span class="planning-value" id="planningCostBaseline">&mdash;</span>
+                  <span class="planning-value-meta"><span class="planning-value-currencies" id="planningCostBaselineCurrencies"></span></span>
+                </div>
+                <div class="planning-value-block">
+                  <span class="planning-value-label">Adjusted scenario</span>
+                  <span class="planning-value scenario" id="planningCostScenario">&mdash;</span>
+                  <span class="planning-value-meta"><span class="planning-value-currencies" id="planningCostScenarioCurrencies"></span><span class="planning-value-delta neutral" id="planningCostDelta">Matches baseline</span></span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="planning-toolbar">
+            <div class="planning-toolbar-right">
+              <div class="planning-field">
+                <label for="planningReference">Historic reference</label>
+                <select id="planningReference">
+                  <option value="4">1 month</option>
+                  <option value="13" selected>1 quarter</option>
+                  <option value="26">6 months</option>
+                  <option value="52">1 year</option>
+                </select>
+              </div>
+              <div class="planning-field">
+                <label>Future horizon</label>
+                <div class="segmented" id="planningHorizon" role="group" aria-label="Future horizon">
+                  <button type="button" data-value="1w" aria-selected="false">1 week</button>
+                  <button type="button" data-value="4w" aria-selected="false">4 weeks</button>
+                  <button type="button" data-value="6m" aria-selected="true">6 months</button>
+                  <button type="button" data-value="custom" aria-selected="false">Custom</button>
+                </div>
+              </div>
+              <div class="planning-field planning-custom-field" id="planningCustomField">
+                <label for="planningCustomDate">Forecast until</label>
+                <input id="planningCustomDate" type="date" />
+              </div>
+            </div>
+          </div>
+
+          <section class="planning-chart-shell" aria-labelledby="planningChartTitle">
+            <div class="planning-chart-header">
+              <div>
+                <div class="planning-chart-title" id="planningChartTitle"></div>
+                <div class="planning-chart-note" id="planningChartNote"></div>
+              </div>
+              <div class="planning-legend">
+                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--brand)"></span>Spend</span>
+                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--planning-usage)"></span>Usage</span>
+                <span class="planning-legend-item" id="planningAdoptionLegendItem"><span class="planning-swatch" style="--swatch: var(--planning-adoption)"></span>Adoption</span>
+                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted); opacity: .55"></span>Actual</span>
+                <span class="planning-legend-item"><span class="planning-swatch dashed" style="--swatch: var(--text-muted)"></span>Baseline</span>
+                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted)"></span>Scenario</span>
+              </div>
+            </div>
+            <div class="planning-chart" id="planningChart">
+              <div id="planningChartSvg"></div>
+              <div class="tooltip" id="planningTooltip" role="status" aria-live="polite"></div>
+            </div>
+          </section>
+
+          <section class="control-centre" aria-labelledby="controlCentreTitle">
+            <div class="control-centre-head">
+              <div>
+                <h3 class="control-centre-title" id="controlCentreTitle">Scenario controls</h3>
+                <p class="control-centre-copy">
+                  Adjust company-wide assumptions. The baseline forecast
+                  stays visible for comparison.
+                </p>
+                <div class="scenario-result" id="scenarioResult" aria-live="polite">No adjustments applied.</div>
+              </div>
+              <button class="table-toggle" id="resetScenario" type="button">Reset to baseline</button>
+            </div>
+            <div class="scenario-grid">
+              <div class="scenario-control" id="adoptionScenarioControl">
+                <div class="scenario-control-head">
+                  <div>
+                    <span class="scenario-control-title">AI adoption rate</span>
+                    <span class="scenario-control-note">Share of employees actively using AI</span>
+                  </div>
+                  <span class="scenario-control-head-right">
+                    <span class="scenario-control-value" id="adoptionValue">&mdash;</span>
+                    <button
+                      class="scenario-reset-btn"
+                      type="button"
+                      id="adoptionResetBtn"
+                      data-slider="adoptionSlider"
+                      aria-label="Reset AI adoption rate to baseline"
+                      title="Reset to default"
+                    >
+                      <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
+                        <path d="M16.5 10a6.5 6.5 0 1 1-2.02-4.71" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M16.7 3.8v3.6h-3.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                      </svg>
+                    </button>
+                  </span>
+                </div>
+                <div class="ai-slider-track-wrap">
+                  <div class="ai-slider-track"></div>
+                  <div class="ai-slider-fill" id="adoptionSliderFill"></div>
+                  <span class="scenario-baseline-marker" id="adoptionSliderMarker" aria-hidden="true"></span>
+                  <input class="ai-slider-input" id="adoptionSlider" type="range" min="0" max="100" step="0.5" aria-label="AI adoption rate" />
+                  <div class="ai-slider-thumb" id="adoptionSliderThumb"></div>
+                </div>
+                <span class="scenario-scale"><span>0%</span><span>100%</span></span>
+              </div>
+              <label class="scenario-control" for="usageSlider">
+                <span class="scenario-control-head">
+                  <span>
+                    <span class="scenario-control-title">Requests per active employee</span>
+                    <span class="scenario-control-note">Average weekly usage intensity</span>
+                  </span>
+                  <span class="scenario-control-head-right">
+                    <span class="scenario-control-value" id="usageValue">&mdash;</span>
+                    <button class="scenario-reset-btn" type="button" data-slider="usageSlider" aria-label="Reset requests per active employee to baseline">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                    </button>
+                  </span>
+                </span>
+                <div class="ai-slider-track-wrap">
+                  <div class="ai-slider-track"></div>
+                  <div class="ai-slider-fill" id="usageSliderFill"></div>
+                  <span class="scenario-baseline-marker" aria-hidden="true"></span>
+                  <input class="ai-slider-input" id="usageSlider" type="range" min="0" max="6000" step="10" />
+                  <div class="ai-slider-thumb" id="usageSliderThumb"></div>
+                </div>
+                <span class="scenario-scale"><span>0</span><span id="usageScaleMax">6,000</span></span>
+              </label>
+              <label class="scenario-control" for="tokensSlider">
+                <span class="scenario-control-head">
+                  <span>
+                    <span class="scenario-control-title">Tokens per request</span>
+                    <span class="scenario-control-note">Average input and output workload size</span>
+                  </span>
+                  <span class="scenario-control-head-right">
+                    <span class="scenario-control-value" id="tokensValue">&mdash;</span>
+                    <button class="scenario-reset-btn" type="button" data-slider="tokensSlider" aria-label="Reset tokens per request to baseline">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                    </button>
+                  </span>
+                </span>
+                <div class="ai-slider-track-wrap">
+                  <div class="ai-slider-track"></div>
+                  <div class="ai-slider-fill" id="tokensSliderFill"></div>
+                  <span class="scenario-baseline-marker" aria-hidden="true"></span>
+                  <input class="ai-slider-input" id="tokensSlider" type="range" min="0" max="20000" step="100" />
+                  <div class="ai-slider-thumb" id="tokensSliderThumb"></div>
+                </div>
+                <span class="scenario-scale"><span>0</span><span id="tokensScaleMax">20k</span></span>
+              </label>
+              <label class="scenario-control" for="priceSlider">
+                <span class="scenario-control-head">
+                  <span>
+                    <span class="scenario-control-title">Company average token price</span>
+                    <span class="scenario-control-note">Your blended company rate per 1M tokens</span>
+                  </span>
+                  <span class="scenario-control-head-right">
+                    <span class="scenario-control-value" id="priceValue">&mdash;</span>
+                    <button class="scenario-reset-btn" type="button" data-slider="priceSlider" aria-label="Reset company average token price to baseline">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                    </button>
+                  </span>
+                </span>
+                <div class="ai-slider-track-wrap">
+                  <div class="ai-slider-track"></div>
+                  <div class="ai-slider-fill" id="priceSliderFill"></div>
+                  <span class="scenario-baseline-marker" style="--baseline-position: 50%" aria-hidden="true"></span>
+                  <input class="ai-slider-input" id="priceSlider" type="range" min="70" max="130" step="1" value="100" />
+                  <div class="ai-slider-thumb" id="priceSliderThumb"></div>
+                </div>
+                <span class="scenario-scale"><span>&minus;30%</span><span>+30%</span></span>
+              </label>
+              <label class="scenario-control" for="providerPriceSlider">
+                <span class="scenario-control-head">
+                  <span>
+                    <span class="scenario-control-title">Provider average token price</span>
+                    <span class="scenario-control-note">Average list rate across your provider and model mix</span>
+                  </span>
+                  <span class="scenario-control-head-right">
+                    <span class="scenario-control-value" id="providerPriceValue">&mdash;</span>
+                    <button class="scenario-reset-btn" type="button" data-slider="providerPriceSlider" aria-label="Reset provider average token price to baseline">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                    </button>
+                  </span>
+                </span>
+                <div class="ai-slider-track-wrap">
+                  <div class="ai-slider-track"></div>
+                  <div class="ai-slider-fill" id="providerPriceSliderFill"></div>
+                  <span class="scenario-baseline-marker" style="--baseline-position: 50%" aria-hidden="true"></span>
+                  <input class="ai-slider-input" id="providerPriceSlider" type="range" min="70" max="130" step="1" value="100" />
+                  <div class="ai-slider-thumb" id="providerPriceSliderThumb"></div>
+                </div>
+                <span class="scenario-scale"><span>&minus;30%</span><span>+30%</span></span>
+              </label>
+              <label class="scenario-control" for="modelMixSlider">
+                <span class="scenario-control-head">
+                  <span>
+                    <span class="scenario-control-title">Higher-cost model share</span>
+                    <span class="scenario-control-note">Share of tokens routed to premium models across providers</span>
+                  </span>
+                  <span class="scenario-control-head-right">
+                    <span class="scenario-control-value" id="modelMixValue">&mdash;</span>
+                    <button class="scenario-reset-btn" type="button" data-slider="modelMixSlider" aria-label="Reset higher-cost model share to baseline">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                    </button>
+                  </span>
+                </span>
+                <div class="ai-slider-track-wrap">
+                  <div class="ai-slider-track"></div>
+                  <div class="ai-slider-fill" id="modelMixSliderFill"></div>
+                  <span class="scenario-baseline-marker" aria-hidden="true"></span>
+                  <input class="ai-slider-input" id="modelMixSlider" type="range" min="0" max="100" step="1" />
+                  <div class="ai-slider-thumb" id="modelMixSliderThumb"></div>
+                </div>
+                <span class="scenario-scale"><span>0%</span><span>100%</span></span>
+              </label>
+            </div>
+          </section>
+
+        </div>
+        </div>
+        </div>
+        </div>
         </div>
       </section>
     </main>
@@ -874,6 +1132,21 @@
         computeAlerts,
         summarizeAlerts,
       } from "/lib/savings.mjs";
+      import {
+        weeklyGrowthRate,
+        linearWeeklyRate,
+        convertWeeklyRate,
+        projectCompounding,
+        projectLinear,
+        computeScenarioFactors,
+        sixMonthMonthlyCost,
+        currentPremiumModelShare,
+        planningPeriodConfig,
+        chunkWeeklyTotals,
+        chunkWeeklySnapshots,
+        weeklySnapshotsFromDaily,
+        clampHistoricReference,
+      } from "/lib/planning.mjs";
 
       const COLOR_VARS = [
         "--series-1",
@@ -2146,6 +2419,21 @@
         data: null,
       };
 
+      // ---- Planning (#planningCard) ---------------------------------------------------------
+      // Independent of every other section's period picker — like Saving opportunities, this
+      // panel runs its own fetch, loaded eagerly on page load (open by default) with a lazy-load
+      // fallback on the accordion-toggle handler below in case a user collapses and reopens it
+      // before the eager load finishes, or it failed the first time.
+      state.planning = {
+        loaded: false,
+        loading: false,
+        raw: null, // last fetched {costSummary, seats, efficiency}
+        defaults: null, // buildPlanningDefaults() output — the "no adjustment" center point for every slider
+        scenarioTouched: false,
+        referenceWeeks: 13,
+        horizon: "6m",
+      };
+
       function escapeHtml(value) {
         return String(value ?? "").replace(
           /[&<>"']/g,
@@ -2857,6 +3145,831 @@
         renderDriverCards();
         renderAlertGroups();
         renderRatePanel();
+      }
+
+      // Ideally this would cover the Historic reference dropdown's max option (1 year = 52
+      // weeks), but server.mjs's cachedFetchJsonRanged notes the Analytics API has a hard,
+      // fixed-calendar floor on how far back it has any data at all ("data prior to 2026-01-01
+      // is not available") — a 52-week fetch crosses that floor for every org right now (2026),
+      // and something in how the floor-crossing chunks get reconciled currently comes back with
+      // far too little data (reproduced: Planning's forecast broke entirely, "Not enough history
+      // yet", right after this was raised from 24 to 52). 24 weeks stays safely clear of the
+      // floor, so it's reverted here pending a real fix to that gap-handling — a young org (or
+      // any org right now, until the floor recedes into 2027) selecting "6 months"/"1 year" will
+      // see clampHistoricReference's normal "Only N weeks available" degradation instead.
+      const PLANNING_HISTORY_WEEKS = 24;
+      const PLANNING_SLIDER_IDS = [
+        "adoptionSlider",
+        "usageSlider",
+        "tokensSlider",
+        "priceSlider",
+        "providerPriceSlider",
+        "modelMixSlider",
+      ];
+      const PLANNING_SLIDER_TO_KEY = {
+        adoptionSlider: "adoption",
+        usageSlider: "usage",
+        tokensSlider: "tokens",
+        priceSlider: "price",
+        providerPriceSlider: "providerPrice",
+        modelMixSlider: "mix",
+      };
+      const isoDaysFromNow = (days) => isoDaysAgo(-days);
+      // Diameter of every scenario slider's custom-drawn thumb (see updateSliderVisual /
+      // setMarker below) — all six sliders share this one custom track/fill/thumb component.
+      const PLANNING_SLIDER_THUMB_PX = 16;
+
+      // Whether every slider currently sits on its own live-data default — drives the
+      // "Matches baseline" vs "+X% vs baseline" KPI wording and whether the per-slider reset
+      // buttons have anything to do.
+      function planningControlsAtDefaults() {
+        const defaults = state.planning.defaults?.controls;
+        if (!defaults) return true;
+        const controls = readPlanningControls();
+        return Object.keys(PLANNING_SLIDER_TO_KEY).every((sliderId) => {
+          const key = PLANNING_SLIDER_TO_KEY[sliderId];
+          return Math.abs(controls[key] - defaults[key]) < 1e-6;
+        });
+      }
+
+      // Resets a single scenario slider back to its own baseline default, leaving the other
+      // five untouched — the small rotate icon next to each slider's value.
+      function resetPlanningSlider(sliderId) {
+        const defaults = state.planning.defaults?.controls;
+        if (!defaults) return;
+        document.getElementById(sliderId).value = defaults[PLANNING_SLIDER_TO_KEY[sliderId]];
+        state.planning.scenarioTouched = !planningControlsAtDefaults();
+        renderPlanningChart();
+      }
+
+      async function loadPlanningData() {
+        const block = document.getElementById("planningLoadingBlock");
+        state.planning.loading = true;
+        block?.classList.add("loading");
+        try {
+          const fullTo = isoToday();
+          const fullFrom = isoDaysAgo(PLANNING_HISTORY_WEEKS * 7 - 1);
+          const week0 = savingsWeekWindow(0);
+
+          const [costSummary, seats, efficiency] = await Promise.all([
+            fetchSavingsJson(
+              "planning-cost-summary",
+              fullFrom,
+              fullTo,
+              `/api/cost-summary?from=${fullFrom}&to=${fullTo}`,
+            ),
+            fetchSavingsJson(
+              "planning-seats",
+              fullFrom,
+              fullTo,
+              `/api/seats?from=${fullFrom}&to=${fullTo}`,
+            ),
+            fetchSavingsJson(
+              "planning-efficiency",
+              week0.from,
+              week0.to,
+              `/api/efficiency?from=${week0.from}&to=${week0.to}`,
+            ),
+          ]);
+
+          state.planning.raw = { costSummary, seats, efficiency };
+          state.planning.defaults = buildPlanningDefaults(state.planning.raw);
+          state.planning.loaded = true;
+          applyPlanningDefaultsToControls();
+        } catch (err) {
+          console.error(err);
+          state.planning.raw = null;
+          state.planning.defaults = null;
+        } finally {
+          state.planning.loading = false;
+          block?.classList.remove("loading");
+          renderPlanningChart();
+        }
+      }
+
+      // Reduces the raw /api/cost-summary + /api/seats + /api/efficiency responses (already
+      // fetched for PLANNING_HISTORY_WEEKS of history) into the weekly/daily series and
+      // current-period slider defaults renderPlanningChart() needs — the only place in Planning
+      // that touches the raw API shapes.
+      function buildPlanningDefaults({ costSummary, seats, efficiency }) {
+        const labels = costSummary?.labels ?? [];
+        const byProvider = costSummary?.byProvider ?? [];
+        // Company-wide daily spend/requests = sum of both providers per day — same combining
+        // logic overviewSeriesForMetric() already uses for the Company overview "Overall" line.
+        const combinedDaily = (key) =>
+          labels.map((_, i) => byProvider.reduce((sum, p) => sum + (p[key]?.[i] ?? 0), 0));
+        const dailySpend = combinedDaily("spend");
+        const dailyRequests = combinedDaily("requests");
+        const spendWeeks = weeklyTotalsFromDaily(trimToWeeks(dailySpend));
+        const requestWeeks = weeklyTotalsFromDaily(trimToWeeks(dailyRequests));
+
+        const anthropic = byProvider.find((p) => p.name === "Anthropic");
+        const anthropicRequestWeeks = weeklyTotalsFromDaily(trimToWeeks(anthropic?.requests ?? []));
+
+        const seatsAvailable = !!seats?.available;
+        const dailyAdoption = seatsAvailable
+          ? (seats.series ?? []).map((d) => d.monthlyAdoptionRate ?? 0)
+          : [];
+        const adoptionWeeks = seatsAvailable
+          ? weeklySnapshotsFromDaily(trimToWeeks(dailyAdoption))
+          : [];
+
+        const currentWeeklySpend = currentWeek(spendWeeks);
+        const currentWeeklyRequests = currentWeek(requestWeeks);
+        const currentAnthropicRequests = currentWeek(anthropicRequestWeeks);
+        const currentAdoption = seatsAvailable ? currentWeek(adoptionWeeks) : null;
+
+        // "Active employees" for the requests-per-employee slider — mau is the same field the
+        // Overview KPI already shows as "X of Y seats active" (see renderKpis()). Without any
+        // seat data, the slider falls back to treating the whole company as the denominator so
+        // ratio-based scaling still behaves sensibly, even though its label ("per active
+        // employee") no longer holds literally.
+        const activeEmployees = seats?.mau || seats?.assignedSeats || currentWeeklyRequests || 1;
+        const totalTokens = (efficiency?.totalInputTokens ?? 0) + (efficiency?.outputTokens ?? 0);
+
+        const rate = blendedRate({
+          actualInputCost: efficiency?.actualInputCost ?? 0,
+          hypotheticalInputCost: efficiency?.hypotheticalInputCost ?? null,
+          outputCost: efficiency?.outputCost ?? 0,
+          totalInputTokens: efficiency?.totalInputTokens ?? 0,
+          outputTokens: efficiency?.outputTokens ?? 0,
+        });
+
+        // Model-mix baseline is Anthropic-only, same limitation the Saving opportunities rate
+        // panel already has — cost-summary's byModel has no OpenAI per-model breakdown to price.
+        const models = (costSummary?.byModel ?? [])
+          .map((m) => {
+            const pricing = modelPricingFor(m.name);
+            if (!pricing) return null;
+            return {
+              spend: currentWeek(weeklyTotalsFromDaily(trimToWeeks(m.spend))),
+              avgPricePerMillion: (pricing.input + pricing.output) / 2,
+            };
+          })
+          .filter(Boolean);
+
+        return {
+          seatsAvailable,
+          series: { dailySpend, dailyRequests, dailyAdoption, spendWeeks, requestWeeks, adoptionWeeks },
+          currentWeeklySpend,
+          companyRateUsd: rate.companyRate,
+          providerRateUsd: rate.providerRate,
+          controls: {
+            adoption: currentAdoption ?? 50,
+            usage: currentWeeklyRequests > 0 ? currentWeeklyRequests / activeEmployees : 1000,
+            tokens: currentAnthropicRequests > 0 ? totalTokens / currentAnthropicRequests : 3000,
+            price: 100,
+            providerPrice: 100,
+            mix: currentPremiumModelShare(models),
+          },
+        };
+      }
+
+      // Widens each data-driven slider's range around the real default (percentage sliders stay
+      // fixed at 0-100) so the default never sits outside the track, then sets every slider to
+      // its default position — called once after a successful fetch, and again by "Reset to
+      // baseline".
+      function applyPlanningDefaultsToControls() {
+        const { controls } = state.planning.defaults;
+        const setRange = (id, value, max) => {
+          const input = document.getElementById(id);
+          input.min = 0;
+          input.max = max;
+          input.value = value;
+        };
+        setRange("adoptionSlider", controls.adoption, 100);
+        setRange("usageSlider", Math.round(controls.usage), niceMax(controls.usage * 2));
+        setRange("tokensSlider", Math.round(controls.tokens), niceMax(controls.tokens * 2));
+        setRange("modelMixSlider", Math.round(controls.mix), 100);
+        document.getElementById("usageScaleMax").textContent = Number(
+          document.getElementById("usageSlider").max,
+        ).toLocaleString("en-US");
+        document.getElementById("tokensScaleMax").textContent =
+          `${(Number(document.getElementById("tokensSlider").max) / 1000).toFixed(1)}k`;
+        document.getElementById("priceSlider").value = controls.price;
+        document.getElementById("providerPriceSlider").value = controls.providerPrice;
+        updatePlanningControlValues();
+      }
+
+      function readPlanningControls() {
+        return {
+          adoption: Number(document.getElementById("adoptionSlider").value),
+          usage: Number(document.getElementById("usageSlider").value),
+          tokens: Number(document.getElementById("tokensSlider").value),
+          price: Number(document.getElementById("priceSlider").value),
+          providerPrice: Number(document.getElementById("providerPriceSlider").value),
+          mix: Number(document.getElementById("modelMixSlider").value),
+        };
+      }
+
+      function updatePlanningControlValues() {
+        const controls = readPlanningControls();
+        document.getElementById("adoptionValue").textContent = `${controls.adoption.toFixed(1)}%`;
+        document.getElementById("usageValue").textContent =
+          `${Math.round(controls.usage).toLocaleString("en-US")}/wk`;
+        document.getElementById("tokensValue").textContent = `${(controls.tokens / 1000).toFixed(1)}k`;
+        document.getElementById("modelMixValue").textContent = `${Math.round(controls.mix)}%`;
+        const companyRateUsd = state.planning.defaults?.companyRateUsd;
+        const providerRateUsd = state.planning.defaults?.providerRateUsd;
+        document.getElementById("priceValue").textContent =
+          companyRateUsd != null ? `$${((companyRateUsd * controls.price) / 100).toFixed(2)}` : "—";
+        document.getElementById("providerPriceValue").textContent =
+          providerRateUsd != null ? `$${((providerRateUsd * controls.providerPrice) / 100).toFixed(2)}` : "—";
+
+        // A slider's thumb travels between [radius, 100%-radius], not [0, 100%] — its center is
+        // always inset by half its own diameter from each edge. Positioning the baseline marker
+        // at a plain `frac * 100%` ignored that inset, so it drifted away from the thumb (further
+        // off the closer the default sits to either end) — the "sometimes left, sometimes right,
+        // sometimes under it" inconsistency. PLANNING_SLIDER_THUMB_PX keeps the marker centered
+        // on the thumb (see updateSliderVisual) at any value, for every slider.
+        const setMarker = (id, value) => {
+          const input = document.getElementById(id);
+          const min = Number(input.min);
+          const max = Number(input.max);
+          const frac = max > min ? (value - min) / (max - min) : 0.5;
+          const pos = `calc(${PLANNING_SLIDER_THUMB_PX / 2}px + (100% - ${PLANNING_SLIDER_THUMB_PX}px) * ${frac})`;
+          input.parentElement
+            .querySelector(".scenario-baseline-marker")
+            .style.setProperty("--baseline-position", pos);
+        };
+        const d = state.planning.defaults?.controls;
+        if (d) {
+          setMarker("adoptionSlider", d.adoption);
+          setMarker("usageSlider", d.usage);
+          setMarker("tokensSlider", d.tokens);
+          setMarker("priceSlider", d.price);
+          setMarker("providerPriceSlider", d.providerPrice);
+          setMarker("modelMixSlider", d.mix);
+        }
+
+        PLANNING_SLIDER_IDS.forEach(updateSliderVisual);
+        const adoptionResetBtn = document.getElementById("adoptionResetBtn");
+        const atDefault = d ? Math.abs(controls.adoption - d.adoption) < 0.26 : true;
+        adoptionResetBtn.disabled = atDefault;
+        adoptionResetBtn.title = atDefault || !d ? "Already at default" : `Reset to default (${d.adoption.toFixed(1)}%)`;
+      }
+
+      // Keeps a scenario slider's custom-drawn fill/thumb in sync with its underlying (visually
+      // transparent) range input — see the .ai-slider-* styles in assets/styles.css. All six
+      // scenario controls share this one custom track/fill/thumb component.
+      function updateSliderVisual(sliderId) {
+        const input = document.getElementById(sliderId);
+        const min = Number(input.min);
+        const max = Number(input.max);
+        const value = Number(input.value);
+        const frac = max > min ? (value - min) / (max - min) : 0;
+        const pos = `calc(${PLANNING_SLIDER_THUMB_PX / 2}px + (100% - ${PLANNING_SLIDER_THUMB_PX}px) * ${frac})`;
+        document.getElementById(`${sliderId}Fill`).style.width = pos;
+        document.getElementById(`${sliderId}Thumb`).style.left = pos;
+      }
+
+      // Reference-window growth rate for one metric's weekly series — shared by both the KPI
+      // tiles and the chart's own baseline/scenario projection so they always agree on the same
+      // number. Clamped to however many weeks are actually available (see
+      // clampHistoricReference), so a young org selecting "1 year" degrades gracefully instead
+      // of erroring.
+      function computeReferenceGrowth(weeklyValues, referenceWeeks, compounding) {
+        const { weeks, warning } = clampHistoricReference(referenceWeeks, weeklyValues.length);
+        const slice = weeklyValues.slice(-weeks);
+        const rate = compounding ? weeklyGrowthRate(slice) : linearWeeklyRate(slice);
+        return { rate, warning };
+      }
+
+      // The Historic reference dropdown's own visible text ("1 month" / "1 quarter" / ...) —
+      // reused for the chart title/caption instead of re-deriving a label from the raw week
+      // count, so the two can never drift out of sync with each other.
+      function planningReferenceLabel() {
+        const select = document.getElementById("planningReference");
+        return select.options[select.selectedIndex]?.text ?? `${state.planning.referenceWeeks} weeks`;
+      }
+
+      // Builds one metric's {history, baseline, scenario} arrays for the chart, at whatever
+      // granularity the selected horizon calls for (day/week/month) — real data for `history`,
+      // a trend projection for `baseline`/`scenario`. `rate` is always a per-week rate (from
+      // computeReferenceGrowth); it's converted to the horizon's own unit here. `referenceWeeks`
+      // (the Historic reference dropdown) — not config.future/unit's own horizon — decides how
+      // much real `history` gets plotted, converted into whatever unit the chart is rendering in,
+      // so picking "1 year" actually shows a year of history regardless of the forecast horizon.
+      // Scales a baseline projection toward `scenarioFactor` over the forecast horizon —
+      // ramping from 0% effect at the "Now" divider (i=0, so the scenario line always starts
+      // exactly on top of baseline/actual, never jumping at "Now") to the full scenarioFactor by
+      // the last future point. Applying scenarioFactor as a flat multiplier to every point
+      // (including index 0) was the original bug here: index 0 IS the real current value, so a
+      // flat multiply moved "Now" itself whenever a slider changed.
+      function applyScenarioRamp(baseline, scenarioFactor, clampRange = { min: -Infinity, max: Infinity }) {
+        const future = baseline.length - 1;
+        return baseline.map((v, i) => {
+          const progress = future > 0 ? i / future : 0;
+          const scaled = v * (1 + (scenarioFactor - 1) * progress);
+          return Math.min(clampRange.max, Math.max(clampRange.min, scaled));
+        });
+      }
+
+      function buildMetricSeries({
+        dailyValues,
+        weeklyValues,
+        config,
+        referenceWeeks,
+        rate,
+        compounding,
+        scenarioFactor,
+        clampRange,
+      }) {
+        let history;
+        let historyWarning = null;
+        if (config.unit === "day") {
+          const requestedDays = referenceWeeks * 7;
+          const days = Math.min(requestedDays, dailyValues.length);
+          history = dailyValues.slice(-days);
+          if (days < requestedDays) historyWarning = `Only ${days} day${days === 1 ? "" : "s"} of history available.`;
+        } else if (config.unit === "week") {
+          const clamped = clampHistoricReference(referenceWeeks, weeklyValues.length);
+          history = weeklyValues.slice(-clamped.weeks);
+          historyWarning = clamped.warning;
+        } else {
+          const clamped = clampHistoricReference(referenceWeeks, weeklyValues.length);
+          const usableWeeks = clamped.weeks - (clamped.weeks % 4);
+          historyWarning = clamped.warning;
+          const slice = weeklyValues.slice(-usableWeeks);
+          history = usableWeeks > 0 ? (compounding ? chunkWeeklyTotals(slice, 4) : chunkWeeklySnapshots(slice, 4)) : [];
+        }
+
+        const currentValue = history.length ? history[history.length - 1] : 0;
+        let baseline;
+        if (rate == null) {
+          baseline = new Array(config.future + 1).fill(currentValue);
+        } else if (compounding) {
+          const ratePerPeriod = convertWeeklyRate(rate, config.unit);
+          baseline = projectCompounding(currentValue, ratePerPeriod, config.future);
+        } else {
+          const ratePerPeriod = config.unit === "day" ? rate / 7 : config.unit === "month" ? rate * 4 : rate;
+          baseline = projectLinear(currentValue, ratePerPeriod, config.future, clampRange);
+        }
+        const scenario = applyScenarioRamp(baseline, scenarioFactor, clampRange);
+
+        return { history, baseline, scenario, historyWarning };
+      }
+
+      function resetPlanningKpis(message) {
+        ["planningGrowthBaseline", "planningGrowthScenario", "planningCostBaseline", "planningCostScenario"].forEach(
+          (id) => {
+            document.getElementById(id).textContent = "—";
+          },
+        );
+        document.getElementById("planningGrowthDelta").textContent = "Matches baseline";
+        document.getElementById("planningCostDelta").textContent = "Matches baseline";
+        document.getElementById("planningCostBaselineCurrencies").textContent = "";
+        document.getElementById("planningCostScenarioCurrencies").textContent = "";
+        document.getElementById("scenarioResult").textContent = "No adjustments applied.";
+        document.getElementById("planningChartTitle").textContent = "Spend, usage and adoption forecast";
+        document.getElementById("planningChartNote").textContent = message;
+        document.getElementById("planningChartSvg").innerHTML = "";
+      }
+
+      function renderPlanningKpis({ defaults, spendGrowth, factors }) {
+        const signed = (v) => `${v >= 0 ? "+" : ""}${v.toFixed(1)}%`;
+        const projection = sixMonthMonthlyCost(defaults.currentWeeklySpend, spendGrowth.rate ?? 0, factors.spendFactor);
+        document.getElementById("planningGrowthBaseline").textContent = signed(projection.baselineWeeklyGrowthPct);
+        document.getElementById("planningGrowthScenario").textContent = signed(projection.scenarioWeeklyGrowthPct);
+        const growthDelta = projection.scenarioWeeklyGrowthPct - projection.baselineWeeklyGrowthPct;
+        document.getElementById("planningGrowthDelta").textContent = state.planning.scenarioTouched
+          ? `${growthDelta >= 0 ? "+" : ""}${growthDelta.toFixed(1)} pp vs baseline`
+          : "Matches baseline";
+
+        document.getElementById("planningCostBaseline").textContent = money(projection.baselineMonthly);
+        document.getElementById("planningCostBaselineCurrencies").textContent = convertedLabel(projection.baselineMonthly);
+        document.getElementById("planningCostScenario").textContent = money(projection.scenarioMonthly);
+        document.getElementById("planningCostScenarioCurrencies").textContent = convertedLabel(projection.scenarioMonthly);
+        const costDelta =
+          projection.baselineMonthly > 0 ? (projection.scenarioMonthly / projection.baselineMonthly - 1) * 100 : 0;
+        document.getElementById("planningCostDelta").textContent = state.planning.scenarioTouched
+          ? `${costDelta >= 0 ? "+" : ""}${costDelta.toFixed(1)}% vs baseline`
+          : "Matches baseline";
+
+        document.getElementById("scenarioResult").textContent = state.planning.scenarioTouched
+          ? `Adjusted six-month monthly cost: ${money(projection.scenarioMonthly)} (${costDelta >= 0 ? "+" : ""}${costDelta.toFixed(1)}% vs baseline forecast).`
+          : "No adjustments applied.";
+      }
+
+      // Independent y-scale per metric (Spend/Usage/Adoption have unrelated ranges) — Spend and
+      // Usage reuse chart-dom.mjs's niceMax() the same way every other chart here does; Adoption
+      // (a 0-100 rate) gets its own bounded-to-100 headroom logic instead.
+      function planningMetricScale(values, plotH, marginTop, isPercent) {
+        const finite = values.filter((v) => Number.isFinite(v));
+        if (!finite.length) return { y: () => marginTop + plotH, ticks: [0, 1] };
+        let min;
+        let max;
+        if (isPercent) {
+          min = Math.max(0, Math.floor((Math.min(...finite) - 10) / 10) * 10);
+          max = Math.min(100, Math.ceil((Math.max(...finite) + 10) / 10) * 10);
+          if (max <= min) max = Math.min(100, min + 10);
+        } else {
+          min = 0;
+          max = niceMax(Math.max(...finite));
+        }
+        const y = (v) => marginTop + plotH - ((v - min) / (max - min || 1)) * plotH;
+        const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => min + (max - min) * t);
+        return { y, ticks };
+      }
+
+      function renderPlanningSvg({ config, spendSeries, usageSeries, adoptionSeries, scenarioTouched }) {
+        const chartWrap = document.getElementById("planningChart");
+        const chartEl = document.getElementById("planningChartSvg");
+        const tooltip = document.getElementById("planningTooltip");
+        const width = 1100;
+        const height = 420;
+        const margin = { top: 34, right: adoptionSeries ? 150 : 90, bottom: 40, left: 86 };
+        const plotW = width - margin.left - margin.right;
+        const plotH = height - margin.top - margin.bottom;
+
+        const metrics = [
+          { key: "SPEND · USD", name: "Spend", data: spendSeries, color: cssVar("--brand"), format: money, isPercent: false },
+          {
+            key: "USAGE",
+            name: "Usage",
+            data: usageSeries,
+            color: cssVar("--planning-usage"),
+            format: (v) => Math.round(v).toLocaleString("en-US"),
+            isPercent: false,
+          },
+        ];
+        if (adoptionSeries) {
+          metrics.push({
+            key: "ADOPTION",
+            name: "Adoption",
+            data: adoptionSeries,
+            color: cssVar("--planning-adoption"),
+            format: (v) => `${v.toFixed(1)}%`,
+            isPercent: true,
+          });
+        }
+        metrics.forEach((m, i) => {
+          m.axisX = i === 0 ? margin.left : i === 1 ? width - margin.right + 14 : width - margin.right + 96;
+        });
+
+        const historyLen = spendSeries.history.length;
+        const total = historyLen + config.future;
+        chartEl.innerHTML = "";
+        tooltip.style.opacity = "0";
+        if (total < 2 || historyLen < 1) return;
+
+        const x = xScale(total, plotW, margin.left);
+        const dividerIndex = historyLen - 1;
+        metrics.forEach((m) => {
+          m.scale = planningMetricScale([...m.data.history, ...m.data.baseline, ...m.data.scenario], plotH, margin.top, m.isPercent);
+        });
+
+        const svg = createSvgElement("svg", {
+          viewBox: `0 0 ${width} ${height}`,
+          role: "img",
+          "aria-label": "Spend, usage and adoption history with baseline and adjusted forecasts",
+        });
+
+        const spendMetric = metrics[0];
+        spendMetric.scale.ticks.forEach((v) => {
+          const py = spendMetric.scale.y(v);
+          svg.appendChild(
+            createSvgElement("line", { class: "gridline", x1: margin.left, x2: width - margin.right, y1: py, y2: py }),
+          );
+          const label = createSvgElement("text", {
+            class: "axis-label",
+            x: margin.left - 12,
+            y: py - 3,
+            "text-anchor": "end",
+          });
+          label.textContent = spendMetric.format(v);
+          svg.appendChild(label);
+          const eur = createSvgElement("text", {
+            class: "axis-label-converted",
+            x: margin.left - 12,
+            y: py + 9,
+            "text-anchor": "end",
+          });
+          eur.textContent = fxLabel(v, EUR_RATE, "€");
+          svg.appendChild(eur);
+        });
+
+        metrics.slice(1).forEach((m) => {
+          m.scale.ticks.forEach((v) => {
+            const label = createSvgElement("text", {
+              class: "planning-colour-axis",
+              x: m.axisX,
+              y: m.scale.y(v) + 3,
+              fill: m.color,
+            });
+            label.textContent = m.format(v);
+            svg.appendChild(label);
+          });
+          svg.appendChild(
+            createSvgElement("line", {
+              class: "planning-colour-axis-line",
+              x1: m.axisX - 7,
+              x2: m.axisX - 7,
+              y1: margin.top,
+              y2: height - margin.bottom,
+              stroke: m.color,
+            }),
+          );
+        });
+
+        metrics.forEach((m, i) => {
+          const label = createSvgElement("text", {
+            class: "planning-axis-title",
+            x: i === 0 ? margin.left : m.axisX - 7,
+            y: margin.top - 14,
+            fill: m.color,
+          });
+          label.textContent = m.key;
+          svg.appendChild(label);
+        });
+
+        const unitAbbr = config.unit[0];
+        const labelForIndex = (i) => {
+          const relative = i - dividerIndex;
+          return relative === 0 ? "Now" : relative < 0 ? `${Math.abs(relative)}${unitAbbr} ago` : `+${relative}${unitAbbr}`;
+        };
+        const labelStep = Math.max(1, Math.ceil(total / 8));
+        for (let i = 0; i < total; i++) {
+          if (i % labelStep !== 0 && i !== dividerIndex && i !== total - 1) continue;
+          const label = createSvgElement("text", {
+            class: "axis-label",
+            x: x(i),
+            y: height - 12,
+            "text-anchor": "middle",
+          });
+          label.textContent = labelForIndex(i);
+          svg.appendChild(label);
+        }
+
+        const dividerX = x(dividerIndex);
+        svg.appendChild(
+          createSvgElement("line", {
+            class: "planning-forecast-divider",
+            x1: dividerX,
+            x2: dividerX,
+            y1: margin.top,
+            y2: height - margin.bottom,
+          }),
+        );
+        const dividerLabel = createSvgElement("text", {
+          class: "planning-divider-label",
+          x: dividerX + 6,
+          y: margin.top + 10,
+        });
+        dividerLabel.textContent = "FORECAST";
+        svg.appendChild(dividerLabel);
+
+        metrics.forEach((m) => {
+          const { scale, data, color } = m;
+          const pathFrom = (arr, startIndex) =>
+            arr.map((v, i) => `${i ? "L" : "M"} ${x(startIndex + i)} ${scale.y(v)}`).join(" ");
+
+          if (scenarioTouched) {
+            const bandPoints = [
+              ...data.scenario.map((v, i) => `${i ? "L" : "M"} ${x(dividerIndex + i)} ${scale.y(v)}`),
+              ...data.baseline
+                .slice()
+                .reverse()
+                .map((v, i) => `L ${x(total - 1 - i)} ${scale.y(v)}`),
+              "Z",
+            ].join(" ");
+            svg.appendChild(
+              createSvgElement("path", { class: "planning-variance-band", d: bandPoints, fill: color, opacity: 0.12 }),
+            );
+          }
+
+          svg.appendChild(createSvgElement("path", { class: "planning-actual", d: pathFrom(data.history, 0), stroke: color }));
+          svg.appendChild(
+            createSvgElement("path", { class: "planning-baseline", d: pathFrom(data.baseline, dividerIndex), stroke: color }),
+          );
+          svg.appendChild(
+            createSvgElement("path", { class: "planning-scenario", d: pathFrom(data.scenario, dividerIndex), stroke: color }),
+          );
+
+          svg.appendChild(
+            createSvgElement("circle", {
+              class: "planning-point",
+              cx: x(dividerIndex),
+              cy: scale.y(data.history[data.history.length - 1]),
+              r: 4,
+              stroke: color,
+            }),
+          );
+          const baselineEnd = data.baseline[data.baseline.length - 1];
+          const scenarioEnd = data.scenario[data.scenario.length - 1];
+          svg.appendChild(createSvgElement("circle", { cx: x(total - 1), cy: scale.y(scenarioEnd), r: 4, fill: color }));
+          svg.appendChild(
+            createSvgElement("circle", {
+              class: "planning-point",
+              cx: x(total - 1),
+              cy: scale.y(baselineEnd),
+              r: 4,
+              stroke: color,
+            }),
+          );
+        });
+
+        // Hover tooltip — same crosshair + dark-card pattern as renderOverviewChart(), extended
+        // for the baseline/scenario split: a history-region point shows one "actual" row per
+        // metric, a forecast-region point shows baseline vs. scenario (collapsed to a single row
+        // once they match, i.e. before any slider has been touched).
+        const crosshair = createSvgElement("line", {
+          class: "crosshair",
+          x1: 0,
+          x2: 0,
+          y1: margin.top,
+          y2: height - margin.bottom,
+          opacity: 0,
+        });
+        svg.appendChild(crosshair);
+
+        const addTooltipRow = (label, color, value, dashed) => {
+          const row = document.createElement("div");
+          row.className = "tooltip-row";
+          const key = document.createElement("span");
+          key.className = "tooltip-key";
+          if (dashed) {
+            key.style.background = "transparent";
+            key.style.borderTop = `2px dashed ${color}`;
+          } else {
+            key.style.background = color;
+          }
+          const name = document.createElement("span");
+          name.className = "tooltip-name";
+          name.textContent = label;
+          const val = document.createElement("span");
+          val.className = "tooltip-value";
+          val.textContent = value;
+          row.append(key, name, val);
+          tooltip.appendChild(row);
+        };
+
+        for (let i = 0; i < total; i++) {
+          const bandW = plotW / total;
+          const hit = createSvgElement("rect", {
+            class: "hover-col",
+            x: x(i) - bandW / 2,
+            y: margin.top,
+            width: bandW,
+            height: plotH,
+            tabindex: "0",
+            role: "img",
+          });
+          const summary = metrics
+            .map((m) =>
+              i <= dividerIndex ? `${m.name}: ${m.format(m.data.history[i])}` : `${m.name}: ${m.format(m.data.baseline[i - dividerIndex])}`,
+            )
+            .join(", ");
+          hit.setAttribute("aria-label", `${labelForIndex(i)}: ${summary}`);
+          const show = () => {
+            crosshair.setAttribute("x1", x(i));
+            crosshair.setAttribute("x2", x(i));
+            crosshair.setAttribute("opacity", 1);
+            tooltip.innerHTML = "";
+            const dateEl = document.createElement("div");
+            dateEl.className = "tooltip-date";
+            dateEl.textContent = labelForIndex(i);
+            tooltip.appendChild(dateEl);
+            metrics.forEach((m) => {
+              if (i <= dividerIndex) {
+                addTooltipRow(m.name, m.color, m.format(m.data.history[i]), false);
+                return;
+              }
+              const fi = i - dividerIndex;
+              const baselineVal = m.data.baseline[fi];
+              const scenarioVal = m.data.scenario[fi];
+              if (scenarioTouched && Math.abs(scenarioVal - baselineVal) > 1e-9) {
+                addTooltipRow(`${m.name} · baseline`, m.color, m.format(baselineVal), true);
+                addTooltipRow(`${m.name} · scenario`, m.color, m.format(scenarioVal), false);
+              } else {
+                addTooltipRow(m.name, m.color, m.format(baselineVal), false);
+              }
+            });
+            const bounds = svg.getBoundingClientRect();
+            const wrapBounds = chartWrap.getBoundingClientRect();
+            const scaleX = bounds.width / width;
+            const scaleY = bounds.height / height;
+            tooltip.style.left = `${bounds.left - wrapBounds.left + x(i) * scaleX}px`;
+
+            // Anchor above the topmost hovered value rather than a fixed offset from the chart's
+            // top edge — a fixed offset combined with the shared .tooltip class's -110% transform
+            // overlaps the chart-header/legend row above the plot once the tooltip's own height
+            // (which varies with row count) is taken into account. Flip to render below the point
+            // instead whenever "above" would push it past the top of the chart entirely.
+            const topmostY = Math.min(
+              ...metrics.map((m) =>
+                i <= dividerIndex ? m.scale.y(m.data.history[i]) : m.scale.y(m.data.baseline[i - dividerIndex]),
+              ),
+            );
+            const pointScreenY = bounds.top - wrapBounds.top + topmostY * scaleY;
+            tooltip.style.transform = "translate(-50%, 0)";
+            const tipHeight = tooltip.offsetHeight;
+            const above = pointScreenY - tipHeight - 12;
+            tooltip.style.top = `${above >= 0 ? above : pointScreenY + 12}px`;
+            tooltip.style.opacity = "1";
+          };
+          const hide = () => {
+            crosshair.setAttribute("opacity", 0);
+            tooltip.style.opacity = "0";
+          };
+          hit.addEventListener("pointerenter", show);
+          hit.addEventListener("pointermove", show);
+          hit.addEventListener("pointerleave", hide);
+          hit.addEventListener("focus", show);
+          hit.addEventListener("blur", hide);
+          svg.appendChild(hit);
+        }
+
+        chartEl.appendChild(svg);
+      }
+
+      function renderPlanningChart() {
+        const { defaults } = state.planning;
+        if (!defaults) {
+          resetPlanningKpis(state.planning.loading ? "Loading…" : "No data available yet.");
+          return;
+        }
+
+        const controlsNow = readPlanningControls();
+        const factors = computeScenarioFactors(controlsNow, defaults.controls);
+        const today = isoToday();
+        const customDateInput = document.getElementById("planningCustomDate");
+        if (state.planning.horizon === "custom" && !customDateInput.value) {
+          customDateInput.min = isoDaysFromNow(7);
+          customDateInput.value = isoDaysFromNow(84);
+        }
+        const config = planningPeriodConfig(state.planning.horizon, customDateInput.value || isoDaysFromNow(28), today);
+
+        const spendGrowth = computeReferenceGrowth(defaults.series.spendWeeks, state.planning.referenceWeeks, true);
+        const usageGrowth = computeReferenceGrowth(defaults.series.requestWeeks, state.planning.referenceWeeks, true);
+        const adoptionGrowth = defaults.seatsAvailable
+          ? computeReferenceGrowth(defaults.series.adoptionWeeks, state.planning.referenceWeeks, false)
+          : { rate: null, warning: null };
+
+        const spendSeries = buildMetricSeries({
+          dailyValues: defaults.series.dailySpend,
+          weeklyValues: defaults.series.spendWeeks,
+          config,
+          referenceWeeks: state.planning.referenceWeeks,
+          rate: spendGrowth.rate,
+          compounding: true,
+          scenarioFactor: factors.spendFactor,
+          clampRange: { min: 0, max: Infinity },
+        });
+        const usageSeries = buildMetricSeries({
+          dailyValues: defaults.series.dailyRequests,
+          weeklyValues: defaults.series.requestWeeks,
+          config,
+          referenceWeeks: state.planning.referenceWeeks,
+          rate: usageGrowth.rate,
+          compounding: true,
+          scenarioFactor: factors.usageFactor,
+          clampRange: { min: 0, max: Infinity },
+        });
+        const adoptionSeries = defaults.seatsAvailable
+          ? buildMetricSeries({
+              dailyValues: defaults.series.dailyAdoption,
+              weeklyValues: defaults.series.adoptionWeeks,
+              config,
+              referenceWeeks: state.planning.referenceWeeks,
+              rate: adoptionGrowth.rate,
+              compounding: false,
+              scenarioFactor: factors.adoptionFactor,
+              clampRange: { min: 0, max: 100 },
+            })
+          : null;
+
+        if (spendSeries.history.length === 0) {
+          resetPlanningKpis("Not enough data yet to build a forecast.");
+          return;
+        }
+
+        // Adoption is Anthropic-only seat data (see buildPlanningDefaults) — when it's not
+        // available, hide its legend swatch and disable its slider rather than showing a
+        // control for a line the chart never draws.
+        document.getElementById("planningAdoptionLegendItem").hidden = !defaults.seatsAvailable;
+        const adoptionControl = document.getElementById("adoptionScenarioControl");
+        adoptionControl.classList.toggle("disabled", !defaults.seatsAvailable);
+        document.getElementById("adoptionSlider").disabled = !defaults.seatsAvailable;
+
+        document.getElementById("planningChartTitle").textContent =
+          `Spend, usage and adoption forecast · Last ${planningReferenceLabel()} and ${config.futureLabel}`;
+        const warning = [spendSeries.historyWarning, usageSeries.historyWarning, adoptionSeries?.historyWarning].find(
+          Boolean,
+        );
+        document.getElementById("planningChartNote").textContent =
+          warning ??
+          `Baseline forecast uses the typical week-over-week trend across the last ${planningReferenceLabel()}. Adjusted scenarios branch from the same starting point.`;
+
+        renderPlanningSvg({
+          config,
+          spendSeries,
+          usageSeries,
+          adoptionSeries,
+          scenarioTouched: state.planning.scenarioTouched,
+        });
+        renderPlanningKpis({ defaults, spendGrowth, factors });
+        updatePlanningControlValues();
       }
 
       const MODEL_GUIDE_COPY = {
@@ -4120,6 +5233,9 @@
             if (isOpen && card.id === "savingsCard" && !state.savings.loaded && !state.savings.loading) {
               loadSavingsData();
             }
+            if (isOpen && card.id === "planningCard" && !state.planning.loaded && !state.planning.loading) {
+              loadPlanningData();
+            }
           };
           heading.addEventListener("click", toggle);
           heading.addEventListener("keydown", (e) => {
@@ -4204,6 +5320,48 @@
         window.setTimeout(() => {
           e.currentTarget.textContent = original;
         }, 1400);
+      });
+
+      document.getElementById("planningReference").addEventListener("change", (e) => {
+        state.planning.referenceWeeks = Number(e.currentTarget.value);
+        renderPlanningChart();
+      });
+
+      document.querySelectorAll("#planningHorizon button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document
+            .querySelectorAll("#planningHorizon button")
+            .forEach((b) => b.setAttribute("aria-selected", "false"));
+          btn.setAttribute("aria-selected", "true");
+          state.planning.horizon = btn.dataset.value;
+          document
+            .getElementById("planningCustomField")
+            .classList.toggle("visible", state.planning.horizon === "custom");
+          renderPlanningChart();
+        });
+      });
+
+      document.getElementById("planningCustomDate").addEventListener("change", renderPlanningChart);
+
+      PLANNING_SLIDER_IDS.forEach((id) => {
+        document.getElementById(id).addEventListener("input", () => {
+          state.planning.scenarioTouched = !planningControlsAtDefaults();
+          renderPlanningChart();
+        });
+      });
+
+      document.querySelectorAll(".scenario-reset-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          resetPlanningSlider(btn.dataset.slider);
+        });
+      });
+
+      document.getElementById("resetScenario").addEventListener("click", () => {
+        if (state.planning.defaults) applyPlanningDefaultsToControls();
+        state.planning.scenarioTouched = false;
+        renderPlanningChart();
       });
 
       function openModal(id) {
@@ -4496,10 +5654,12 @@
           prefetchOtherAllocationRanges().catch((err) => console.error(err));
         });
 
-      // Open by default (unlike Planning, which stays collapsed) — loads immediately rather
-      // than waiting for the accordion-open handler that lazy-loads it if a user collapses
-      // and reopens this card later.
+      // Open by default — loads immediately rather than waiting for the accordion-open handler
+      // that lazy-loads it if a user collapses and reopens this card later.
       loadSavingsData().catch((err) => console.error(err));
+
+      // Open by default too — same reasoning as Saving opportunities above.
+      loadPlanningData().catch((err) => console.error(err));
 
       // Set only by loadIndexHtml() in the demo build (see build-mac-demo.sh) — real builds
       // never inject this, so the badge stays hidden and this is a no-op there.
