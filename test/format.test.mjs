@@ -17,6 +17,7 @@ import {
   isoDaysAgo,
   convertedLabel,
   weekdayAbbr,
+  monthAbbr,
   fxLabel,
   EUR_RATE,
   GBP_RATE,
@@ -79,7 +80,7 @@ test("trendBadge: null or non-finite diffValue renders nothing", () => {
   assert.equal(trendBadge(NaN), "");
 });
 
-test("trendBadge: color is literal sign — increase is always green, decrease is always red", () => {
+test("trendBadge: by default, color is literal sign — increase is green, decrease is red", () => {
   const up = trendBadge(5.4);
   assert.match(up, /trend-good/);
   assert.match(up, /▲/);
@@ -88,6 +89,15 @@ test("trendBadge: color is literal sign — increase is always green, decrease i
   assert.match(down, /trend-bad/);
   assert.match(down, /▼/);
   assert.match(down, /5\.4%/);
+});
+
+test("trendBadge: invert flips the color judgment but not the arrow direction", () => {
+  const up = trendBadge(5.4, { invert: true });
+  assert.match(up, /trend-bad/);
+  assert.match(up, /▲/);
+  const down = trendBadge(-5.4, { invert: true });
+  assert.match(down, /trend-good/);
+  assert.match(down, /▼/);
 });
 
 test("productLabel: known product codes map to their display label", () => {
@@ -178,4 +188,10 @@ test("convertedLabel: a negative amount keeps its sign in both currencies", () =
 test("weekdayAbbr: maps an ISO date to its three-letter weekday, independent of local timezone", () => {
   assert.equal(weekdayAbbr("2026-09-15"), "TUE");
   assert.equal(weekdayAbbr("2026-09-13"), "SUN");
+});
+
+test("monthAbbr: maps an ISO date to its three-letter month", () => {
+  assert.equal(monthAbbr("2026-01-15"), "JAN");
+  assert.equal(monthAbbr("2026-09-01"), "SEP");
+  assert.equal(monthAbbr("2026-12-31"), "DEC");
 });

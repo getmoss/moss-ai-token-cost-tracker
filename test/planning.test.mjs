@@ -109,6 +109,15 @@ test("computeScenarioFactors: doubling adoption doubles both factors", () => {
   assert.ok(Math.abs(usageFactor - 2) < 1e-9);
 });
 
+test("computeScenarioFactors: doubling employees doubles spend/usage but leaves adoption factor unchanged", () => {
+  const defaults = { adoption: 50, usage: 1000, tokens: 3000, price: 100, providerPrice: 100, mix: 30, employees: 100 };
+  const values = { ...defaults, employees: 200 };
+  const { spendFactor, usageFactor, adoptionFactor } = computeScenarioFactors(values, defaults);
+  assert.ok(Math.abs(spendFactor - 2) < 1e-9);
+  assert.ok(Math.abs(usageFactor - 2) < 1e-9);
+  assert.ok(Math.abs(adoptionFactor - 1) < 1e-9);
+});
+
 test("computeScenarioFactors: model mix shift applies an 0.8%-per-point spend multiplier", () => {
   const defaults = { adoption: 50, usage: 1000, tokens: 3000, price: 100, providerPrice: 100, mix: 30 };
   const values = { ...defaults, mix: 40 }; // +10 points

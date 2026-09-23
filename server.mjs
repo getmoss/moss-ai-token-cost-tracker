@@ -2296,13 +2296,13 @@ async function serveStatic(req, res, pathname) {
 // separate ChatGPT "Admin Console" product, not for this one. See HANDOFF.md.
 const PROVIDER_COPY = {
   anthropic: {
-    title: "Add Anthropic (Claude) Analytics API key",
-    shortName: "Anthropic",
+    title: "Add Claude Analytics API key",
+    shortName: "Claude",
     credentialName: "Analytics API key",
     badgeBg: "#d6f1e5",
     badgeFg: "#265f4f",
     intro:
-      "This dashboard reads Anthropic's Claude Enterprise Analytics API to show your Claude spend, usage and adoption.",
+      "This dashboard reads the Claude Enterprise Analytics API to show your Claude spend, usage and adoption.",
     consoleUrl: "https://claude.ai/admin-settings/api-access",
     helpGuideUrl: "https://support.claude.com/en/articles/15330651-claude-enterprise-admin-api-reference-guide?utm_source=chatgpt.com",
     helpGuideLabel: "Claude Admin API key guide",
@@ -2315,17 +2315,17 @@ const PROVIDER_COPY = {
       { text: "Turn on public API access if it isn't already." },
       { text: "Create an Analytics API key, then copy it and paste it below." },
     ],
-    fieldLabelSelf: "Anthropic Analytics API key",
+    fieldLabelSelf: "Claude Analytics API key",
     reservedNote:
       "This key only grants read:analytics access — it can read usage and cost data but can't make any changes to your account.",
     delegateIntro: "Send this to your organization's primary owner:",
-    messageCardTitle: "Message for your Anthropic org owner",
+    messageCardTitle: "Message for your Claude org owner",
     invalidFormatMsg:
-      "That doesn't look like an Anthropic key — double-check what they sent, or that you copied the whole value.",
+      "That doesn't look like a Claude key — double-check what they sent, or that you copied the whole value.",
     permissionErrorMsg:
-      "This Anthropic key doesn't have the right access. Ask whoever created it to generate an Analytics API key, not a regular API key.",
+      "This Claude key doesn't have the right access. Ask whoever created it to generate an Analytics API key, not a regular API key.",
     requestMessage:
-      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Analytics API key for our Anthropic organisation?\n\n" +
+      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Analytics API key for our Claude organisation?\n\n" +
       "1. Go to https://claude.ai/admin-settings/api-access\n\n" +
       "2. Turn on public API access if needed.\n\n" +
       "3. Create an Analytics API key.\n\n" +
@@ -2333,8 +2333,8 @@ const PROVIDER_COPY = {
       "The key only grants read access and cannot make changes. It stays on my device and is never sent to Moss. I can also share the GitHub code for review.",
   },
   openai: {
-    title: "Add OpenAI (ChatGPT) Admin API key",
-    shortName: "OpenAI",
+    title: "Add ChatGPT Admin API key",
+    shortName: "ChatGPT",
     credentialName: "Admin API key",
     badgeBg: "#f1f1f1",
     badgeFg: "#5b5858",
@@ -2342,26 +2342,26 @@ const PROVIDER_COPY = {
       "Add this to see combined spend across both providers. You can always add it later from settings.",
     consoleUrl: "https://platform.openai.com/settings/organization/admin-keys",
     helpGuideUrl: "https://help.openai.com/en/articles/20001407?utm_source=chatgpt.com",
-    helpGuideLabel: "OpenAI Admin key guide",
+    helpGuideLabel: "ChatGPT Admin key guide",
     keyPrefix: "sk-",
     steps: [
-      { text: "Go to your OpenAI Platform admin keys page.", chip: true },
+      { text: "Go to your ChatGPT admin keys page.", chip: true },
       { text: "Click <b>Create new admin key</b>." },
       {
         text: "If it asks you to choose permissions, select <b>Read only</b> - then copy the key and paste it below either way.",
       },
     ],
-    fieldLabelSelf: "OpenAI Admin API key",
+    fieldLabelSelf: "ChatGPT Admin API key",
     reservedNote:
       "If you were able to choose Read only permissions, this key can only read spend and usage data — nothing can be changed with it.",
-    delegateIntro: "Send this to whoever manages your OpenAI account:",
-    messageCardTitle: "Message for your OpenAI admin",
+    delegateIntro: "Send this to whoever manages your ChatGPT account:",
+    messageCardTitle: "Message for your ChatGPT admin",
     invalidFormatMsg:
-      "That doesn't look like a valid OpenAI key — double-check what your admin sent, or that you copied the whole value.",
+      "That doesn't look like a valid ChatGPT key — double-check what your admin sent, or that you copied the whole value.",
     permissionErrorMsg:
-      "This OpenAI key doesn't have Admin permissions. Ask whoever created it to generate an Admin API key, not a standard API key.",
+      "This ChatGPT key doesn't have Admin permissions. Ask whoever created it to generate an Admin API key, not a standard API key.",
     requestMessage:
-      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Admin API key for our OpenAI organisation?\n\n" +
+      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Admin API key for our ChatGPT organisation?\n\n" +
       "1. Go to https://platform.openai.com/settings/organization/keys\n\n" +
       '2. Click "Create new admin key".\n\n' +
       '3. Select "Read only" if asked to choose permissions.\n\n' +
@@ -2381,20 +2381,20 @@ const PROVIDER_COPY = {
 export function setupPageCopy(mode) {
   if (mode === "add-openai") {
     return {
-      title: "Add OpenAI (ChatGPT)",
+      title: "Add ChatGPT",
       subtitle:
-        "Add OpenAI to see combined AI cost and usage across both providers.",
+        "Add ChatGPT to see combined AI cost and usage across both providers.",
       cards: ["openai"],
-      buttonLabel: "Add OpenAI",
+      buttonLabel: "Add ChatGPT",
     };
   }
   if (mode === "add-anthropic") {
     return {
-      title: "Add Anthropic (Claude)",
+      title: "Add Claude",
       subtitle:
-        "Add Anthropic to see combined AI cost and usage across both providers, plus Claude adoption tracking.",
+        "Add Claude to see combined AI cost and usage across both providers, plus adoption tracking.",
       cards: ["anthropic"],
-      buttonLabel: "Add Anthropic",
+      buttonLabel: "Add Claude",
     };
   }
   // Reached from the dashboard header's "Change key" action (see setupPageHtml's
@@ -2402,7 +2402,7 @@ export function setupPageCopy(mode) {
   // already connected, so the copy and button read as an update rather than a first connect.
   if (mode === "change-anthropic") {
     return {
-      title: "Change your Anthropic key",
+      title: "Change your Claude key",
       subtitle:
         "Paste a new Admin API key to replace the one currently connected.",
       cards: ["anthropic"],
@@ -2411,7 +2411,7 @@ export function setupPageCopy(mode) {
   }
   if (mode === "change-openai") {
     return {
-      title: "Change your OpenAI key",
+      title: "Change your ChatGPT key",
       subtitle:
         "Paste a new Admin API key to replace the one currently connected.",
       cards: ["openai"],
@@ -2594,8 +2594,8 @@ const SETUP_CLIENT_SCRIPT = `
         canProceed = a || o;
         hint = '';
         if (a && o) hint = "You're all set.";
-        else if (a) hint = 'Add OpenAI too for combined spend, or continue with just Anthropic.';
-        else if (o) hint = 'Add Anthropic too for combined spend, or continue with just OpenAI.';
+        else if (a) hint = 'Add ChatGPT too for combined spend, or continue with just Claude.';
+        else if (o) hint = 'Add Claude too for combined spend, or continue with just ChatGPT.';
       }
       const btn = document.getElementById('proceed-btn');
       btn.disabled = !canProceed || state.saving;
@@ -3555,7 +3555,7 @@ async function verifyProviderKey(provider, key) {
       new Date().toISOString().slice(0, 10),
     );
     const error = await verifyKey(
-      "Anthropic",
+      "Claude",
       url,
       { "x-api-key": key, "anthropic-version": "2023-06-01" },
       PROVIDER_COPY.anthropic.permissionErrorMsg,
@@ -3566,7 +3566,7 @@ async function verifyProviderKey(provider, key) {
     const url = new URL(`${OPENAI_API_BASE}/costs`);
     url.searchParams.set("limit", "1");
     const error = await verifyKey(
-      "OpenAI",
+      "ChatGPT",
       url,
       { Authorization: `Bearer ${key}` },
       PROVIDER_COPY.openai.permissionErrorMsg,

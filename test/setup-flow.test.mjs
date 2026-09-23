@@ -11,7 +11,7 @@ test("setupPageCopy: 'setup' mode (first run, neither provider configured) shows
 test("setupPageCopy: 'add-openai' shows only the OpenAI card and never mentions adoption", () => {
   const copy = setupPageCopy("add-openai");
   assert.deepEqual(copy.cards, ["openai"]);
-  assert.equal(copy.buttonLabel, "Add OpenAI");
+  assert.equal(copy.buttonLabel, "Add ChatGPT");
   // Adoption/seat data is Anthropic-only (see available-data-points.md) — connecting OpenAI
   // can never unlock it, so this copy must not imply otherwise.
   assert.doesNotMatch(copy.title + " " + copy.subtitle, /adoption/i);
@@ -20,7 +20,7 @@ test("setupPageCopy: 'add-openai' shows only the OpenAI card and never mentions 
 test("setupPageCopy: 'add-anthropic' shows only the Anthropic card and does mention adoption", () => {
   const copy = setupPageCopy("add-anthropic");
   assert.deepEqual(copy.cards, ["anthropic"]);
-  assert.equal(copy.buttonLabel, "Add Anthropic");
+  assert.equal(copy.buttonLabel, "Add Claude");
   // Connecting Anthropic genuinely does unlock Claude adoption tracking, so this copy is
   // allowed — and expected — to say so.
   assert.match(copy.title + " " + copy.subtitle, /adoption/i);
@@ -114,7 +114,7 @@ test("verifyKey: a 401 response is classified as a rejected key", async () => {
   await withStubbedFetch(
     async () => ({ status: 401 }),
     async () => {
-      const message = await verifyKey("Anthropic", "https://example.test", {}, "permission denied");
+      const message = await verifyKey("Claude", "https://example.test", {}, "permission denied");
       assert.match(message, /rejected/);
     }
   );
@@ -124,7 +124,7 @@ test("verifyKey: a 403 response passes through the provider-specific permission 
   await withStubbedFetch(
     async () => ({ status: 403 }),
     async () => {
-      const message = await verifyKey("OpenAI", "https://example.test", {}, "generate an Admin API key");
+      const message = await verifyKey("ChatGPT", "https://example.test", {}, "generate an Admin API key");
       assert.equal(message, "generate an Admin API key");
     }
   );
@@ -136,7 +136,7 @@ test("verifyKey: a network failure does not block saving (returns null, not an e
       throw new Error("network down");
     },
     async () => {
-      const message = await verifyKey("Anthropic", "https://example.test", {}, "permission denied");
+      const message = await verifyKey("Claude", "https://example.test", {}, "permission denied");
       assert.equal(message, null);
     }
   );
@@ -146,7 +146,7 @@ test("verifyKey: a 200 response means the key is valid (returns null)", async ()
   await withStubbedFetch(
     async () => ({ status: 200 }),
     async () => {
-      const message = await verifyKey("Anthropic", "https://example.test", {}, "permission denied");
+      const message = await verifyKey("Claude", "https://example.test", {}, "permission denied");
       assert.equal(message, null);
     }
   );
@@ -156,7 +156,7 @@ test("verifyKey: a 500 response is not treated as a rejected/permission-denied k
   await withStubbedFetch(
     async () => ({ status: 500 }),
     async () => {
-      const message = await verifyKey("Anthropic", "https://example.test", {}, "permission denied");
+      const message = await verifyKey("Claude", "https://example.test", {}, "permission denied");
       assert.equal(message, null);
     }
   );

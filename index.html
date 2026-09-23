@@ -25,7 +25,7 @@
             id="providerChipBtn-anthropic"
           >
             <span class="provider-chip-dot"></span>
-            <span class="provider-chip-label">Anthropic</span>
+            <span class="provider-chip-label">Claude</span>
             <span class="provider-chip-caret"></span>
           </button>
           <div class="provider-menu" id="providerMenu-anthropic" hidden>
@@ -73,7 +73,7 @@
         <div class="provider-chip" id="providerChip-openai">
           <button type="button" class="provider-chip-btn" id="providerChipBtn-openai">
             <span class="provider-chip-dot"></span>
-            <span class="provider-chip-label">Connect OpenAI</span>
+            <span class="provider-chip-label">Connect ChatGPT</span>
             <span class="provider-chip-caret"></span>
           </button>
           <div class="provider-menu" id="providerMenu-openai" hidden>
@@ -214,10 +214,10 @@
                   role="group"
                   aria-label="Reporting period"
                 >
-                  <button type="button" data-days="7" aria-selected="true">
+                  <button type="button" data-days="7" aria-selected="false">
                     1 week
                   </button>
-                  <button type="button" data-days="28" aria-selected="false">
+                  <button type="button" data-days="28" aria-selected="true">
                     4 weeks
                   </button>
                   <button type="button" data-days="180" aria-selected="false">
@@ -263,6 +263,24 @@
               ></div>
             </div>
           </div>
+          <div style="display: flex; justify-content: flex-end; padding-top: 12px">
+            <div
+              class="segmented"
+              id="overviewGroupingPicker"
+              role="group"
+              aria-label="Data grouping"
+            >
+              <button type="button" data-grouping="daily" aria-selected="true">
+                Daily
+              </button>
+              <button type="button" data-grouping="weekly" aria-selected="false">
+                Weekly
+              </button>
+              <button type="button" data-grouping="monthly" aria-selected="false">
+                Monthly
+              </button>
+            </div>
+          </div>
         </div>
         </div>
         </div>
@@ -299,16 +317,16 @@
           id="dimensionTabs"
           aria-label="Investigation dimensions"
         >
-          <button data-dimension="product" aria-selected="true">
-            Product category
-          </button>
-          <button data-dimension="model" aria-selected="false">AI model</button>
-          <button data-dimension="team" aria-selected="false">Team</button>
-          <button data-dimension="person" aria-selected="false">
+          <button data-dimension="person" aria-selected="true">
             Top spender
           </button>
+          <button data-dimension="team" aria-selected="false">Team</button>
+          <button data-dimension="model" aria-selected="false">AI model</button>
           <button data-dimension="skill" aria-selected="false">
             API key / workflow
+          </button>
+          <button data-dimension="product" aria-selected="false">
+            Product category
           </button>
         </nav>
         <div class="investigation-head">
@@ -320,6 +338,14 @@
         </div>
 
         <div class="table-block" style="padding: 20px">
+          <div
+            id="modelGuideRow"
+            style="display: none; justify-content: flex-end; margin-bottom: 12px"
+          >
+            <button class="table-toggle" id="modelGuideOpen" type="button">
+              Which model fits the job?
+            </button>
+          </div>
           <div
             class="chart-head"
             style="border-bottom: none; padding: 0 0 24px"
@@ -336,10 +362,10 @@
                 role="group"
                 aria-label="Reporting period"
               >
-                <button type="button" data-days="7" aria-selected="true">
+                <button type="button" data-days="7" aria-selected="false">
                   1 week
                 </button>
-                <button type="button" data-days="28" aria-selected="false">
+                <button type="button" data-days="28" aria-selected="true">
                   4 weeks
                 </button>
                 <button type="button" data-days="180" aria-selected="false">
@@ -379,29 +405,34 @@
               </span>
             </div>
           </div>
+          <div id="investigationAvgSpendRow" class="avg-spend-row" style="display: none">
+            <span class="avg-spend-label" id="investigationAvgSpendLabel">Average employee spend</span>
+            <span class="avg-spend-value" id="investigationAvgSpendValue"></span>
+          </div>
           <div class="table-view-wrap">
             <table id="investigationTable">
               <thead>
                 <tr>
                   <th id="investigationNameColumn">Name</th>
-                  <th class="num sortable" data-sort="spend">Spend</th>
-                  <th class="num sortable" data-sort="trend">vs previous period</th>
+                  <th class="num sortable" data-sort="spend" data-tooltip="The total amount billed for this row during the selected period.">Spend</th>
+                  <th class="num sortable" data-sort="trend" data-tooltip="How much this row's spend went up or down compared to the period before it.">vs previous period</th>
                   <th class="num sortable" data-sort="share">Share of total spend</th>
-                  <th class="num sortable" data-sort="benchmark" id="investigationBenchmarkColumn">vs average</th>
+                  <th class="num sortable" data-sort="benchmark" id="investigationBenchmarkColumn" data-tooltip="How this row's spend compares to the average spend across all rows in this view.">vs average</th>
                   <th
                     class="num"
                     id="investigationPricingColumn"
                     style="display: none"
+                    data-tooltip="The AI provider's published price per 1 million tokens for this model."
                   >
                     Token price · USD per 1m tokens
                   </th>
-                  <th class="num sortable" data-sort="requests">Requests sent</th>
-                  <th class="num sortable" data-sort="costPer1k">Avg. cost per 1K requests</th>
+                  <th class="num sortable" data-sort="requests" data-tooltip="The number of prompts or API calls made during the period.">Requests sent</th>
                   <th
                     class="num sortable"
                     data-sort="costPerMillionTokens"
                     id="investigationTokenCostColumn"
                     style="display: none"
+                    data-tooltip="The average amount actually paid per 1 million tokens used, across all activity in this row."
                   >
                     Cost per 1M tokens
                   </th>
@@ -421,9 +452,9 @@
               href="https://platform.claude.com/docs/en/about-claude/pricing"
               target="_blank"
               rel="noreferrer"
-              >Anthropic pricing page</a
+              >Claude pricing page</a
             >. Current prices may differ from those applied to historical
-            usage. This pricing reference is Anthropic-only for now — OpenAI
+            usage. This pricing reference is Claude-only for now — ChatGPT
             model pricing isn't integrated yet.
           </p>
           <div class="below-table-actions">
@@ -506,271 +537,6 @@
         </div>
       </section>
 
-      <section class="card accordion is-open" id="savingsCard" aria-label="Saving opportunities">
-        <div
-          class="section-heading"
-          role="button"
-          tabindex="0"
-          aria-expanded="true"
-          aria-controls="savingsCardBody"
-        >
-          <div class="section-copy">
-            <div class="step-label"><b>3</b> Saving opportunities</div>
-            <h2>Where can we spend less without cutting useful AI work?</h2>
-            <div class="collapse">
-              <div class="collapse-inner">
-                <p>
-                  Find the workloads, models and usage habits where a change
-                  could lower cost without getting in the way of productive
-                  use.
-                </p>
-              </div>
-            </div>
-          </div>
-          <span class="chevron" aria-hidden="true"><img src="/assets/icons/arrow-down.svg" alt="" width="18" height="18" /></span>
-        </div>
-
-        <div class="collapse">
-        <div class="collapse-inner">
-        <div class="section-body" id="savingsCardBody">
-        <div class="loading-block" id="savingsLoadingBlock">
-        <div class="saving-body">
-
-          <section class="saving-panel" aria-labelledby="briefingTitle">
-            <div class="saving-panel-head">
-              <div>
-                <div class="saving-panel-kicker">1 &middot; Briefing</div>
-                <h3 class="saving-panel-title" id="briefingTitle">
-                  What needs attention this week?
-                </h3>
-                <p class="saving-panel-copy">
-                  Only material cases appear here based on historical usage
-                  averages. Adjust the thresholds in Alert settings and
-                  confirm each case before making major decisions.
-                </p>
-              </div>
-              <button
-                class="table-toggle"
-                id="baselineToggle"
-                type="button"
-                aria-expanded="false"
-                aria-controls="baselineDetail"
-              >
-                Alert settings
-              </button>
-            </div>
-
-            <div class="briefing-summary">
-              <div class="briefing-summary-box">
-                <div class="briefing-label">
-                  Spent this week above expected weekly spend
-                </div>
-                <div class="briefing-currency-row">
-                  <div class="briefing-amount" id="briefingAmount">&mdash;</div>
-                  <div class="briefing-converted" id="briefingConverted"></div>
-                </div>
-              </div>
-              <div class="case-count">
-                <div class="case-number" id="caseNumber">&mdash;</div>
-                <div class="case-label">cases to look into</div>
-              </div>
-            </div>
-
-            <div class="driver-label">Three main cost drivers</div>
-            <div class="driver-grid" id="driverGrid"></div>
-
-            <div class="baseline-detail" id="baselineDetail">
-            <div class="baseline-detail-inner">
-            <div class="baseline-detail-box">
-              <p class="baseline-explain">
-                The current range is calculated from each person&rsquo;s,
-                team&rsquo;s or workflow&rsquo;s average spend over the
-                historical baseline below, compared against the most recent
-                complete week.
-              </p>
-              <div class="settings-grid">
-                <div class="setting-field">
-                  <label for="baselineWeeks">Historical baseline</label>
-                  <select id="baselineWeeks">
-                    <option value="4">4 complete weeks</option>
-                    <option value="6">6 complete weeks</option>
-                    <option value="8">8 complete weeks</option>
-                    <option value="12">12 complete weeks</option>
-                  </select>
-                </div>
-                <div class="setting-field">
-                  <label for="changeThreshold">Minimum change</label>
-                  <select id="changeThreshold">
-                    <option value="20">20%</option>
-                    <option value="30" selected>30%</option>
-                    <option value="40">40%</option>
-                    <option value="50">50%</option>
-                  </select>
-                </div>
-                <div class="setting-field">
-                  <label for="spendThreshold">Minimum extra spend &middot; USD</label>
-                  <select id="spendThreshold">
-                    <option value="100">$100</option>
-                    <option value="250" selected>$250</option>
-                    <option value="500">$500</option>
-                    <option value="1000">$1,000</option>
-                  </select>
-                  <div class="setting-hint" id="spendConversionHint"></div>
-                </div>
-                <div class="setting-field">
-                  <label for="trendThreshold">Sustained growth</label>
-                  <select id="trendThreshold">
-                    <option value="2">2 consecutive weeks</option>
-                    <option value="3" selected>3 consecutive weeks</option>
-                    <option value="4">4 consecutive weeks</option>
-                    <option value="6">6 consecutive weeks</option>
-                  </select>
-                </div>
-                <div class="setting-field">
-                  <label for="requestFloor">Minimum activity floor</label>
-                  <select id="requestFloor">
-                    <option value="50">50 requests</option>
-                    <option value="100" selected>100 requests</option>
-                    <option value="250">250 requests</option>
-                    <option value="500">500 requests</option>
-                  </select>
-                  <div class="setting-hint">
-                    Avoids alerts from very small samples
-                  </div>
-                </div>
-              </div>
-              <div class="settings-apply">
-                <button class="primary-btn" id="settingsApply" type="button">
-                  Apply settings
-                </button>
-              </div>
-            </div>
-            </div>
-            </div>
-
-            <div class="alert-expand-row">
-              <div class="alert-expand-copy">
-                See all people, teams, products and workflows that might need
-                attention
-              </div>
-              <button
-                class="table-toggle"
-                id="alertsToggle"
-                type="button"
-                aria-expanded="false"
-                aria-controls="alertArea"
-              >
-                Show all alerts
-              </button>
-            </div>
-
-            <div class="alert-area" id="alertArea">
-            <div class="alert-area-inner">
-            <div class="alert-area-box">
-              <section class="alert-group model-updates" id="modelUpdatesGroup" hidden>
-                <div class="alert-group-head">
-                  <div>
-                    <div class="alert-group-name">
-                      <span class="alert-icon">A</span><span>AI model updates</span>
-                    </div>
-                    <div class="alert-group-sub">
-                      Official provider releases, pricing changes and
-                      retirement notices matched with company usage
-                    </div>
-                  </div>
-                  <div class="alert-group-count" id="modelUpdatesCount"></div>
-                </div>
-                <div class="alert-cards" id="modelUpdatesCards"></div>
-              </section>
-
-              <div class="alert-columns">
-                <section class="alert-group">
-                  <div class="alert-group-head">
-                    <div>
-                      <div class="alert-group-name">
-                        <span class="alert-icon">P</span><span>People &amp; teams</span>
-                      </div>
-                      <div class="alert-group-sub">
-                        Spend, cost-per-request and model-choice shifts
-                      </div>
-                    </div>
-                    <div class="alert-group-count" id="peopleTeamsCount"></div>
-                  </div>
-                  <div class="alert-cards" id="peopleTeamsCards"></div>
-                </section>
-
-                <section class="alert-group">
-                  <div class="alert-group-head">
-                    <div>
-                      <div class="alert-group-name">
-                        <span class="alert-icon">W</span><span>Products &amp; workflows</span>
-                      </div>
-                      <div class="alert-group-sub">
-                        Volume, routing and cost-per-call trends
-                      </div>
-                    </div>
-                    <div class="alert-group-count" id="productsWorkflowsCount"></div>
-                  </div>
-                  <div class="alert-cards" id="productsWorkflowsCards"></div>
-                </section>
-              </div>
-            </div>
-            </div>
-            </div>
-          </section>
-
-          <section class="saving-panel" aria-labelledby="rateTitle">
-            <div class="saving-panel-head">
-              <div>
-                <div class="saving-panel-kicker">2 &middot; Token and model rate</div>
-                <h3 class="saving-panel-title" id="rateTitle">
-                  Are our own token rates becoming more expensive?
-                </h3>
-                <p class="saving-panel-copy">
-                  Compare the blended rate your company actually paid this
-                  week with T&minus;1 and the provider list-price rate for
-                  the exact model and token mix used.
-                </p>
-              </div>
-              <button class="table-toggle" id="modelGuideOpen" type="button">
-                Which model fits the job?
-              </button>
-            </div>
-
-            <div class="rate-grid" id="rateGrid"></div>
-
-            <div class="rate-detail-row">
-              <button
-                class="text-toggle"
-                id="ratesToggle"
-                type="button"
-                aria-expanded="false"
-                aria-controls="rateTables"
-              >
-                View input, output and cache rates
-              </button>
-              <button
-                class="table-toggle"
-                id="perModelOpen"
-                type="button"
-                aria-expanded="false"
-                aria-controls="perModelInline"
-              >
-                Show per model
-              </button>
-            </div>
-
-            <div class="rate-tables" id="rateTables"></div>
-            <p class="rate-note" id="rateNote"></p>
-            <div class="per-model-inline" id="perModelInline"></div>
-          </section>
-
-        </div>
-        </div>
-        </div>
-        </div>
-        </div>
-      </section>
       <section class="card accordion is-open" id="planningCard" aria-label="Planning">
         <div
           class="section-heading"
@@ -780,7 +546,7 @@
           aria-controls="planningCardBody"
         >
           <div class="section-copy">
-            <div class="step-label"><b>4</b> Planning</div>
+            <div class="step-label"><b>3</b> Planning</div>
             <h2>How might our AI spend develop?</h2>
             <div class="collapse">
               <div class="collapse-inner">
@@ -1037,6 +803,28 @@
                 </div>
                 <span class="scenario-scale"><span>0%</span><span>100%</span></span>
               </label>
+              <label class="scenario-control" for="employeesSlider">
+                <span class="scenario-control-head">
+                  <span>
+                    <span class="scenario-control-title">Employees count</span>
+                    <span class="scenario-control-note">Current AI users, expected to grow with headcount</span>
+                  </span>
+                  <span class="scenario-control-head-right">
+                    <span class="scenario-control-value" id="employeesValue">&mdash;</span>
+                    <button class="scenario-reset-btn" type="button" data-slider="employeesSlider" aria-label="Reset employees count to baseline">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                    </button>
+                  </span>
+                </span>
+                <div class="ai-slider-track-wrap">
+                  <div class="ai-slider-track"></div>
+                  <div class="ai-slider-fill" id="employeesSliderFill"></div>
+                  <span class="scenario-baseline-marker" aria-hidden="true"></span>
+                  <input class="ai-slider-input" id="employeesSlider" type="range" min="0" max="1000" step="1" />
+                  <div class="ai-slider-thumb" id="employeesSliderThumb"></div>
+                </div>
+                <span class="scenario-scale"><span>0</span><span id="employeesScaleMax">1,000</span></span>
+              </label>
             </div>
           </section>
 
@@ -1079,10 +867,10 @@
         <div class="modal-body">
           <div class="modal-tabs" id="modelGuideTabs" aria-label="Model guide provider">
             <button type="button" data-model-provider="anthropic" aria-selected="true">
-              Anthropic
+              Claude
             </button>
             <button type="button" data-model-provider="openai" aria-selected="false">
-              OpenAI
+              ChatGPT
             </button>
           </div>
           <div class="selection-rule">
@@ -1115,22 +903,24 @@
         isoDaysAgo,
         convertedLabel,
         weekdayAbbr,
+        monthAbbr,
         fxLabel,
         EUR_RATE,
         openaiModelPricingFor,
-        MODEL_LIFECYCLE_EVENTS,
       } from "/lib/format.mjs";
-      import { createSvgElement, xScale, yScale, niceMax } from "/lib/chart-dom.mjs";
+      import {
+        createSvgElement,
+        xScale,
+        yScale,
+        niceMax,
+        bucketDailyLabels,
+        reduceByBuckets,
+      } from "/lib/chart-dom.mjs";
       import { readRangeCache, writeRangeCache } from "/lib/range-cache.mjs";
       import {
         weeklyTotalsFromDaily,
         currentWeek,
-        matchLifecycleEvents,
         blendedRate,
-        modelListPriceCost,
-        detectHigherCostModelPattern,
-        computeAlerts,
-        summarizeAlerts,
       } from "/lib/savings.mjs";
       import {
         weeklyGrowthRate,
@@ -1164,7 +954,7 @@
       const MUTED = () => rootStyle.getPropertyValue("--text-muted").trim();
 
       const state = {
-        period: 7,
+        period: 28,
         customRange: null, // { from: "YYYY-MM-DD", to: "YYYY-MM-DD" } when period === "custom"
         tab: "byProduct",
         tableView: false,
@@ -1201,7 +991,7 @@
           skills: false,
           investigation: false,
         },
-        overview: { metric: "spend" },
+        overview: { metric: "spend", grouping: "daily" },
       };
 
       // Tables long enough to warrant a "See all" toggle collapse to this
@@ -1238,9 +1028,9 @@
         const openaiOn = providerConnected("openai");
         const providers =
           anthropicOn && openaiOn
-            ? "Anthropic and ChatGPT"
+            ? "Claude and ChatGPT"
             : anthropicOn
-              ? "Anthropic"
+              ? "Claude"
               : openaiOn
                 ? "ChatGPT"
                 : "none yet";
@@ -1280,13 +1070,13 @@
           missing === "openai"
             ? {
                 title: "You're only tracking Claude spend",
-                desc: "Connect OpenAI to see combined AI cost and usage across both providers.",
-                button: "Connect OpenAI",
+                desc: "Connect ChatGPT to see combined AI cost and usage across both providers.",
+                button: "Connect ChatGPT",
               }
             : {
                 title: "You're only tracking ChatGPT spend",
-                desc: "Connect Anthropic to see combined AI cost and usage across both providers, plus Claude adoption tracking.",
-                button: "Connect Anthropic",
+                desc: "Connect Claude to see combined AI cost and usage across both providers, plus adoption tracking.",
+                button: "Connect Claude",
               };
         document.getElementById("connectBannerTitle").textContent = copy.title;
         document.getElementById("connectBannerDesc").textContent = copy.desc;
@@ -1357,13 +1147,27 @@
         return investigationState.period;
       }
 
+      // The exact wording of whichever #allocationPeriodPicker button is currently
+      // active ("1 week"/"4 weeks"/"6 months") — used so other UI referencing the
+      // selected range echoes its label verbatim instead of restating it as a
+      // generic "this period"/day count.
+      function activeAllocationPeriodLabel() {
+        const activeBtn = document.querySelector(
+          '#allocationPeriodPicker [aria-selected="true"]',
+        );
+        if (!activeBtn) return "";
+        return activeBtn.dataset.days === "custom"
+          ? "custom range"
+          : activeBtn.textContent.trim();
+      }
+
       // previousValue is null when the backend couldn't produce a full equal-length prior
       // period (see server.mjs's hasFullPreviousPeriod checks) — distinct from a present-but-
       // zero value, which just yields no computable % change.
       function deltaLine(
         currentValue,
         previousValue,
-        { points = false, formatAbs = null } = {},
+        { points = false, formatAbs = null, invert = false } = {},
       ) {
         if (previousValue == null) {
           return `<span class="trend-empty">not enough history yet for a comparison</span>`;
@@ -1375,7 +1179,7 @@
         const absPart = formatAbs
           ? ` (${formatAbs(currentValue - previousValue)})`
           : "";
-        return `${trendBadge(diff, { unit: points ? "pp" : "%", extra: absPart })} vs prior ${currentRangeDays()}d`;
+        return `${trendBadge(diff, { unit: points ? "pp" : "%", extra: absPart, invert })} <span class="kpi-delta-prior">vs prior ${currentRangeDays()}d</span>`;
       }
       const TOOL_LABEL = {
         edit_tool: "Edit",
@@ -1415,6 +1219,8 @@
           description:
             "See which teams account for the bill and whether their costs are rising faster or slower than the company average.",
           benchmarkLabel: "vs company average",
+          nameTooltip:
+            "A group of users as set up in your Claude admin console — may not match your org chart's teams exactly.",
         },
         person: {
           label: "Top spender",
@@ -1424,7 +1230,7 @@
           description:
             "Identify the people linked to the most spend, then account for the different ways their teams and roles use AI.",
           unavailableNote:
-            "A daily spend/requests trend isn't available for individual people — Anthropic's API only reports per-person cost as a period total, not a daily series. See the ranked table below instead.",
+            "A daily spend/requests trend isn't available for individual people — Claude's API only reports per-person cost as a period total, not a daily series. See the ranked table below instead.",
           benchmarkLabel: "vs team member average",
           nowrapDesktop: true,
         },
@@ -1436,18 +1242,18 @@
           description:
             "Compare automated workflows by spend, growth and cost per request to find agents that may need tighter guardrails or could deliver the same result with a lower-cost model.",
           unavailableNote:
-            "A daily spend/requests trend isn't available for skills — Anthropic's API only reports per-skill cost as a period total, not a daily series. See the ranked table below instead.",
+            "A daily spend/requests trend isn't available for skills — Claude's API only reports per-skill cost as a period total, not a daily series. See the ranked table below instead.",
           benchmarkLabel: "vs workflow average",
           nowrapDesktop: true,
         },
       };
       const investigationState = {
-        dimension: "product",
+        dimension: "person",
         sort: { key: "spend", dir: "desc" },
         metric: "spend",
         // Organisational allocation's own independent timeframe — same shape as
         // state.period/state.customRange, deliberately not shared with them.
-        period: 7,
+        period: 28,
         customRange: null,
       };
 
@@ -1490,7 +1296,6 @@
         share: "share of total spend",
         benchmark: "vs average",
         requests: "requests sent",
-        costPer1k: "avg. cost per 1k requests",
         costPerMillionTokens: "cost per 1m tokens",
       };
       // Product/Model already carry a daily spend+requests series (from
@@ -1819,18 +1624,35 @@
         const seeAllBtn = document.getElementById("investigationSeeAllBtn");
         const titleCase =
           def.short.charAt(0).toUpperCase() + def.short.slice(1);
-        const colCount = 7 + (isModel ? 1 : 0) + (hasTokenCost ? 1 : 0);
-        document.getElementById("investigationNameColumn").textContent =
-          def.label;
+        const colCount = 6 + (isModel ? 1 : 0) + (hasTokenCost ? 1 : 0);
+        const nameColumn = document.getElementById("investigationNameColumn");
+        nameColumn.textContent = def.label;
+        if (def.nameTooltip) {
+          nameColumn.setAttribute("data-tooltip", def.nameTooltip);
+        } else {
+          nameColumn.removeAttribute("data-tooltip");
+        }
         document.getElementById("investigationBenchmarkColumn").textContent =
           def.benchmarkLabel ?? "vs average";
         document.getElementById("investigationPricingColumn").style.display =
           isModel ? "" : "none";
         document.getElementById("investigationPricingNote").style.display =
           isModel ? "block" : "none";
+        document.getElementById("modelGuideRow").style.display = isModel
+          ? "flex"
+          : "none";
         document.getElementById(
           "investigationTokenCostColumn",
         ).style.display = hasTokenCost ? "" : "none";
+
+        const isPerson = dimension === "person";
+        const avgSpendRow = document.getElementById("investigationAvgSpendRow");
+        const avgSpendValue = document.getElementById("investigationAvgSpendValue");
+        avgSpendRow.style.display = isPerson ? "flex" : "none";
+        if (isPerson) {
+          document.getElementById("investigationAvgSpendLabel").textContent =
+            `Average employee spend · ${activeAllocationPeriodLabel()}`;
+        }
 
         const rows = investigationFullRows();
         body.innerHTML = "";
@@ -1839,6 +1661,7 @@
           document.getElementById("investigationTableTitle").textContent =
             titleCase;
           document.getElementById("investigationTableNote").textContent = "";
+          if (isPerson) avgSpendValue.textContent = "—";
           seeAllBtn.hidden = true;
           const row = document.createElement("tr");
           const cell = document.createElement("td");
@@ -1854,6 +1677,7 @@
           document.getElementById("investigationTableTitle").textContent =
             titleCase;
           document.getElementById("investigationTableNote").textContent = "";
+          if (isPerson) avgSpendValue.textContent = "—";
           seeAllBtn.hidden = true;
           const row = document.createElement("tr");
           const cell = document.createElement("td");
@@ -1866,16 +1690,15 @@
         }
 
         // Every sortable column computed once up front, before sorting —
-        // share/benchmark/costPer1k all depend on the full unsorted list's
-        // totals.
+        // share/benchmark depend on the full unsorted list's totals.
         const totalSpend = rows.reduce((sum, r) => sum + r.spend, 0);
         const averageSpend = totalSpend / rows.length;
+        if (isPerson) avgSpendValue.textContent = money(averageSpend);
         const enriched = rows.map((r) => ({
           ...r,
           trend: r.previousSpend != null ? pctChange(r.spend, r.previousSpend) : null,
           share: totalSpend > 0 ? (r.spend / totalSpend) * 100 : 0,
           benchmark: averageSpend > 0 ? (r.spend / averageSpend - 1) * 100 : null,
-          costPer1k: r.requests > 0 ? (r.spend / r.requests) * 1000 : null,
           costPerMillionTokens:
             r.totalTokens > 0 ? (r.spend / r.totalTokens) * 1_000_000 : null,
         }));
@@ -1901,7 +1724,6 @@
         visible.forEach((r, i) => {
           const share = r.share;
           const benchmarkPct = r.benchmark;
-          const costPer1k = r.costPer1k;
           const costPerMillionTokens = r.costPerMillionTokens;
           const color = colorFor(i);
 
@@ -1938,7 +1760,7 @@
           if (r.anthropicAmount != null && r.openaiAmount > 0) {
             const providerSplit = document.createElement("div");
             providerSplit.className = "name-sub";
-            providerSplit.textContent = `${money(r.anthropicAmount)} Anthropic + ${money(r.openaiAmount)} ChatGPT`;
+            providerSplit.textContent = `${money(r.anthropicAmount)} Claude + ${money(r.openaiAmount)} ChatGPT`;
             spendCell.appendChild(providerSplit);
           }
 
@@ -1947,7 +1769,7 @@
           trendCell.innerHTML =
             r.trend == null
               ? `<span class="trend-empty">n/a</span>`
-              : trendBadge(r.trend) || "—";
+              : trendBadge(r.trend, { invert: true }) || "—";
 
           const shareCell = document.createElement("td");
           shareCell.className = "num share-cell";
@@ -1966,7 +1788,7 @@
           benchmarkCell.innerHTML =
             benchmarkPct == null
               ? "—"
-              : `<span class="${benchmarkPct >= 0 ? "trend-good" : "trend-bad"}">${benchmarkPct >= 0 ? "+" : ""}${benchmarkPct.toFixed(0)}%</span>`;
+              : `<span class="${benchmarkPct >= 0 ? "trend-bad" : "trend-good"}">${benchmarkPct >= 0 ? "+" : ""}${benchmarkPct.toFixed(0)}%</span>`;
 
           let pricingCell = null;
           if (isModel) {
@@ -1988,14 +1810,9 @@
           requestsCell.className = "num";
           requestsCell.textContent = r.requests.toLocaleString();
 
-          const costPer1kCell = document.createElement("td");
-          costPer1kCell.className = "num";
-          costPer1kCell.textContent =
-            costPer1k == null ? "—" : money(costPer1k);
-
           row.append(nameCell, spendCell, trendCell, shareCell, benchmarkCell);
           if (pricingCell) row.appendChild(pricingCell);
-          row.append(requestsCell, costPer1kCell);
+          row.append(requestsCell);
           if (hasTokenCost) {
             const costPerMillionTokensCell = document.createElement("td");
             costPerMillionTokensCell.className = "num";
@@ -2399,28 +2216,8 @@
         }
       }
 
-      // ---- Saving opportunities (#savingsCard) ---------------------------------------------
-      // Independent of Company overview/Organisational allocation's period pickers — this
-      // panel always evaluates "this week vs. a historical baseline" per the Alert settings
-      // fields, using its own fetches, loaded lazily the first time the accordion opens rather
-      // than on every page load.
-
-      state.savings = {
-        settings: {
-          baselineWeeks: 4,
-          changeThresholdPct: 30,
-          minDeltaUsd: 250,
-          trendWeeks: 3,
-          requestFloor: 100,
-        },
-        loaded: false,
-        loading: false,
-        raw: null, // last fetched inputs, so "Apply settings" can recompute without refetching
-        data: null,
-      };
-
       // ---- Planning (#planningCard) ---------------------------------------------------------
-      // Independent of every other section's period picker — like Saving opportunities, this
+      // Independent of every other section's period picker — this
       // panel runs its own fetch, loaded eagerly on page load (open by default) with a lazy-load
       // fallback on the accordion-toggle handler below in case a user collapses and reopens it
       // before the eager load finishes, or it failed the first time.
@@ -2467,686 +2264,6 @@
         return data;
       }
 
-      // Fetches `weeks` non-overlapping week windows from one endpoint (oldest week first,
-      // current week last) and reduces each response to a flat row array via `mapRows`.
-      async function fetchWeeklyRows(endpoint, weeks, mapRows) {
-        const calls = [];
-        for (let i = weeks - 1; i >= 0; i--) {
-          const { from, to } = savingsWeekWindow(i);
-          calls.push(
-            fetchSavingsJson(`savings-${endpoint}`, from, to, `/api/${endpoint}?from=${from}&to=${to}`)
-              .then(mapRows)
-              .catch((err) => {
-                console.error(err);
-                return [];
-              }),
-          );
-        }
-        return Promise.all(calls);
-      }
-
-      // Turns N weeks of flat row arrays (oldest first) into one entity per distinct key, each
-      // with aligned spendWeeks/requestWeeks arrays — the shape lib/savings.mjs's detectSpike
-      // etc. expect. A key missing from a given week (e.g. a workflow with no activity that
-      // week) is treated as a real 0, not a gap.
-      function alignWeeklyEntities(weeksOfRows, { keyOf, nameOf, spendOf, requestsOf }) {
-        const byKey = new Map();
-        weeksOfRows.forEach((rows, weekIndex) => {
-          for (const row of rows) {
-            const key = keyOf(row);
-            if (key == null) continue;
-            if (!byKey.has(key)) {
-              byKey.set(key, {
-                id: key,
-                name: nameOf(row),
-                spendWeeks: new Array(weeksOfRows.length).fill(0),
-                requestWeeks: new Array(weeksOfRows.length).fill(0),
-              });
-            }
-            const entity = byKey.get(key);
-            entity.spendWeeks[weekIndex] = spendOf(row) ?? 0;
-            entity.requestWeeks[weekIndex] = requestsOf(row) ?? 0;
-          }
-        });
-        return [...byKey.values()];
-      }
-
-      async function loadSavingsData() {
-        const block = document.getElementById("savingsLoadingBlock");
-        state.savings.loading = true;
-        block?.classList.add("loading");
-        try {
-          const { baselineWeeks } = state.savings.settings;
-          const weeks = baselineWeeks + 1;
-          const days = weeks * 7;
-          const fullTo = isoToday();
-          const fullFrom = isoDaysAgo(days - 1);
-          const week0 = savingsWeekWindow(0);
-
-          const [
-            costSummary,
-            teamsWeeks,
-            peopleWeeks,
-            skillsWeeks,
-            currentWeekEfficiency,
-            currentWeekCost,
-            openaiModelCosts,
-          ] = await Promise.all([
-            fetchSavingsJson(
-              "savings-cost-summary",
-              fullFrom,
-              fullTo,
-              `/api/cost-summary?from=${fullFrom}&to=${fullTo}`,
-            ),
-            fetchWeeklyRows("teams", weeks, (d) => d.teams ?? []),
-            fetchWeeklyRows("people", weeks, (d) => d.people ?? []),
-            fetchWeeklyRows("skills", weeks, (d) => d.skills ?? []),
-            fetchSavingsJson(
-              "savings-efficiency",
-              week0.from,
-              week0.to,
-              `/api/efficiency?from=${week0.from}&to=${week0.to}`,
-            ),
-            fetchSavingsJson(
-              "savings-cost-summary-week0",
-              week0.from,
-              week0.to,
-              `/api/cost-summary?from=${week0.from}&to=${week0.to}`,
-            ),
-            providerConnected("openai")
-              ? fetchSavingsJson(
-                  "savings-openai-model-costs",
-                  week0.from,
-                  week0.to,
-                  `/api/openai-model-costs?from=${week0.from}&to=${week0.to}`,
-                )
-              : Promise.resolve({ models: [] }),
-          ]);
-
-          state.savings.raw = {
-            costSummary,
-            teamsWeeks,
-            peopleWeeks,
-            skillsWeeks,
-            currentWeekEfficiency,
-            currentWeekCost,
-            openaiModelCosts,
-          };
-          state.savings.data = buildSavingsData(state.savings.raw);
-          state.savings.loaded = true;
-        } catch (err) {
-          console.error(err);
-          state.savings.data = null;
-        } finally {
-          state.savings.loading = false;
-          block?.classList.remove("loading");
-          renderSavings();
-        }
-      }
-
-      function buildSavingsData({
-        costSummary,
-        teamsWeeks,
-        peopleWeeks,
-        skillsWeeks,
-        currentWeekEfficiency,
-        currentWeekCost,
-        openaiModelCosts,
-      }) {
-        const settings = state.savings.settings;
-
-        const productEntities = (costSummary?.byProduct ?? []).map((p) => ({
-          kind: "product",
-          id: p.name,
-          name: productLabel(p.name),
-          spendWeeks: weeklyTotalsFromDaily(trimToWeeks(p.spend)),
-          requestWeeks: weeklyTotalsFromDaily(trimToWeeks(p.requestsDaily ?? p.spend.map(() => 0))),
-        }));
-        const modelEntities = (costSummary?.byModel ?? []).map((m) => ({
-          kind: "model",
-          id: m.name,
-          name: m.name,
-          spendWeeks: weeklyTotalsFromDaily(trimToWeeks(m.spend)),
-          requestWeeks: weeklyTotalsFromDaily(trimToWeeks(m.requestsDaily ?? m.spend.map(() => 0))),
-        }));
-        const teamEntities = alignWeeklyEntities(teamsWeeks, {
-          keyOf: (r) => r.id,
-          nameOf: (r) => r.name,
-          spendOf: (r) => r.spend,
-          requestsOf: (r) => r.requests,
-        }).map((e) => ({ ...e, kind: "team" }));
-        const peopleEntities = alignWeeklyEntities(peopleWeeks, {
-          keyOf: (r) => r.email ?? r.name,
-          nameOf: (r) => r.name,
-          spendOf: (r) => r.amount,
-          requestsOf: (r) => r.requests,
-        }).map((e) => ({ ...e, kind: "person" }));
-        // "spend" for a workflow is its overageSpend, matching the Organisational allocation
-        // tab's own convention for the same dimension (see renderInvestigationTable's
-        // `spend: s.overageSpend` for the skill/workflow row).
-        const skillEntities = alignWeeklyEntities(skillsWeeks, {
-          keyOf: (r) => r.name,
-          nameOf: (r) => r.name,
-          spendOf: (r) => r.overageSpend,
-          requestsOf: (r) => r.invocations,
-        }).map((e) => ({ ...e, kind: "workflow" }));
-
-        const alertSettings = {
-          minChangePct: settings.changeThresholdPct,
-          minDeltaUsd: settings.minDeltaUsd,
-          requestFloor: settings.requestFloor,
-          trendWeeks: settings.trendWeeks,
-        };
-        const alerts = computeAlerts(
-          [...peopleEntities, ...teamEntities, ...skillEntities, ...productEntities],
-          alertSettings,
-        );
-
-        // "Higher-cost model pattern" — company-wide only (see detectHigherCostModelPattern's
-        // own comment in lib/savings.mjs for why this can't be scoped to a person/team).
-        const rankedModels = modelEntities
-          .map((m) => {
-            const pricing = modelPricingFor(m.id);
-            return pricing ? { ...m, avgPricePerMillion: (pricing.input + pricing.output) / 2 } : null;
-          })
-          .filter(Boolean);
-        const modelPattern =
-          rankedModels.length > 1
-            ? detectHigherCostModelPattern(rankedModels, { minShareChangePct: 5 })
-            : null;
-        const modelPatternImpact = modelPattern
-          ? modelPattern.current - (modelPattern.baseline ?? modelPattern.current)
-          : null;
-        if (modelPattern && modelPatternImpact >= settings.minDeltaUsd) {
-          alerts.push({
-            id: "model-mix-shift",
-            category: "people",
-            type: "higherCostModelPattern",
-            title: "Higher-cost model pattern",
-            entity: modelPattern,
-            impactUsd: modelPatternImpact,
-            metric: modelPattern,
-          });
-        }
-
-        // AI model updates (category A) — cross-check the curated MODEL_LIFECYCLE_EVENTS
-        // reference (lib/format.mjs) against this week's actual per-model spend.
-        const modelWeeklySpend = new Map(modelEntities.map((m) => [m.id, currentWeek(m.spendWeeks)]));
-        const lifecycleAlerts = matchLifecycleEvents(MODEL_LIFECYCLE_EVENTS, modelWeeklySpend);
-
-        // "3 main cost drivers" picks one per conceptual group (people/team, product/workflow,
-        // AI model update) — remapped to those 3 buckets here rather than in lib/savings.mjs's
-        // own `category` field, which stays "person"-vs-"team"-vs-"workflow" for alert-group
-        // routing below.
-        const driverPool = [
-          ...alerts.map((a) => ({ ...a, category: a.category === "workflow" ? "workflow" : "people" })),
-          ...lifecycleAlerts.map((e) => ({
-            id: e.id,
-            category: "model",
-            title: e.title,
-            impactUsd: e.currentWeeklySpend,
-            entity: e,
-            isLifecycle: true,
-          })),
-        ];
-        const { topDrivers, caseCount } = summarizeAlerts(driverPool);
-        // The headline "spent above expected" total deliberately excludes lifecycle alerts —
-        // their $ figure is "weekly spend affected", not "spend above baseline", a different
-        // kind of number that would misleadingly inflate this total if summed in.
-        const totalAboveExpected = alerts.reduce((sum, a) => sum + Math.max(0, a.impactUsd ?? 0), 0);
-
-        const rate = buildRateComparison({ currentWeekEfficiency, currentWeekCost, openaiModelCosts });
-
-        return { alerts, lifecycleAlerts, topDrivers, caseCount, totalAboveExpected, rate };
-      }
-
-      function buildRateComparison({ currentWeekEfficiency, currentWeekCost, openaiModelCosts }) {
-        const eff = currentWeekEfficiency;
-        let anthropic = null;
-        if (eff && providerConnected("anthropic")) {
-          const current = blendedRate({
-            actualInputCost: eff.actualInputCost,
-            hypotheticalInputCost: eff.hypotheticalInputCost,
-            outputCost: eff.outputCost,
-            totalInputTokens: eff.totalInputTokens,
-            outputTokens: eff.outputTokens,
-          });
-          const previous = eff.previous
-            ? blendedRate({
-                actualInputCost: eff.previous.actualInputCost,
-                hypotheticalInputCost: eff.previous.hypotheticalInputCost,
-                outputCost: eff.previous.outputCost,
-                totalInputTokens: eff.previous.totalInputTokens,
-                outputTokens: eff.previous.outputTokens,
-              })
-            : null;
-          const changePct =
-            current.companyRate != null && previous?.companyRate != null
-              ? pctChange(current.companyRate, previous.companyRate)
-              : null;
-
-          const uncachedRate =
-            eff.uncachedInputTokens > 0
-              ? ((eff.tokenTypeCosts?.uncached_input_tokens ?? 0) / eff.uncachedInputTokens) * 1e6
-              : null;
-          const rateFor = (tokenKey, tokens, hasDiscount) => {
-            const amount = eff.tokenTypeCosts?.[tokenKey] ?? 0;
-            const companyRate = tokens > 0 ? (amount / tokens) * 1e6 : null;
-            return { companyRate, providerRate: hasDiscount ? uncachedRate : companyRate };
-          };
-          const tokenRows = [
-            { label: "Fresh input", ...rateFor("uncached_input_tokens", eff.uncachedInputTokens, false) },
-            { label: "Cache read", ...rateFor("cache_read_input_tokens", eff.cacheReadInputTokens, true) },
-            {
-              label: "Cache write",
-              ...rateFor("cache_creation.ephemeral_5m_input_tokens", eff.cacheCreationTokens, true),
-            },
-            { label: "Output", ...rateFor("output_tokens", eff.outputTokens, false) },
-          ];
-
-          const models = (currentWeekCost?.byModel ?? [])
-            .map((m) => {
-              const pricing = modelPricingFor(m.name);
-              if (!pricing || !m.totalTokens) return null;
-              const listCost = modelListPriceCost(pricing, m);
-              return {
-                name: m.name,
-                companyRate: (m.totalSpend / m.totalTokens) * 1e6,
-                providerRate: (listCost / m.totalTokens) * 1e6,
-              };
-            })
-            .filter(Boolean);
-
-          anthropic = { current, previous, changePct, tokenRows, models };
-        }
-
-        let openai = null;
-        if (providerConnected("openai")) {
-          const providerRow = (currentWeekCost?.byProvider ?? []).find((p) => p.name === "OpenAI");
-          const spend = providerRow?.totalSpend ?? 0;
-          const requests = providerRow?.totalRequests ?? 0;
-          const models = (openaiModelCosts?.models ?? []).map((m) => ({
-            ...m,
-            pricing: openaiModelPricingFor(m.name),
-          }));
-          openai = { spend, requests, costPerRequest: requests > 0 ? spend / requests : null, models };
-        }
-
-        return { anthropic, openai };
-      }
-
-      function pctText(v) {
-        return Number.isFinite(v) ? `${Math.round(Math.abs(v))}%` : "a large amount";
-      }
-
-      // Copy generator for the 8 computeAlerts() alert types — see lib/savings.mjs's
-      // computeAlerts for what each `type` means and when it fires.
-      function alertCopy(alert) {
-        const name = alert.entity?.name ?? "This item";
-        const m = alert.metric ?? {};
-        switch (alert.type) {
-          case "personalSpendSpike":
-            return {
-              observation: `${name} spent ${pctText(m.changePct)} above their normal weekly range.`,
-              likelyReason:
-                "A project, deadline, more intensive work or a change in the models or tools used.",
-              recommendation:
-                "Check whether the person’s work changed that week. Higher usage and spend can reflect valuable work, so understand the increase before suggesting changes.",
-            };
-          case "teamSpendSpike":
-            return {
-              observation: `${name} spent ${pctText(m.changePct)} above its normal weekly range.`,
-              likelyReason:
-                "A project launch, deadline, broader team usage or several employees working more intensively.",
-              recommendation:
-                "Confirm with the team whether a specific project or temporary change explains the increase.",
-            };
-          case "costPerRequestJump":
-            return {
-              observation: `${name}’s average cost per request rose ${pctText(m.changePct)} above its normal range.`,
-              likelyReason:
-                "A shift toward a more expensive model, longer prompts or context, or less use of caching.",
-              recommendation:
-                "Review recent model choice and prompt length; confirm caching is still being used where it applies.",
-            };
-          case "higherCostModelPattern":
-            return {
-              observation: `${name} gained ${Math.round(m.shareDelta ?? 0)} percentage points of company spend share this week, at an above-median price.`,
-              likelyReason:
-                "Work is routing to a higher-cost model more often than usual, rather than pure volume growth.",
-              recommendation:
-                "Confirm the higher-cost model is actually needed for this work, or route it to a cheaper model that still meets the quality bar.",
-            };
-          case "workflowSpendSpike":
-            return {
-              observation: `${name} spent above its normal weekly range.`,
-              likelyReason:
-                "The workflow handled more work, changed configuration or ran more often than usual.",
-              recommendation:
-                "Confirm whether a project or workload change explains the increase. If not, review what changed in the workflow.",
-            };
-          case "requestBurst":
-            return {
-              observation: `${name} sent ${pctText(m.changePct)} more requests than its normal weekly range.`,
-              likelyReason:
-                "More genuine demand, a scheduling change, duplicate triggers, retries or repeated agent steps.",
-              recommendation:
-                "Check expected workload, schedules and workflow logs to determine what caused the additional calls.",
-            };
-          case "callsMoreExpensive":
-            return {
-              observation: `${name}’s average cost per call rose ${pctText(m.changePct)} above its normal range.`,
-              likelyReason: "A shift toward a more expensive model or longer prompts/context per call.",
-              recommendation: "Review the workflow’s model choice and prompt/context length for this period.",
-            };
-          case "sustainedGrowth":
-            return {
-              observation: `${name}’s spend has risen for ${m.trendWeeks ?? state.savings.settings.trendWeeks} consecutive weeks.`,
-              likelyReason: "Steady organic growth in usage, or a gradual configuration/workload change.",
-              recommendation:
-                "Confirm the growth is expected; if not, review the workflow’s recent runs and configuration.",
-            };
-          default:
-            return { observation: "", likelyReason: "", recommendation: "" };
-        }
-      }
-
-      function driverTypeLabel(driver) {
-        if (driver.category === "model") return "AI model update";
-        if (driver.category === "workflow") return "Product & workflow";
-        return "People & teams";
-      }
-
-      function renderBriefingSummary() {
-        const amountEl = document.getElementById("briefingAmount");
-        const convertedEl = document.getElementById("briefingConverted");
-        const caseEl = document.getElementById("caseNumber");
-        const data = state.savings.data;
-        if (!data) {
-          amountEl.textContent = "—";
-          convertedEl.textContent = "";
-          caseEl.textContent = "—";
-          return;
-        }
-        amountEl.textContent = money(data.totalAboveExpected);
-        convertedEl.textContent = convertedLabel(data.totalAboveExpected);
-        caseEl.textContent = String(data.caseCount);
-      }
-
-      function renderDriverCards() {
-        const grid = document.getElementById("driverGrid");
-        const data = state.savings.data;
-        if (!data || data.topDrivers.length === 0) {
-          grid.innerHTML =
-            '<p class="no-alerts-note">No cost drivers above the current thresholds this week.</p>';
-          return;
-        }
-        grid.innerHTML = data.topDrivers
-          .map((driver) => {
-            const copy = driver.isLifecycle ? driver.entity : alertCopy(driver);
-            const impactLabel = driver.isLifecycle
-              ? `${money(driver.impactUsd)}<span class="small-currency">${convertedLabel(driver.impactUsd)} current weekly spend affected</span>`
-              : `${signedMoney(driver.impactUsd)}<span class="small-currency">${convertedLabel(driver.impactUsd)} above normal range</span>`;
-            return `
-              <article class="driver-card">
-                <div class="driver-type">${escapeHtml(driverTypeLabel(driver))}</div>
-                <div class="driver-name">${escapeHtml(driver.title)}</div>
-                <div class="driver-impact">${impactLabel}</div>
-                <ul class="driver-points">
-                  <li><strong>Likely reason:</strong> ${escapeHtml(copy.likelyReason)}</li>
-                  <li><strong>Recommendation:</strong> ${escapeHtml(copy.recommendation)}</li>
-                </ul>
-              </article>`;
-          })
-          .join("");
-      }
-
-      function alertCardHtml(alert) {
-        const copy = alertCopy(alert);
-        const impact =
-          alert.impactUsd > 0
-            ? `${signedMoney(alert.impactUsd)} above range<span>${convertedLabel(alert.impactUsd)}</span>`
-            : "";
-        const entityName = alert.entity?.name ? ` · ${escapeHtml(alert.entity.name)}` : "";
-        return `
-          <article class="alert-card">
-            <div class="alert-card-title">
-              <h4>${escapeHtml(alert.title)}${entityName}</h4>
-              <div class="alert-impact${impact ? "" : " unquantified"}">${impact || "See details"}</div>
-            </div>
-            <ul class="alert-points">
-              <li><strong>Observation:</strong> ${escapeHtml(copy.observation)}</li>
-              <li><strong>Likely reason:</strong> ${escapeHtml(copy.likelyReason)}</li>
-              <li><strong>Recommendation:</strong> ${escapeHtml(copy.recommendation)}</li>
-            </ul>
-          </article>`;
-      }
-
-      function lifecycleCardHtml(event) {
-        return `
-          <article class="alert-card">
-            <div class="alert-card-title">
-              <h4>${escapeHtml(event.title)}</h4>
-              <div class="alert-impact">${money(event.currentWeeklySpend)} weekly spend affected<span>${convertedLabel(event.currentWeeklySpend)}</span></div>
-            </div>
-            <ul class="alert-points">
-              <li><strong>Observation:</strong> ${escapeHtml(event.observation)} <a class="source-link" href="${escapeHtml(event.sourceUrl)}" target="_blank" rel="noreferrer">Official source</a>.</li>
-              <li><strong>Likely reason:</strong> ${escapeHtml(event.likelyReason)}</li>
-              <li><strong>Recommendation:</strong> ${escapeHtml(event.recommendation)}</li>
-            </ul>
-          </article>`;
-      }
-
-      function renderAlertGroups() {
-        const data = state.savings.data;
-        const modelGroup = document.getElementById("modelUpdatesGroup");
-        const modelCards = document.getElementById("modelUpdatesCards");
-        const modelCount = document.getElementById("modelUpdatesCount");
-        const peopleCards = document.getElementById("peopleTeamsCards");
-        const peopleCount = document.getElementById("peopleTeamsCount");
-        const workflowCards = document.getElementById("productsWorkflowsCards");
-        const workflowCount = document.getElementById("productsWorkflowsCount");
-        const alertsToggle = document.getElementById("alertsToggle");
-
-        if (!data) {
-          modelGroup.hidden = true;
-          peopleCards.innerHTML = "";
-          workflowCards.innerHTML = "";
-          alertsToggle.textContent = "Show all alerts";
-          return;
-        }
-
-        const peopleAlerts = data.alerts.filter(
-          (a) => a.entity?.kind === "person" || a.entity?.kind === "team" || a.type === "higherCostModelPattern",
-        );
-        const workflowAlerts = data.alerts.filter(
-          (a) => a.entity?.kind === "workflow" || a.entity?.kind === "product",
-        );
-
-        modelGroup.hidden = data.lifecycleAlerts.length === 0;
-        modelCards.innerHTML = data.lifecycleAlerts.map(lifecycleCardHtml).join("");
-        modelCount.textContent = `${data.lifecycleAlerts.length} update${data.lifecycleAlerts.length === 1 ? "" : "s"} this week`;
-
-        peopleCards.innerHTML = peopleAlerts.length
-          ? peopleAlerts.map(alertCardHtml).join("")
-          : '<p class="no-alerts-note">No people or team alerts above the current thresholds this week.</p>';
-        peopleCount.textContent = `${peopleAlerts.length} alert${peopleAlerts.length === 1 ? "" : "s"}`;
-
-        workflowCards.innerHTML = workflowAlerts.length
-          ? workflowAlerts.map(alertCardHtml).join("")
-          : '<p class="no-alerts-note">No product or workflow alerts above the current thresholds this week.</p>';
-        workflowCount.textContent = `${workflowAlerts.length} alert${workflowAlerts.length === 1 ? "" : "s"}`;
-
-        const isOpen = alertsToggle.getAttribute("aria-expanded") === "true";
-        alertsToggle.textContent = isOpen
-          ? "Hide alerts"
-          : `Show all ${data.caseCount} alert${data.caseCount === 1 ? "" : "s"}`;
-      }
-
-      function rateCardHtml({ providerLabel, color, companyRate, providerRate, changePct, unit = "/1M tokens" }) {
-        const changeHtml =
-          changePct != null
-            ? `<div class="rate-change">${changePct >= 0 ? "↑" : "↓"} ${Math.abs(changePct).toFixed(1)}% vs T&minus;1</div>`
-            : "";
-        const providerFigure =
-          providerRate != null
-            ? `<div class="rate-figure">
-                <div class="rate-label">Provider model average &middot; same mix</div>
-                <div class="rate-main">${money(providerRate)} <small>${unit}</small></div>
-              </div>`
-            : "";
-        return `
-          <article class="rate-card" style="--provider-color:${color}">
-            <div class="provider-name"><span class="provider-dot"></span>${escapeHtml(providerLabel)}</div>
-            <div class="rate-compare">
-              <div class="rate-figure">
-                <div class="rate-label">Your company model average</div>
-                <div class="rate-main">${companyRate != null ? money(companyRate) : "&mdash;"} <small>${unit}</small></div>
-                <div class="rate-footer">${changeHtml}</div>
-              </div>
-              ${providerFigure}
-            </div>
-          </article>`;
-      }
-
-      function anthropicRateTableHtml(tokenRows) {
-        const rows = tokenRows
-          .map(
-            (r) => `<tr>
-              <td><strong>${escapeHtml(r.label)}</strong></td>
-              <td>${r.companyRate != null ? money(r.companyRate) : "&mdash;"}</td>
-              <td>${r.providerRate != null ? money(r.providerRate) : "&mdash;"}</td>
-            </tr>`,
-          )
-          .join("");
-        return `
-          <div class="rate-table">
-            <div class="rate-table-head"><div class="provider-name"><span class="provider-dot" style="--provider-color:var(--series-2)"></span>Anthropic &middot; this week</div></div>
-            <table>
-              <thead><tr><th>Token type</th><th>Company avg.</th><th>Provider avg.<br>same mix</th></tr></thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>`;
-      }
-
-      function openaiRateTableHtml(models) {
-        const totals = {};
-        models.forEach((m) =>
-          Object.entries(m.byTokenType || {}).forEach(([type, amount]) => {
-            totals[type] = (totals[type] ?? 0) + amount;
-          }),
-        );
-        const entries = Object.entries(totals);
-        const rows = entries
-          .map(([type, amount]) => `<tr><td><strong>${escapeHtml(type)}</strong></td><td>${money(amount)}</td></tr>`)
-          .join("");
-        return `
-          <div class="rate-table">
-            <div class="rate-table-head"><div class="provider-name"><span class="provider-dot" style="--provider-color:var(--openai)"></span>ChatGPT / OpenAI &middot; this week</div></div>
-            <table>
-              <thead><tr><th>Token type</th><th>Company spend</th></tr></thead>
-              <tbody>${rows || '<tr><td colspan="2">No data</td></tr>'}</tbody>
-            </table>
-          </div>`;
-      }
-
-      function perModelTableHtml(rate) {
-        const anthropicRows = (rate.anthropic?.models ?? [])
-          .map(
-            (m) => `<tr>
-              <td class="provider-cell">Anthropic</td>
-              <td class="model-cell">${escapeHtml(m.name)}</td>
-              <td>${money(m.companyRate)}</td>
-              <td>${money(m.providerRate)}</td>
-            </tr>`,
-          )
-          .join("");
-        const openaiRows = (rate.openai?.models ?? [])
-          .map(
-            (m) => `<tr>
-              <td class="provider-cell">ChatGPT / OpenAI</td>
-              <td class="model-cell">${escapeHtml(m.name)}</td>
-              <td>${money(m.spend)}<br /><small>this week</small></td>
-              <td>${m.pricing ? `$${m.pricing.input} in / $${m.pricing.output} out` : "&mdash;"}</td>
-            </tr>`,
-          )
-          .join("");
-        const rows = anthropicRows + openaiRows;
-        return `
-          <div class="per-model-table-title">Average token cost by model<span class="per-model-table-note">Anthropic: USD per 1M tokens, company effective average vs. provider published price. OpenAI: USD spend this week vs. provider published per-token price &mdash; no per-model token counts are available to compute a $/1M-token figure.</span></div>
-          <div class="per-model-table">
-            <table>
-              <thead><tr><th>Provider</th><th>Model</th><th>Company</th><th>Provider</th></tr></thead>
-              <tbody>${rows || '<tr><td colspan="4">No per-model data yet.</td></tr>'}</tbody>
-            </table>
-          </div>`;
-      }
-
-      function renderRatePanel() {
-        const grid = document.getElementById("rateGrid");
-        const tables = document.getElementById("rateTables");
-        const perModel = document.getElementById("perModelInline");
-        const note = document.getElementById("rateNote");
-        const rate = state.savings.data?.rate;
-
-        if (!rate || (!rate.anthropic && !rate.openai)) {
-          grid.innerHTML = '<p class="no-alerts-note">No token-rate data available for this week yet.</p>';
-          tables.innerHTML = "";
-          perModel.innerHTML = "";
-          note.textContent = "";
-          return;
-        }
-
-        const cards = [];
-        if (rate.anthropic) {
-          cards.push(
-            rateCardHtml({
-              providerLabel: "Anthropic",
-              color: "var(--series-2)",
-              companyRate: rate.anthropic.current.companyRate,
-              providerRate: rate.anthropic.current.providerRate,
-              changePct: rate.anthropic.changePct,
-            }),
-          );
-        }
-        if (rate.openai) {
-          cards.push(
-            rateCardHtml({
-              providerLabel: "ChatGPT / OpenAI",
-              color: "var(--openai)",
-              companyRate: rate.openai.costPerRequest,
-              unit: "/request",
-              providerRate: null,
-            }),
-          );
-        }
-        grid.innerHTML = cards.join("");
-
-        const tableParts = [];
-        if (rate.anthropic) tableParts.push(anthropicRateTableHtml(rate.anthropic.tokenRows));
-        if (rate.openai) tableParts.push(openaiRateTableHtml(rate.openai.models));
-        tables.innerHTML = tableParts.join("");
-
-        perModel.innerHTML = perModelTableHtml(rate);
-
-        const noteParts = [
-          "Company figures reflect this week’s actual usage. “Provider, same mix” is what the same token volumes would cost with no caching discount, at today’s published rates.",
-        ];
-        if (rate.openai) {
-          noteParts.push(
-            "OpenAI’s Costs/Usage APIs don’t expose token counts, only $ amounts and request counts — so OpenAI is shown as $ per request and $ spend by model rather than $ per 1M tokens.",
-          );
-        }
-        note.textContent = noteParts.join(" ");
-      }
-
-      function renderSavings() {
-        renderBriefingSummary();
-        renderDriverCards();
-        renderAlertGroups();
-        renderRatePanel();
-      }
-
       // Ideally this would cover the Historic reference dropdown's max option (1 year = 52
       // weeks), but server.mjs's cachedFetchJsonRanged notes the Analytics API has a hard,
       // fixed-calendar floor on how far back it has any data at all ("data prior to 2026-01-01
@@ -3165,6 +2282,7 @@
         "priceSlider",
         "providerPriceSlider",
         "modelMixSlider",
+        "employeesSlider",
       ];
       const PLANNING_SLIDER_TO_KEY = {
         adoptionSlider: "adoption",
@@ -3173,10 +2291,11 @@
         priceSlider: "price",
         providerPriceSlider: "providerPrice",
         modelMixSlider: "mix",
+        employeesSlider: "employees",
       };
       const isoDaysFromNow = (days) => isoDaysAgo(-days);
       // Diameter of every scenario slider's custom-drawn thumb (see updateSliderVisual /
-      // setMarker below) — all six sliders share this one custom track/fill/thumb component.
+      // setMarker below) — all seven sliders share this one custom track/fill/thumb component.
       const PLANNING_SLIDER_THUMB_PX = 16;
 
       // Whether every slider currently sits on its own live-data default — drives the
@@ -3193,7 +2312,7 @@
       }
 
       // Resets a single scenario slider back to its own baseline default, leaving the other
-      // five untouched — the small rotate icon next to each slider's value.
+      // six untouched — the small rotate icon next to each slider's value.
       function resetPlanningSlider(sliderId) {
         const defaults = state.planning.defaults?.controls;
         if (!defaults) return;
@@ -3321,6 +2440,7 @@
             price: 100,
             providerPrice: 100,
             mix: currentPremiumModelShare(models),
+            employees: activeEmployees,
           },
         };
       }
@@ -3341,11 +2461,15 @@
         setRange("usageSlider", Math.round(controls.usage), niceMax(controls.usage * 2));
         setRange("tokensSlider", Math.round(controls.tokens), niceMax(controls.tokens * 2));
         setRange("modelMixSlider", Math.round(controls.mix), 100);
+        setRange("employeesSlider", Math.round(controls.employees), niceMax(controls.employees * 2));
         document.getElementById("usageScaleMax").textContent = Number(
           document.getElementById("usageSlider").max,
         ).toLocaleString("en-US");
         document.getElementById("tokensScaleMax").textContent =
           `${(Number(document.getElementById("tokensSlider").max) / 1000).toFixed(1)}k`;
+        document.getElementById("employeesScaleMax").textContent = Number(
+          document.getElementById("employeesSlider").max,
+        ).toLocaleString("en-US");
         document.getElementById("priceSlider").value = controls.price;
         document.getElementById("providerPriceSlider").value = controls.providerPrice;
         updatePlanningControlValues();
@@ -3359,6 +2483,7 @@
           price: Number(document.getElementById("priceSlider").value),
           providerPrice: Number(document.getElementById("providerPriceSlider").value),
           mix: Number(document.getElementById("modelMixSlider").value),
+          employees: Number(document.getElementById("employeesSlider").value),
         };
       }
 
@@ -3369,6 +2494,8 @@
           `${Math.round(controls.usage).toLocaleString("en-US")}/wk`;
         document.getElementById("tokensValue").textContent = `${(controls.tokens / 1000).toFixed(1)}k`;
         document.getElementById("modelMixValue").textContent = `${Math.round(controls.mix)}%`;
+        document.getElementById("employeesValue").textContent =
+          Math.round(controls.employees).toLocaleString("en-US");
         const companyRateUsd = state.planning.defaults?.companyRateUsd;
         const providerRateUsd = state.planning.defaults?.providerRateUsd;
         document.getElementById("priceValue").textContent =
@@ -3400,6 +2527,7 @@
           setMarker("priceSlider", d.price);
           setMarker("providerPriceSlider", d.providerPrice);
           setMarker("modelMixSlider", d.mix);
+          setMarker("employeesSlider", d.employees);
         }
 
         PLANNING_SLIDER_IDS.forEach(updateSliderVisual);
@@ -3410,7 +2538,7 @@
       }
 
       // Keeps a scenario slider's custom-drawn fill/thumb in sync with its underlying (visually
-      // transparent) range input — see the .ai-slider-* styles in assets/styles.css. All six
+      // transparent) range input — see the .ai-slider-* styles in assets/styles.css. All seven
       // scenario controls share this one custom track/fill/thumb component.
       function updateSliderVisual(sliderId) {
         const input = document.getElementById(sliderId);
@@ -3975,7 +3103,7 @@
       const MODEL_GUIDE_COPY = {
         anthropic: [
           { id: "claude-fable-5", name: "Claude Fable 5.1", tier: "Frontier specialist", use: "Demanding reasoning and long-horizon agents when Opus 5 at higher effort still falls short." },
-          { id: "claude-opus-5", name: "Claude Opus 5", tier: "Highest general use", use: "Complex agentic coding and difficult enterprise work. Anthropic’s recommended starting point for most workloads." },
+          { id: "claude-opus-5", name: "Claude Opus 5", tier: "Highest general use", use: "Complex agentic coding and difficult enterprise work. The recommended starting point for most workloads." },
           { id: "claude-sonnet-5", name: "Claude Sonnet 5", tier: "Balanced", use: "Everyday coding, analysis, content and tool use with a strong speed-to-intelligence balance." },
           { id: "claude-haiku-4-5", name: "Claude Haiku 4.5", tier: "Fastest", use: "Real-time, high-volume and cost-sensitive work, including smaller sub-agent tasks." },
         ],
@@ -3988,9 +3116,9 @@
       };
       const MODEL_GUIDE_SOURCES = {
         anthropic:
-          'Current generally available models and prices from the official <a class="source-link" href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Anthropic model overview</a> and <a class="source-link" href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noreferrer">pricing page</a>.',
+          'Current generally available models and prices from the official <a class="source-link" href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Claude model overview</a> and <a class="source-link" href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noreferrer">pricing page</a>.',
         openai:
-          'Current general-purpose models and prices from the official <a class="source-link" href="https://developers.openai.com/api/docs/models" target="_blank" rel="noreferrer">OpenAI model catalogue</a> and <a class="source-link" href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">pricing page</a>.',
+          'Current general-purpose models and prices from the official <a class="source-link" href="https://developers.openai.com/api/docs/models" target="_blank" rel="noreferrer">ChatGPT model catalogue</a> and <a class="source-link" href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">pricing page</a>.',
       };
 
       function modelGuidePane(provider) {
@@ -4041,12 +3169,13 @@
             sub:
               t &&
               (t.anthropicSpend > 0 && t.openaiSpend > 0
-                ? `${money(t.anthropicSpend)} Anthropic + ${money(t.openaiSpend)} ChatGPT`
+                ? `${money(t.anthropicSpend)} Claude + ${money(t.openaiSpend)} ChatGPT`
                 : ""),
             delta:
               t &&
               deltaLine(t.spend, t.previous ? t.previous.spend : null, {
                 formatAbs: signedMoney,
+                invert: true,
               }),
           },
           {
@@ -4067,7 +3196,7 @@
           },
           {
             label: "Claude adoption rate",
-            info: "Anthropic-only: how many eligible employees used Claude at least once during the period. There's no equivalent adoption metric available for ChatGPT.",
+            info: "How many eligible employees used Claude at least once during the period. There's no equivalent adoption metric available for ChatGPT.",
             ready: !!seats,
             value:
               seats &&
@@ -4092,7 +3221,7 @@
           },
         ];
 
-        // "Add Anthropic" action tile — always exactly 3 KPI tiles, never 4. When Anthropic is
+        // "Add Claude" action tile — always exactly 3 KPI tiles, never 4. When Anthropic is
         // connected (OpenAI missing or not), the "Claude adoption rate" tile has genuine data
         // and stays as-is; the banner above is the only OpenAI nudge in that case. Only when
         // OpenAI is connected and Anthropic isn't does this REPLACE the adoption tile — its
@@ -4105,9 +3234,9 @@
           if (adoptionIdx !== -1) {
             kpis[adoptionIdx] = {
               action: true,
-              title: "Add Anthropic",
-              desc: "Connect Anthropic to see combined AI cost and usage across both providers, plus Claude adoption tracking.",
-              buttonLabel: "Connect Anthropic",
+              title: "Add Claude",
+              desc: "Connect Claude to see combined AI cost and usage across both providers, plus adoption tracking.",
+              buttonLabel: "Connect Claude",
             };
           }
         }
@@ -4186,10 +3315,29 @@
       }
 
       // Deliberately a separate, simpler renderer from renderChart() below —
-      // this chart is always exactly Overall/Anthropic/OpenAI (no dynamic
+      // this chart is always exactly Overall/Claude/ChatGPT (no dynamic
       // "fold into Other", no legend-driven show/hide, no table view), so
       // reusing renderChart's more general machinery would mean threading
       // extra conditionals through code that already works for its own job.
+      // Applies the overview chart's Daily/Weekly/Monthly grouping picker to an
+      // already-built daily {labels, series} pair — bucketDailyLabels computes the
+      // shared bucket boundaries once, reduceByBuckets reduces each series' daily
+      // values into one point per bucket. `sum: false` is for rate/snapshot metrics
+      // (Adoption), where summing daily percentages would be meaningless.
+      function applyOverviewGrouping(labels, series, { sum = true } = {}) {
+        if (state.overview.grouping === "daily" || !labels.length) {
+          return { labels, series };
+        }
+        const buckets = bucketDailyLabels(labels, state.overview.grouping);
+        return {
+          labels: buckets.map((b) => b.label),
+          series: series.map((s) => ({
+            ...s,
+            values: reduceByBuckets(s.values, buckets, { sum }),
+          })),
+        };
+      }
+
       function overviewSeriesForMetric(metric) {
         if (metric === "adoption") {
           const points = state.seats?.series ?? [];
@@ -4201,14 +3349,17 @@
             };
           }
           return {
-            labels: points.map((p) => p.date),
-            series: [
-              {
-                name: "Claude adoption rate",
-                color: cssVar("--overall"),
-                values: points.map((p) => p.monthlyAdoptionRate ?? 0),
-              },
-            ],
+            ...applyOverviewGrouping(
+              points.map((p) => p.date),
+              [
+                {
+                  name: "Claude adoption rate",
+                  color: cssVar("--overall"),
+                  values: points.map((p) => p.monthlyAdoptionRate ?? 0),
+                },
+              ],
+              { sum: false },
+            ),
             format: (v) => `${v.toFixed(1)}%`,
           };
         }
@@ -4251,7 +3402,7 @@
         }
         const format =
           metric === "usage" ? (v) => Math.round(v).toLocaleString() : money;
-        return { labels, series, format };
+        return { ...applyOverviewGrouping(labels, series, { sum: true }), format };
       }
 
       function renderOverviewLegend(series) {
@@ -4355,6 +3506,10 @@
           }
         }
 
+        // Monthly grouping labels by calendar month, not weekday — a bucket's
+        // start-of-month day is arbitrary (only the first bucket of a range can
+        // start mid-month), so "WED" above it is noise, not information.
+        const isMonthly = state.overview.grouping === "monthly";
         const labelStep = Math.ceil(labels.length / 8);
         labels.forEach((d, i) => {
           if (i % labelStep !== 0 && i !== labels.length - 1) return;
@@ -4364,7 +3519,7 @@
             y: height - 20,
             "text-anchor": "middle",
           });
-          weekday.textContent = weekdayAbbr(d);
+          weekday.textContent = isMonthly ? monthAbbr(d) : weekdayAbbr(d);
           svg.appendChild(weekday);
           const label = createSvgElement("text", {
             class: "axis-label",
@@ -4372,7 +3527,7 @@
             y: height - 8,
             "text-anchor": "middle",
           });
-          label.textContent = d.slice(5).replace("-", "/");
+          label.textContent = isMonthly ? d.slice(0, 4) : d.slice(5).replace("-", "/");
           svg.appendChild(label);
         });
 
@@ -4978,7 +4133,7 @@
           const cell = document.createElement("td");
           cell.colSpan = 2;
           cell.className = "empty";
-          cell.textContent = "No OpenAI spend for this period";
+          cell.textContent = "No ChatGPT spend for this period";
           row.appendChild(cell);
           body.appendChild(row);
           return;
@@ -5230,9 +4385,6 @@
             const card = heading.closest(".card");
             const isOpen = card.classList.toggle("is-open");
             heading.setAttribute("aria-expanded", String(isOpen));
-            if (isOpen && card.id === "savingsCard" && !state.savings.loaded && !state.savings.loading) {
-              loadSavingsData();
-            }
             if (isOpen && card.id === "planningCard" && !state.planning.loaded && !state.planning.loading) {
               loadPlanningData();
             }
@@ -5272,55 +4424,6 @@
             : "View as chart";
           e.currentTarget.setAttribute("aria-expanded", String(isOpen));
         });
-
-      document.getElementById("baselineToggle").addEventListener("click", (e) => {
-        const open = document.getElementById("baselineDetail").classList.toggle("visible");
-        e.currentTarget.setAttribute("aria-expanded", String(open));
-        e.currentTarget.textContent = open ? "Close settings" : "Alert settings";
-      });
-      document.getElementById("alertsToggle").addEventListener("click", (e) => {
-        const open = document.getElementById("alertArea").classList.toggle("visible");
-        e.currentTarget.setAttribute("aria-expanded", String(open));
-        renderAlertGroups(); // re-derives this button's own label from the aria-expanded set above
-      });
-      document.getElementById("ratesToggle").addEventListener("click", (e) => {
-        const open = document.getElementById("rateTables").classList.toggle("visible");
-        e.currentTarget.setAttribute("aria-expanded", String(open));
-        e.currentTarget.textContent = open
-          ? "Hide input, output and cache rates"
-          : "View input, output and cache rates";
-      });
-      document.getElementById("perModelOpen").addEventListener("click", (e) => {
-        const open = document.getElementById("perModelInline").classList.toggle("visible");
-        e.currentTarget.setAttribute("aria-expanded", String(open));
-        e.currentTarget.textContent = open ? "Hide per model" : "Show per model";
-      });
-      document.getElementById("spendThreshold").addEventListener("change", (e) => {
-        document.getElementById("spendConversionHint").textContent =
-          `Approx. ${convertedLabel(Number(e.currentTarget.value))}`;
-      });
-      document.getElementById("settingsApply").addEventListener("click", async (e) => {
-        const s = state.savings.settings;
-        const newBaselineWeeks = Number(document.getElementById("baselineWeeks").value);
-        s.changeThresholdPct = Number(document.getElementById("changeThreshold").value);
-        s.minDeltaUsd = Number(document.getElementById("spendThreshold").value);
-        s.trendWeeks = Number(document.getElementById("trendThreshold").value);
-        s.requestFloor = Number(document.getElementById("requestFloor").value);
-        const baselineChanged = newBaselineWeeks !== s.baselineWeeks;
-        s.baselineWeeks = newBaselineWeeks;
-
-        const original = e.currentTarget.textContent;
-        if (baselineChanged || !state.savings.raw) {
-          await loadSavingsData();
-        } else {
-          state.savings.data = buildSavingsData(state.savings.raw);
-          renderSavings();
-        }
-        e.currentTarget.textContent = "Settings applied";
-        window.setTimeout(() => {
-          e.currentTarget.textContent = original;
-        }, 1400);
-      });
 
       document.getElementById("planningReference").addEventListener("change", (e) => {
         state.planning.referenceWeeks = Number(e.currentTarget.value);
@@ -5467,6 +4570,31 @@
         );
       }
 
+      const groupingButtons = document.querySelectorAll(
+        "#overviewGroupingPicker [data-grouping]",
+      );
+
+      // Weekly needs at least one full trailing week of data, Monthly needs more
+      // than one bucket to be worth a separate view — both scale with the same
+      // day-count thresholds as the 1 week/4 weeks/6 months presets, so a custom
+      // range's availability is judged by its actual span, not by preset identity.
+      function applyOverviewGroupingAvailability() {
+        const days = currentRangeDays();
+        const allowed = { daily: true, weekly: days > 7, monthly: days > 28 };
+        groupingButtons.forEach((btn) => {
+          btn.disabled = !allowed[btn.dataset.grouping];
+        });
+        if (!allowed[state.overview.grouping]) {
+          state.overview.grouping = "daily";
+        }
+        groupingButtons.forEach((btn) =>
+          btn.setAttribute(
+            "aria-selected",
+            String(btn.dataset.grouping === state.overview.grouping),
+          ),
+        );
+      }
+
       // Reflect a range restored from the URL (readRangeFromUrl, above) into the controls.
       if (state.period === "custom" && state.customRange) {
         customRangeWrap.hidden = false;
@@ -5475,6 +4603,7 @@
         rangeToInput.min = state.customRange.from;
       }
       setActivePeriodButton();
+      applyOverviewGroupingAvailability();
       syncUrl();
 
       function applyCustomRange() {
@@ -5484,6 +4613,7 @@
         state.period = "custom";
         state.customRange = { from, to };
         setActivePeriodButton();
+        applyOverviewGroupingAvailability();
         syncUrl();
         loadData();
       }
@@ -5503,8 +4633,20 @@
           customRangeWrap.hidden = true;
           state.period = Number(btn.dataset.days);
           setActivePeriodButton();
+          applyOverviewGroupingAvailability();
           syncUrl();
           loadData();
+        });
+      });
+
+      groupingButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.disabled || btn.dataset.grouping === state.overview.grouping) return;
+          state.overview.grouping = btn.dataset.grouping;
+          groupingButtons.forEach((b) =>
+            b.setAttribute("aria-selected", String(b === btn)),
+          );
+          renderOverviewChart();
         });
       });
 
@@ -5656,9 +4798,6 @@
 
       // Open by default — loads immediately rather than waiting for the accordion-open handler
       // that lazy-loads it if a user collapses and reopens this card later.
-      loadSavingsData().catch((err) => console.error(err));
-
-      // Open by default too — same reasoning as Saving opportunities above.
       loadPlanningData().catch((err) => console.error(err));
 
       // Set only by loadIndexHtml() in the demo build (see build-mac-demo.sh) — real builds
@@ -5815,7 +4954,7 @@
       }
 
       (function initProviderChips() {
-        const PROVIDER_NAMES = { anthropic: "Anthropic", openai: "OpenAI" };
+        const PROVIDER_NAMES = { anthropic: "Claude", openai: "ChatGPT" };
         const CHEVRON_DOWN_SVG =
           '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
         const PLUS_SVG =
