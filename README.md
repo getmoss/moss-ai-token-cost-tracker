@@ -1,6 +1,6 @@
 # Moss AI Token Cost Tracker
 
-A dashboard for tracking your team's AI token spend (Anthropic + OpenAI) - no data leaves your machine.
+A dashboard for tracking your team's AI token spend (Anthropic + OpenAI + LiteLLM Proxy) - no data leaves your machine.
 
 <details open>
 <summary>macOS setup guide (GIF)</summary>
@@ -28,8 +28,8 @@ The same prompt works both for the initial setup and every time after, when you 
 
    ```
    Clone and set up the "Moss AI Token Cost Tracker" tool for me — a local
-   dashboard for tracking Anthropic/OpenAI token spend. Act as my setup
-   assistant using your file system and terminal access:
+   dashboard for tracking Anthropic/OpenAI/LiteLLM Proxy token spend. Act as
+   my setup assistant using your file system and terminal access:
 
    1. First check whether the current folder (or a `moss-ai-token-cost-tracker`
       subfolder) already contains this tool (look for server.mjs and
@@ -217,6 +217,16 @@ Follow the on-screen setup to connect your provider Admin API keys. Enter these 
 
 To stop the tool, return to Terminal or PowerShell and press `Ctrl + C`. To use it again later, repeat the steps above.
 
+### Connecting a LiteLLM Proxy
+
+If your company runs a [LiteLLM Proxy](https://docs.litellm.ai/) (an AI gateway developers use via virtual keys, e.g. for Claude Code in the terminal), you can connect it as a third source alongside Anthropic/OpenAI to see spend broken down by team and key alias.
+
+- Ask whoever runs your LiteLLM Proxy for its **base URL** and a **read-only virtual key** — a `proxy_admin_viewer`-role key, or one with the `get_spend_routes` permission. Never use or share the **master key**.
+- This app only ever makes `GET` requests to your proxy's `/user/daily/activity` endpoint. It cannot create, change, or delete keys, teams, or budgets — that's enforced in code, not just policy.
+- LiteLLM computes its own cost from an internal price map, which can differ from the provider's actual invoice — treat its spend numbers as an estimate, not an exact bill.
+- Per-user (email/user ID) breakdown is **off by default** — only team and key-alias level spend is shown, to avoid exposing individual identities unnecessarily. If you specifically need per-person numbers, set `LITELLM_INCLUDE_USER_BREAKDOWN=1` in `.env` (see `.env.example`).
+- If your LiteLLM Proxy forwards to the *same* Anthropic/OpenAI org you've already connected above, its spend will be double-counted in the combined total — the LiteLLM panel shows which real providers it's forwarding to, so you can check for overlap.
+
 ## Demo mode (no API keys needed)
 
 Want to try it out without connecting real accounts? Run:
@@ -225,7 +235,7 @@ Want to try it out without connecting real accounts? Run:
 npm run demo
 ```
 
-Then open [http://localhost:4173](http://localhost:4173), and enter anything (e.g. `demo`) as the API key(s) on the setup screen. Every request is served from realistic mock data instead of calling Anthropic/OpenAI, so nothing real is read or charged. A "Demo - sample data" banner stays visible the whole time so it's never mistaken for a live dashboard.
+Then open [http://localhost:4173](http://localhost:4173), and enter anything (e.g. `demo`) as the API key(s) on the setup screen. Every request is served from realistic mock data instead of calling Anthropic/OpenAI/LiteLLM, so nothing real is read or charged. A "Demo - sample data" banner stays visible the whole time so it's never mistaken for a live dashboard.
 
 ## Useful commands
 
@@ -242,7 +252,7 @@ Then open [http://localhost:4173](http://localhost:4173), and enter anything (e.
 
 Everything lives in two files: `server.mjs` (a dependency-free Node HTTP server) and `index.html` (a single self-contained page - styles, fonts, and scripts all inlined, no build step). This is why the dashboard appears in a browser even though nothing is hosted online.
 
-Your Admin API keys are stored in your local `.env` file and used to request usage and cost data directly from the Anthropic and OpenAI Admin APIs. The returned data is processed on your computer - your keys and spend data are never sent to or stored by Moss.
+Your Admin API keys (and, if connected, your LiteLLM Proxy's base URL and key) are stored in your local `.env` file and used to request usage and cost data directly from the Anthropic Admin API, the OpenAI Admin API, and/or your own LiteLLM Proxy. The returned data is processed on your computer - your keys and spend data are never sent to or stored by Moss.
 
 ## Requirements
 

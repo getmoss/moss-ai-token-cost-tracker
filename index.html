@@ -118,6 +118,54 @@
             </button>
           </div>
         </div>
+        <div class="provider-chip" id="providerChip-litellm">
+          <button type="button" class="provider-chip-btn" id="providerChipBtn-litellm">
+            <span class="provider-chip-dot"></span>
+            <span class="provider-chip-label">Connect LiteLLM</span>
+            <span class="provider-chip-caret"></span>
+          </button>
+          <div class="provider-menu" id="providerMenu-litellm" hidden>
+            <div class="provider-menu-key"></div>
+            <button
+              type="button"
+              class="provider-menu-item"
+              data-action="change"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><path d="M3 12a9 9 0 0 1 15.3-6.4L21 8M21 3v5h-5" /><path
+                  d="M21 12a9 9 0 0 1-15.3 6.4L3 16M3 21v-5h5"
+              /></svg>
+              <span>Change key</span>
+            </button>
+            <button
+              type="button"
+              class="provider-menu-item provider-menu-item-danger"
+              data-action="remove"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ><path d="M4 7h16" /><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13" /><path
+                  d="M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"
+              /></svg>
+              <span>Remove key</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
     <main class="page">
@@ -970,6 +1018,7 @@
         teams: null,
         teamSeries: null,
         openaiProjects: null,
+        litellmAttribution: null,
         // Organisational allocation's own copies, loaded on its own independent
         // range (see investigationState.period/customRange below) — kept separate
         // from cost/teams/people/skills above so the two sections' ranges never
@@ -1024,16 +1073,17 @@
       function updateConnectionStatus(totals) {
         const el = document.getElementById("connectionStatus");
         if (!el || !totals) return;
-        const anthropicOn = providerConnected("anthropic");
-        const openaiOn = providerConnected("openai");
+        const names = [
+          providerConnected("anthropic") ? "Claude" : null,
+          providerConnected("openai") ? "ChatGPT" : null,
+          providerConnected("litellm") ? "LiteLLM" : null,
+        ].filter(Boolean);
         const providers =
-          anthropicOn && openaiOn
-            ? "Claude and ChatGPT"
-            : anthropicOn
-              ? "Claude"
-              : openaiOn
-                ? "ChatGPT"
-                : "none yet";
+          names.length === 0
+            ? "none yet"
+            : names.length === 1
+              ? names[0]
+              : names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
         const time = new Date().toLocaleTimeString([], {
           hour: "2-digit",
           minute: "2-digit",
@@ -1886,6 +1936,7 @@
         "modelCachingCard",
         "teamsCard",
         "openaiProjectsCard",
+        "litellmAttributionCard",
       ];
 
       // Tracks fetches that are still in flight, keyed by `endpoint:range`, so that switching
@@ -2087,6 +2138,16 @@
               renderOpenAiProjects();
             },
           ),
+          loadPiece(
+            "litellm-attribution",
+            key,
+            `/api/litellm-attribution?${q}`,
+            ["litellmAttributionCard"],
+            (data) => {
+              state.litellmAttribution = data;
+              renderLiteLlmAttribution();
+            },
+          ),
         ];
       }
 
@@ -2160,6 +2221,7 @@
           state.teams =
           state.teamSeries =
           state.openaiProjects =
+          state.litellmAttribution =
             null;
         state.visibility.byProduct = null;
         state.visibility.byModel = null;
@@ -3370,16 +3432,24 @@
         const byProvider = state.cost.byProvider ?? [];
         const anthropic = byProvider.find((p) => p.name === "Anthropic");
         const openai = byProvider.find((p) => p.name === "OpenAI");
-        // The backend always returns both entries, even when a key is missing (as
+        const litellm = byProvider.find((p) => p.name === "LiteLLM");
+        // The backend always returns every entry, even when a key is missing (as
         // zeros) — so "is this provider actually connected" has to be judged by
         // totalSpend, not by presence of the object, or a disabled provider would
         // still draw a flat phantom zero-line and a redundant "Overall" duplicate.
         const anthropicActive = anthropic && anthropic.totalSpend > 0;
         const openaiActive = openai && openai.totalSpend > 0;
+        const litellmActive = litellm && litellm.totalSpend > 0;
+        const activeCount = [anthropicActive, openaiActive, litellmActive].filter(
+          Boolean,
+        ).length;
         const series = [];
-        if (anthropicActive && openaiActive) {
+        if (activeCount > 1) {
           const overall = labels.map(
-            (_, i) => (anthropic?.[key]?.[i] ?? 0) + (openai?.[key]?.[i] ?? 0),
+            (_, i) =>
+              (anthropic?.[key]?.[i] ?? 0) +
+              (openai?.[key]?.[i] ?? 0) +
+              (litellm?.[key]?.[i] ?? 0),
           );
           series.push({
             name: "Overall",
@@ -3398,6 +3468,13 @@
             name: "ChatGPT",
             color: cssVar("--openai"),
             values: openai[key],
+          });
+        }
+        if (litellmActive) {
+          series.push({
+            name: "LiteLLM",
+            color: cssVar("--litellm"),
+            values: litellm[key],
           });
         }
         const format =
@@ -4150,6 +4227,53 @@
         });
       }
 
+      // LiteLLM computes cost from its own internal price map, which can lag or differ from
+      // the provider's actual invoice (see PROVIDER_COPY.litellm's reservedNote in
+      // server.mjs and the byProvider.forwardsToProviders field handleCostSummary attaches) —
+      // surfaced here once rather than repeated on every row.
+      function renderLiteLlmAttribution() {
+        const data = state.litellmAttribution;
+        const teamBody = document.getElementById("litellmAttributionTeamBody");
+        const keyBody = document.getElementById("litellmAttributionKeyBody");
+        const note = document.getElementById("litellmAttributionNote");
+        if (!teamBody && !keyBody) return; // card not present in this layout yet
+        const fillTable = (body, rows, nameKey, emptyText) => {
+          if (!body) return;
+          body.innerHTML = "";
+          if (!rows || !rows.length) {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+            cell.colSpan = 3;
+            cell.className = "empty";
+            cell.textContent = emptyText;
+            row.appendChild(cell);
+            body.appendChild(row);
+            return;
+          }
+          rows.forEach((r) => {
+            const row = document.createElement("tr");
+            const nameCell = document.createElement("td");
+            nameCell.textContent = r[nameKey];
+            const spendCell = document.createElement("td");
+            spendCell.className = "num";
+            spendCell.textContent = money(r.spend);
+            const requestsCell = document.createElement("td");
+            requestsCell.className = "num";
+            requestsCell.textContent = r.requests.toLocaleString();
+            row.append(nameCell, spendCell, requestsCell);
+            body.appendChild(row);
+          });
+        };
+        fillTable(teamBody, data?.byTeam, "teamId", "No LiteLLM spend for this period");
+        fillTable(keyBody, data?.byKeyAlias, "alias", "No LiteLLM spend for this period");
+        if (note) {
+          const providers = data?.forwardsToProviders ?? [];
+          note.textContent = providers.length
+            ? `LiteLLM is forwarding to: ${providers.join(", ")}. If this overlaps with an Anthropic/OpenAI key already connected above, that spend may be double-counted in the combined total.`
+            : "";
+        }
+      }
+
       function renderToolAcceptance() {
         const data = state.toolAcceptance;
         const body = document.getElementById("toolAcceptanceBody");
@@ -4827,7 +4951,11 @@
       // numbers together (see the comment above dropProviderFromLoadedState).
       // `cost` is mutated in place (it's an object); `people` is returned since
       // arrays are replaced wholesale, not mutated.
-      function correctCostAndPeopleForProviderDrop(cost, people, isAnthropic, providerName) {
+      // `provider` is 'anthropic' | 'openai' | 'litellm'; providerName is byProvider's own
+      // display name for that provider ("Anthropic" | "OpenAI" | "LiteLLM").
+      function correctCostAndPeopleForProviderDrop(cost, people, provider, providerName) {
+        const isAnthropic = provider === "anthropic";
+        const isOpenai = provider === "openai";
         if (cost) {
           const c = cost;
           const byProvider = c.byProvider ?? [];
@@ -4844,14 +4972,18 @@
             c.totals.spend -= removedSpend;
             c.totals.requests -= removedRequests;
             if (isAnthropic) c.totals.anthropicSpend = 0;
-            else c.totals.openaiSpend = 0;
+            else if (isOpenai) c.totals.openaiSpend = 0;
+            else c.totals.litellmSpend = 0;
             if (c.totals.previous) {
               const removedPrevSpend = isAnthropic
                 ? c.totals.previous.anthropicSpend
-                : c.totals.previous.openaiSpend;
+                : isOpenai
+                  ? c.totals.previous.openaiSpend
+                  : c.totals.previous.litellmSpend;
               c.totals.previous.spend -= removedPrevSpend ?? 0;
               if (isAnthropic) c.totals.previous.anthropicSpend = 0;
-              else c.totals.previous.openaiSpend = 0;
+              else if (isOpenai) c.totals.previous.openaiSpend = 0;
+              else c.totals.previous.litellmSpend = 0;
               // The previous period's request count was never split per-provider in the
               // response (unlike spend) — no way to un-mix it here, so drop the comparison
               // rather than show a misleading delta against a number that still silently
@@ -4861,8 +4993,8 @@
           }
           if (isAnthropic) {
             // byProduct/byModel/byContextWindow/savings are Anthropic-only (see
-            // HANDOFF.md) — removing OpenAI never touches them; removing Anthropic empties
-            // them entirely, same as a fresh Anthropic-disabled fetch would.
+            // HANDOFF.md) — removing OpenAI/LiteLLM never touches them; removing Anthropic
+            // empties them entirely, same as a fresh Anthropic-disabled fetch would.
             c.byProduct = [];
             c.byModel = [];
             c.byContextWindow = [];
@@ -4871,8 +5003,11 @@
           }
         }
 
+        // /api/people never carries LiteLLM amounts (its per-user breakdown is opt-in and
+        // served separately by /api/litellm-attribution — see server.mjs's GDPR
+        // data-minimization note) — removing LiteLLM has nothing to subtract here.
         let correctedPeople = people;
-        if (people) {
+        if (people && provider !== "litellm") {
           correctedPeople = people
             .map((p) => {
               const anthropicAmount = isAnthropic ? 0 : p.anthropicAmount;
@@ -4898,12 +5033,17 @@
 
       function dropProviderFromLoadedState(provider) {
         const isAnthropic = provider === "anthropic";
-        const providerName = isAnthropic ? "Anthropic" : "OpenAI";
+        const providerName =
+          provider === "anthropic"
+            ? "Anthropic"
+            : provider === "openai"
+              ? "OpenAI"
+              : "LiteLLM";
 
         state.people = correctCostAndPeopleForProviderDrop(
           state.cost,
           state.people,
-          isAnthropic,
+          provider,
           providerName,
         );
 
@@ -4920,8 +5060,10 @@
             state.teams =
             state.teamSeries =
               null;
-        } else {
+        } else if (provider === "openai") {
           state.openaiProjects = null;
+        } else {
+          state.litellmAttribution = null;
         }
 
         // Re-cache the corrected data for the range currently on screen so switching away
@@ -4937,7 +5079,7 @@
         state.allocationPeople = correctCostAndPeopleForProviderDrop(
           state.allocationCost,
           state.allocationPeople,
-          isAnthropic,
+          provider,
           providerName,
         );
         if (isAnthropic) {
@@ -4954,14 +5096,15 @@
       }
 
       (function initProviderChips() {
-        const PROVIDER_NAMES = { anthropic: "Claude", openai: "ChatGPT" };
+        const PROVIDER_NAMES = { anthropic: "Claude", openai: "ChatGPT", litellm: "LiteLLM" };
+        const PROVIDER_KEYS = ["anthropic", "openai", "litellm"];
         const CHEVRON_DOWN_SVG =
           '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
         const PLUS_SVG =
           '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
 
         function closeAllMenus() {
-          ["anthropic", "openai"].forEach((key) => {
+          PROVIDER_KEYS.forEach((key) => {
             const menu = document.getElementById("providerMenu-" + key);
             if (menu) menu.hidden = true;
           });
@@ -5017,7 +5160,7 @@
           }
         }
 
-        ["anthropic", "openai"].forEach((key) => {
+        PROVIDER_KEYS.forEach((key) => {
           const chip = document.getElementById("providerChip-" + key);
           const btn = document.getElementById("providerChipBtn-" + key);
           const menu = document.getElementById("providerMenu-" + key);
@@ -5068,8 +5211,9 @@
               });
               if (!res.ok) throw new Error("remove-key failed");
               clearStaleProviderMixState();
-              const otherKey = key === "anthropic" ? "openai" : "anthropic";
-              const anotherProviderRemains = providerInfo(otherKey).connected;
+              const anotherProviderRemains = PROVIDER_KEYS.some(
+                (k) => k !== key && providerInfo(k).connected,
+              );
               // /remove-key applies the change to the running server synchronously (see
               // applyProviderKeys in server.mjs) before responding, so there's no relaunch
               // to wait for — safe to act on the new state immediately.
@@ -5099,6 +5243,7 @@
                   renderModelCaching();
                   renderTeams();
                   renderOpenAiProjects();
+                  renderLiteLlmAttribution();
                 } else {
                   // Nothing loaded yet to subtract from (e.g. removed right as the page was
                   // still loading, before cancelBackgroundLoads above could even deliver a

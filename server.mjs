@@ -75,6 +75,9 @@ const REPEAT_ICON_SVG = monochromeIconSvg("rotate");
 const TEAMS_ICON_SVG = monochromeIconSvg("users");
 const DOLLAR_ICON_SVG = monochromeIconSvg("dollar");
 const OPENAI_LOGO_SVG = monochromeIconSvg("openai-light");
+// Generic gateway/proxy glyph, not LiteLLM's actual logo — see assets/icons/litellm.svg's own
+// comment. Avoids guessing at trademark usage for a project logo this app has no license to.
+const LITELLM_LOGO_SVG = monochromeIconSvg("litellm");
 // Anthropic's mark keeps its real brand orange rather than currentColor — unlike the
 // monochrome UI icons above, this one's color is the point, not something that should ever
 // inherit surrounding text color.
@@ -185,7 +188,7 @@ function loadExternalConfig() {
 }
 loadExternalConfig();
 
-// Either provider key works on its own, or both together — the dashboard degrades to
+// Any one provider key works on its own, or all three together — the dashboard degrades to
 // showing just the connected provider(s)' data rather than requiring a specific one.
 // Mutable, not const: applyProviderKeys (below) updates these in place when a key is
 // added/changed/removed, so the running process picks up the change immediately instead of
@@ -194,6 +197,12 @@ let KEY = process.env.ANTHROPIC_ADMIN_KEY;
 let ANTHROPIC_ENABLED = Boolean(KEY);
 let OPENAI_KEY = process.env.OPENAI_ADMIN_KEY;
 let OPENAI_ENABLED = Boolean(OPENAI_KEY);
+// LiteLLM needs two values, not one — a self-hosted proxy's base URL is never a fixed
+// constant the way api.anthropic.com/api.openai.com are. Both must be present to enable it;
+// a stray key with no URL (or vice versa) is treated as not configured.
+let LITELLM_BASE_URL = process.env.LITELLM_BASE_URL;
+let LITELLM_KEY = process.env.LITELLM_API_KEY;
+let LITELLM_ENABLED = Boolean(LITELLM_BASE_URL && LITELLM_KEY);
 
 // Shared with the client-side copy inside SETUP_CLIENT_SCRIPT (that one masks what the user
 // just typed, before it's ever sent anywhere; this one masks an already-saved key server-side
@@ -209,20 +218,28 @@ function maskKey(key) {
 // live (see applyProviderKeys) without a relaunch — a cached boolean would go stale the first
 // time a key is added or removed.
 function isSetupMode() {
-  return !ANTHROPIC_ENABLED && !OPENAI_ENABLED;
+  return !ANTHROPIC_ENABLED && !OPENAI_ENABLED && !LITELLM_ENABLED;
 }
 if (isSetupMode()) {
   console.warn(
     "No API keys configured — serving the setup page until at least one is saved.",
   );
-} else if (!ANTHROPIC_ENABLED) {
-  console.warn(
-    "Missing ANTHROPIC_ADMIN_KEY — Anthropic sections of the dashboard will show zero/empty data.",
-  );
-} else if (!OPENAI_ENABLED) {
-  console.warn(
-    "Missing OPENAI_ADMIN_KEY — OpenAI sections of the dashboard will show zero/empty data.",
-  );
+} else {
+  if (!ANTHROPIC_ENABLED) {
+    console.warn(
+      "Missing ANTHROPIC_ADMIN_KEY — Anthropic sections of the dashboard will show zero/empty data.",
+    );
+  }
+  if (!OPENAI_ENABLED) {
+    console.warn(
+      "Missing OPENAI_ADMIN_KEY — OpenAI sections of the dashboard will show zero/empty data.",
+    );
+  }
+  if (!LITELLM_ENABLED) {
+    console.warn(
+      "Missing LITELLM_BASE_URL/LITELLM_API_KEY — LiteLLM sections of the dashboard will show zero/empty data.",
+    );
+  }
 }
 
 const PORT = Number(process.env.PORT) || 4173;
@@ -234,6 +251,9 @@ const API_BASE = "https://api.anthropic.com/v1/organizations/analytics";
 let HEADERS = { "x-api-key": KEY, "anthropic-version": "2023-06-01" };
 const OPENAI_API_BASE = "https://api.openai.com/v1/organization";
 let OPENAI_HEADERS = { Authorization: `Bearer ${OPENAI_KEY}` };
+// Trimmed of a trailing slash so `${LITELLM_BASE_URL}/user/daily/activity` never ends up
+// with a doubled slash depending on how the user pasted their proxy's URL.
+let LITELLM_HEADERS = { Authorization: `Bearer ${LITELLM_KEY}` };
 
 // Applies a new set of provider keys to the *running* process — no relaunch. Used by both
 // handleSetup (add/change a key) and handleRemoveKey (drop one). Older versions of this app
@@ -245,17 +265,25 @@ let OPENAI_HEADERS = { Authorization: `Bearer ${OPENAI_KEY}` };
 // a synchronous variable reassignment's doesn't. Now .env is purely a cold-boot bootstrap
 // file — read once at startup (loadExternalConfig, above) and written here so the *next* cold
 // start picks up the change, but never read back while this process keeps running.
-function applyProviderKeys(anthropicKey, openaiKey) {
+function applyProviderKeys(anthropicKey, openaiKey, litellmBaseUrl, litellmKey) {
   KEY = anthropicKey || "";
   OPENAI_KEY = openaiKey || "";
+  LITELLM_BASE_URL = (litellmBaseUrl || "").replace(/\/+$/, "");
+  LITELLM_KEY = litellmKey || "";
   ANTHROPIC_ENABLED = Boolean(KEY);
   OPENAI_ENABLED = Boolean(OPENAI_KEY);
+  LITELLM_ENABLED = Boolean(LITELLM_BASE_URL && LITELLM_KEY);
   HEADERS = { "x-api-key": KEY, "anthropic-version": "2023-06-01" };
   OPENAI_HEADERS = { Authorization: `Bearer ${OPENAI_KEY}` };
+  LITELLM_HEADERS = { Authorization: `Bearer ${LITELLM_KEY}` };
 
   const lines = [];
   if (KEY) lines.push(`ANTHROPIC_ADMIN_KEY=${KEY}`);
   if (OPENAI_KEY) lines.push(`OPENAI_ADMIN_KEY=${OPENAI_KEY}`);
+  if (LITELLM_ENABLED) {
+    lines.push(`LITELLM_BASE_URL=${LITELLM_BASE_URL}`);
+    lines.push(`LITELLM_API_KEY=${LITELLM_KEY}`);
+  }
   const configPath = join(ROOT, ".env");
   // Synchronous and immediate, not deferred to "later" — a few bytes to a local file is
   // effectively instant, and doing it synchronously means two overlapping requests can't
@@ -263,7 +291,7 @@ function applyProviderKeys(anthropicKey, openaiKey) {
   if (lines.length) writeFileSync(configPath, lines.join("\n") + "\n");
   else if (existsSync(configPath)) unlinkSync(configPath);
   console.log(
-    `.env updated: anthropic=${KEY ? "yes" : "no"}, openai=${OPENAI_KEY ? "yes" : "no"}`,
+    `.env updated: anthropic=${KEY ? "yes" : "no"}, openai=${OPENAI_KEY ? "yes" : "no"}, litellm=${LITELLM_ENABLED ? "yes" : "no"}`,
   );
 }
 
@@ -618,6 +646,74 @@ function mockOpenAiUsageBuckets(startingAtUnix, endingAtUnix) {
   return buckets;
 }
 
+// Mock keys/teams mirror a plausible LiteLLM virtual-key setup — hashes are never real
+// (this app never sees a real LiteLLM key, only hashes LiteLLM itself reports), just stable
+// labels so the demo's attribution table has something believable to show.
+const MOCK_LITELLM_KEYS = [
+  { hash: "key-hash-1", alias: "claude-code-cli", teamId: "team-engineering" },
+  { hash: "key-hash-2", alias: "internal-chatbot", teamId: "team-support" },
+  { hash: "key-hash-3", alias: "batch-eval-job", teamId: "team-engineering" },
+];
+const MOCK_LITELLM_MODELS = ["claude-sonnet-5", "claude-opus-5", "gpt-5.6-sol"];
+
+// Matches fetchLiteLlmDailyActivity's own return value (the flat `results` array, already
+// unwrapped from the real endpoint's `{results, metadata}` envelope) — aggregateLiteLlmDailyActivity
+// runs completely unmodified on top of this, same pattern as every other mock*Buckets function.
+function mockLiteLlmDailyActivity(startingAt, endingAt) {
+  return mockDaysInRange(startingAt, endingAt).map(({ dateIso, dayIndex }) => {
+    const models = {};
+    const apiKeys = {};
+    const providers = { anthropic: {}, openai: {} };
+    let daySpend = 0;
+    let dayRequests = 0;
+    let dayPromptTokens = 0;
+    let dayCompletionTokens = 0;
+
+    MOCK_LITELLM_KEYS.forEach((k, i) => {
+      const model = MOCK_LITELLM_MODELS[i % MOCK_LITELLM_MODELS.length];
+      const spend = mockDailyValue(`litellm_key:${k.hash}`, dayIndex, 2, 25, dateIso);
+      const requests = Math.max(
+        1,
+        Math.round(spend * (6 + mulberry32(seedFrom(`litellm_req:${k.hash}:${dateIso.slice(0, 10)}`))() * 4)),
+      );
+      const promptTokens = Math.round(spend * 4000);
+      const completionTokens = Math.round(spend * 1200);
+      daySpend += spend;
+      dayRequests += requests;
+      dayPromptTokens += promptTokens;
+      dayCompletionTokens += completionTokens;
+
+      apiKeys[k.hash] = {
+        metrics: { spend, api_requests: requests },
+        metadata: {
+          key_alias: k.alias,
+          team_id: k.teamId,
+          user_id: null,
+          user_email: null,
+          key_exists: true,
+        },
+      };
+      models[model] = models[model] ?? { metrics: { spend: 0, api_requests: 0 } };
+      models[model].metrics.spend += spend;
+      models[model].metrics.api_requests += requests;
+    });
+
+    return {
+      date: dateIso,
+      metrics: {
+        spend: daySpend,
+        prompt_tokens: dayPromptTokens,
+        completion_tokens: dayCompletionTokens,
+        cache_read_input_tokens: Math.round(dayPromptTokens * 0.3),
+        cache_creation_input_tokens: Math.round(dayPromptTokens * 0.05),
+        total_tokens: dayPromptTokens + dayCompletionTokens,
+        api_requests: dayRequests,
+      },
+      breakdown: { models, providers, api_keys: apiKeys },
+    };
+  });
+}
+
 // Matches fetchActivitySummaries's own return value (already unwrapped from {summaries:[...]})
 // — shapeActivitySummary/handleSeats run unmodified on top of this.
 function mockActivitySummaries(startingDate) {
@@ -725,7 +821,9 @@ async function cachedFetchJson(url, headers = HEADERS, attempt = 0) {
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_TTL_MS) return hit.data;
 
-  const response = await withConcurrencyLimit(() => fetch(url, { headers }));
+  const response = await withConcurrencyLimit(() =>
+    fetch(url, { method: "GET", headers }),
+  );
   if (response.status === 429 && attempt < 6) {
     const retryAfterSec = Number(response.headers.get("retry-after")) || 3;
     await new Promise((r) => setTimeout(r, retryAfterSec * 1000 + 250));
@@ -738,6 +836,26 @@ async function cachedFetchJson(url, headers = HEADERS, attempt = 0) {
   const data = await response.json();
   cache.set(key, { at: Date.now(), data });
   return data;
+}
+
+// This app only ever reads LiteLLM — never writes, deletes, or otherwise manages its proxy
+// (see the hard constraint in the LiteLLM integration's brief: no /global/spend/reset,
+// /key/generate, /key/delete, or any other management route). A single allowlist of exact
+// paths, checked here rather than trusted to "we just happen to only call one function",
+// means a future call site that passes the wrong path fails loudly instead of silently
+// reaching a mutating endpoint. GET is also pinned explicitly in cachedFetchJson above (not
+// left to fetch's default) as defense in depth for the same reason.
+const LITELLM_ALLOWED_PATHS = new Set(["/user/daily/activity"]);
+
+export function buildLiteLlmUrl(baseUrl, path, params) {
+  if (!LITELLM_ALLOWED_PATHS.has(path)) {
+    throw new Error(
+      `Refusing to call non-allowlisted LiteLLM path: ${path}`,
+    );
+  }
+  const url = new URL(`${baseUrl}${path}`);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  return url;
 }
 
 // The Analytics API only has data back to a fixed org-wide start date (confirmed live:
@@ -1226,6 +1344,151 @@ async function fetchOpenAiProjectCosts(startingAtUnix, endingAtUnix) {
     }
   }
   return [...byProject.values()].sort((a, b) => b.spend - a.spend);
+}
+
+// Exposing per-user spend (breakdown.api_keys[].metadata.user_email) is opt-in, not the
+// default — spend logs/daily-activity rows can carry a real person's email, and the GDPR
+// data-minimization constraint this integration was built under says per-user breakdown
+// must be something the operator deliberately turns on, not something that ships live. Team
+// and key-alias level attribution (see aggregateLiteLlmDailyActivity below) needs no such
+// flag — that's the level this feature is for.
+const LITELLM_INCLUDE_USER_BREAKDOWN =
+  process.env.LITELLM_INCLUDE_USER_BREAKDOWN === "1";
+
+// LiteLLM's /user/daily/activity wants plain YYYY-MM-DD, not the RFC3339 timestamps
+// Anthropic's API takes — reuses the same resolveRange() window everything else in
+// handleCostSummary already computed, just reformatted for this one endpoint.
+const toLiteLlmDate = (iso) => iso.slice(0, 10);
+
+async function fetchLiteLlmDailyActivity(startingAt, endingAt) {
+  if (!LITELLM_ENABLED) return [];
+  if (MOCK_MODE) return mockLiteLlmDailyActivity(startingAt, endingAt);
+
+  const results = [];
+  let page = 1;
+  // /user/daily/activity's own `metadata.total_pages`/`has_more` drive pagination here — a
+  // different shape than the has_more/next_page cursor the Anthropic/OpenAI fetchers above
+  // use, but the same "keep paging until the server says stop" loop.
+  for (;;) {
+    const url = buildLiteLlmUrl(LITELLM_BASE_URL, "/user/daily/activity", {
+      start_date: toLiteLlmDate(startingAt),
+      end_date: toLiteLlmDate(endingAt),
+      page: String(page),
+      page_size: "1000",
+    });
+    const data = await cachedFetchJson(url, LITELLM_HEADERS);
+    results.push(...(data.results ?? []));
+    if (!data.metadata?.has_more) break;
+    page += 1;
+  }
+  return results;
+}
+
+// `results` is the flat array fetchLiteLlmDailyActivity returns (one entry per calendar
+// day) — each with the shape confirmed against litellm/types/proxy/management_endpoints/
+// common_daily_activity.py: { date, metrics: {spend, prompt_tokens, completion_tokens,
+// cache_read_input_tokens, cache_creation_input_tokens, total_tokens, api_requests, ...},
+// breakdown: { models, providers, api_keys: { <hash>: { metrics, metadata: { key_alias,
+// team_id, user_id, user_email, key_exists } } } } }.
+//
+// Team/key-alias attribution comes from `breakdown.api_keys`, keyed by key *hash* — never
+// the real key value, and never the master key (this app is only ever given a read-only
+// proxy_admin_viewer-scoped key, per the integration's hard constraints) — attributed to
+// whichever team/key-alias that hash's metadata names. `providers` is surfaced separately
+// (not folded into spend) so a user who later discovers LiteLLM shares an org with an
+// existing Anthropic/OpenAI connection has a visible signal of that, instead of a silent
+// double-count.
+export function aggregateLiteLlmDailyActivity(results, { includeUserBreakdown = false } = {}) {
+  const dailyByDate = new Map();
+  const byModel = new Map();
+  const byTeam = new Map();
+  const byKeyAlias = new Map();
+  const byUser = new Map();
+  const providers = new Set();
+  let totalSpend = 0;
+  let totalRequests = 0;
+
+  const addTo = (map, key, spend, requests) => {
+    if (key == null) return;
+    const t = map.get(key) ?? { spend: 0, requests: 0 };
+    t.spend += spend;
+    t.requests += requests;
+    map.set(key, t);
+  };
+
+  for (const day of results) {
+    const date = day.date?.slice(0, 10);
+    const m = day.metrics ?? {};
+    const spend = m.spend ?? 0;
+    const requests = m.api_requests ?? 0;
+    totalSpend += spend;
+    totalRequests += requests;
+    if (date) {
+      const d = dailyByDate.get(date) ?? {
+        spend: 0,
+        requests: 0,
+        promptTokens: 0,
+        completionTokens: 0,
+        cacheReadTokens: 0,
+        cacheCreationTokens: 0,
+      };
+      d.spend += spend;
+      d.requests += requests;
+      d.promptTokens += m.prompt_tokens ?? 0;
+      d.completionTokens += m.completion_tokens ?? 0;
+      d.cacheReadTokens += m.cache_read_input_tokens ?? 0;
+      d.cacheCreationTokens += m.cache_creation_input_tokens ?? 0;
+      dailyByDate.set(date, d);
+    }
+
+    const breakdown = day.breakdown ?? {};
+    for (const [model, v] of Object.entries(breakdown.models ?? {})) {
+      addTo(byModel, model, v.metrics?.spend ?? 0, v.metrics?.api_requests ?? 0);
+    }
+    for (const provider of Object.keys(breakdown.providers ?? {})) {
+      providers.add(provider);
+    }
+    for (const keyInfo of Object.values(breakdown.api_keys ?? {})) {
+      const spendHere = keyInfo.metrics?.spend ?? 0;
+      const requestsHere = keyInfo.metrics?.api_requests ?? 0;
+      const alias = keyInfo.metadata?.key_alias ?? "Unlabeled key";
+      const teamId = keyInfo.metadata?.team_id ?? "unassigned";
+      addTo(byKeyAlias, alias, spendHere, requestsHere);
+      addTo(byTeam, teamId, spendHere, requestsHere);
+      // Only ever populated when the operator has explicitly opted in — see
+      // LITELLM_INCLUDE_USER_BREAKDOWN above. aggregateLiteLlmDailyActivity itself stays
+      // pure either way; the flag is threaded in by the one caller (fetchLiteLlmCostSummary)
+      // rather than read from process.env here, so this stays unit-testable without env
+      // mutation.
+      if (includeUserBreakdown) {
+        const user = keyInfo.metadata?.user_email ?? keyInfo.metadata?.user_id ?? null;
+        if (user) addTo(byUser, user, spendHere, requestsHere);
+      }
+    }
+  }
+
+  const toSortedArray = (map, nameKey) =>
+    [...map.entries()]
+      .map(([name, v]) => ({ [nameKey]: name, ...v }))
+      .sort((a, b) => b.spend - a.spend);
+
+  return {
+    dailyByDate,
+    totalSpend,
+    totalRequests,
+    byModel: toSortedArray(byModel, "name"),
+    byTeam: toSortedArray(byTeam, "teamId"),
+    byKeyAlias: toSortedArray(byKeyAlias, "alias"),
+    byUser: includeUserBreakdown ? toSortedArray(byUser, "user") : [],
+    providers: [...providers],
+  };
+}
+
+async function fetchLiteLlmCostSummary(startingAt, endingAt) {
+  const results = await fetchLiteLlmDailyActivity(startingAt, endingAt);
+  return aggregateLiteLlmDailyActivity(results, {
+    includeUserBreakdown: LITELLM_INCLUDE_USER_BREAKDOWN,
+  });
 }
 
 // Same "not bucketed by day, so chunk-and-sum rather than concatenate" situation as
@@ -1976,6 +2239,8 @@ async function handleCostSummary(res, searchParams) {
     openaiUsageBuckets,
     previousOpenaiUsageBuckets,
     modelUsageBuckets,
+    litellm,
+    previousLitellm,
   ] = await Promise.all([
     fetchCostBuckets(startingAt, endingAt),
     fetchCostBuckets(prevStartingAt, prevEndingAt),
@@ -1987,6 +2252,8 @@ async function handleCostSummary(res, searchParams) {
     // Anthropic's cost_report has no token counts — usage_report grouped by
     // model is the only source for the Model tab's "Cost per 1M tokens".
     fetchUsageGroupedBy(startingAt, endingAt, "model"),
+    fetchLiteLlmCostSummary(startingAt, endingAt),
+    fetchLiteLlmCostSummary(prevStartingAt, prevEndingAt),
   ]);
 
   const current = aggregateCostBuckets(currentBuckets);
@@ -2042,6 +2309,7 @@ async function handleCostSummary(res, searchParams) {
 
   const anthropicSpend = current.totals.spend;
   const openaiSpend = openai.totalSpend;
+  const litellmSpend = litellm.totalSpend;
   const byProvider = [
     {
       name: "Anthropic",
@@ -2057,6 +2325,21 @@ async function handleCostSummary(res, searchParams) {
       totalSpend: openaiSpend,
       totalRequests: openaiUsage.totalRequests,
     },
+    {
+      name: "LiteLLM",
+      // Tagged so the UI can label this row distinctly from a direct Anthropic/OpenAI
+      // connection — LiteLLM computes its own cost from its price map, which can differ from
+      // the provider's actual invoice (see HANDOFF note in index.html's LiteLLM section).
+      source: "litellm",
+      spend: current.labels.map((d) => litellm.dailyByDate.get(d)?.spend ?? 0),
+      requests: current.labels.map((d) => litellm.dailyByDate.get(d)?.requests ?? 0),
+      totalSpend: litellmSpend,
+      totalRequests: litellm.totalRequests,
+      // Which real providers LiteLLM is actually forwarding to this period — lets the UI
+      // flag a potential double-count against the Anthropic/OpenAI rows above, rather than
+      // silently combining numbers that might already overlap.
+      forwardsToProviders: litellm.providers,
+    },
   ];
 
   sendJson(res, 200, {
@@ -2068,18 +2351,26 @@ async function handleCostSummary(res, searchParams) {
     byProvider,
     totals: {
       ...current.totals,
-      spend: anthropicSpend + openaiSpend,
+      spend: anthropicSpend + openaiSpend + litellmSpend,
       anthropicSpend,
       openaiSpend,
-      requests: current.totals.requests + openaiUsage.totalRequests,
+      litellmSpend,
+      requests:
+        current.totals.requests + openaiUsage.totalRequests + litellm.totalRequests,
       savings: current.totals.listAmount - current.totals.spend,
       previous: hasFullPreviousPeriod
         ? {
-            spend: previous.totals.spend + previousOpenai.totalSpend,
+            spend:
+              previous.totals.spend +
+              previousOpenai.totalSpend +
+              previousLitellm.totalSpend,
             anthropicSpend: previous.totals.spend,
             openaiSpend: previousOpenai.totalSpend,
+            litellmSpend: previousLitellm.totalSpend,
             requests:
-              previous.totals.requests + previousOpenaiUsage.totalRequests,
+              previous.totals.requests +
+              previousOpenaiUsage.totalRequests +
+              previousLitellm.totalRequests,
             savings: previous.totals.listAmount - previous.totals.spend,
           }
         : null,
@@ -2208,6 +2499,25 @@ async function handleOpenAiModelCosts(res, searchParams) {
   sendJson(res, 200, { models: aggregateOpenAiCostByModel(buckets) });
 }
 
+// Its own endpoint rather than folded into /api/cost-summary (which every section fetches on
+// every load) — team/key-alias attribution is only needed by the LiteLLM panel, not by
+// every other card. byUser is only ever non-empty when the operator has set
+// LITELLM_INCLUDE_USER_BREAKDOWN=1 (see fetchLiteLlmCostSummary) — the GDPR data-minimization
+// constraint this integration was built under means per-user spend must never be exposed by
+// default.
+async function handleLiteLlmAttribution(res, searchParams) {
+  const { startingAt, endingAt } = resolveRange(searchParams);
+  const summary = await fetchLiteLlmCostSummary(startingAt, endingAt);
+  sendJson(res, 200, {
+    available: LITELLM_ENABLED,
+    byTeam: summary.byTeam,
+    byKeyAlias: summary.byKeyAlias,
+    byUser: summary.byUser,
+    userBreakdownEnabled: LITELLM_INCLUDE_USER_BREAKDOWN,
+    forwardsToProviders: summary.providers,
+  });
+}
+
 // The packaged build has no source tree to read index.html from — it's embedded as a SEA
 // asset at build time instead (see sea-config.json) and fetched via node:sea's getAsset.
 async function loadIndexHtml() {
@@ -2229,6 +2539,11 @@ async function loadIndexHtml() {
     openai: {
       connected: OPENAI_ENABLED,
       masked: OPENAI_ENABLED ? maskKey(OPENAI_KEY) : null,
+    },
+    litellm: {
+      connected: LITELLM_ENABLED,
+      masked: LITELLM_ENABLED ? maskKey(LITELLM_KEY) : null,
+      baseUrl: LITELLM_ENABLED ? LITELLM_BASE_URL : null,
     },
   }).replace(/</g, "\\u003c");
   inject.push(`window.__ATS_PROVIDERS__=${providers};`);
@@ -2368,6 +2683,50 @@ const PROVIDER_COPY = {
       "4. Copy the key and share it with me securely.\n\n" +
       "The key is only used to read spend and usage data. It stays on my device and is never sent to Moss. I can also share the GitHub code for review.",
   },
+  litellm: {
+    title: "Add LiteLLM Proxy",
+    shortName: "LiteLLM",
+    credentialName: "virtual key",
+    badgeBg: "#f1f1f1",
+    badgeFg: "#5b5858",
+    intro:
+      "Add your company's LiteLLM Proxy to see who and which team is driving AI spend through it, alongside Claude and ChatGPT.",
+    consoleUrl: "https://docs.litellm.ai/docs/proxy/virtual_keys",
+    helpGuideUrl: "https://docs.litellm.ai/docs/proxy/cost_tracking",
+    helpGuideLabel: "LiteLLM cost tracking guide",
+    // Unlike Anthropic/OpenAI's fixed key prefixes, a self-hosted LiteLLM deployment's
+    // virtual keys have no single fixed prefix to validate against — the client script skips
+    // the keyPrefix format check for this provider (see hasBaseUrlField in
+    // SETUP_CLIENT_SCRIPT) rather than show a misleading "doesn't look right" warning.
+    keyPrefix: "",
+    // Only this provider needs a second field — a self-hosted proxy has no fixed base URL
+    // the way api.anthropic.com/api.openai.com do.
+    hasBaseUrlField: true,
+    baseUrlLabel: "Proxy base URL",
+    baseUrlPlaceholder: "https://your-litellm-proxy.example.com",
+    steps: [
+      {
+        text: "Ask whoever runs your LiteLLM Proxy for its base URL and a read-only virtual key.",
+      },
+      {
+        text: "A proxy_admin_viewer role key, or one with the get_spend_routes permission, is enough — never share the master key.",
+      },
+      { text: "Paste the base URL and key below." },
+    ],
+    fieldLabelSelf: "LiteLLM virtual key",
+    reservedNote:
+      "This app only ever makes GET requests to your proxy's /user/daily/activity endpoint — it cannot create, change, or delete keys, teams, or budgets.",
+    delegateIntro: "Send this to whoever runs your LiteLLM Proxy:",
+    messageCardTitle: "Message for your LiteLLM Proxy admin",
+    invalidFormatMsg: "A base URL and key are both required.",
+    permissionErrorMsg:
+      "This LiteLLM key doesn't have access to spend data. Ask whoever created it for a proxy_admin_viewer key, or one with the get_spend_routes permission — not the master key.",
+    requestMessage:
+      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you give me read-only access to our LiteLLM Proxy's spend data?\n\n" +
+      "1. Create a virtual key with the proxy_admin_viewer role (or the get_spend_routes permission) — not the master key.\n\n" +
+      "2. Share the proxy's base URL and that key with me securely.\n\n" +
+      "This only reads /user/daily/activity — it can't create, change, or delete anything. It stays on my device and is never sent to Moss. I can also share the GitHub code for review.",
+  },
 };
 
 // Shared page-level copy for the parallel two-card layout (not per-provider, so it lives
@@ -2378,7 +2737,7 @@ const PROVIDER_COPY = {
 // provider name: connecting Anthropic genuinely unlocks Claude adoption tracking (see
 // available-data-points.md — "Seat and adoption summaries" only exists under Anthropic),
 // connecting OpenAI never does, so only one of them can honestly mention it.
-export function setupPageCopy(mode) {
+export function setupPageCopy(mode, cards) {
   if (mode === "add-openai") {
     return {
       title: "Add ChatGPT",
@@ -2418,11 +2777,33 @@ export function setupPageCopy(mode) {
       buttonLabel: "Save key",
     };
   }
+  if (mode === "add-litellm") {
+    return {
+      title: "Add LiteLLM Proxy",
+      subtitle:
+        "Add your company's LiteLLM Proxy to see who and which team is driving AI spend through it.",
+      cards: ["litellm"],
+      buttonLabel: "Add LiteLLM",
+    };
+  }
+  if (mode === "change-litellm") {
+    return {
+      title: "Change your LiteLLM connection",
+      subtitle:
+        "Paste a new base URL and key to replace the one currently connected.",
+      cards: ["litellm"],
+      buttonLabel: "Save key",
+    };
+  }
+  // "setup" mode shows whichever providers aren't connected yet — `cards` lets the caller
+  // pass a specific subset (e.g. two still-missing providers after a third was already
+  // connected); defaulting to all three keeps this backward-compatible with a bare
+  // setupPageCopy("setup") call (fresh install, nothing connected at all).
   return {
     title: "Connect your AI providers via API keys",
     subtitle:
-      "Connect one provider to view its spend. Connect both to combine and compare spend across providers.",
-    cards: ["anthropic", "openai"],
+      "Connect one provider to view its spend. Connect more to combine and compare spend across providers.",
+    cards: cards ?? ["anthropic", "openai", "litellm"],
     buttonLabel: "Open dashboard",
   };
 }
@@ -2448,6 +2829,7 @@ const SETUP_CLIENT_SCRIPT = `
       spinner: '<svg viewBox="0 0 24 24" fill="none" width="1em" height="1em"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="32 200"/></svg>',
       anthropicLogo: '${ANTHROPIC_LOGO_SVG}',
       openaiLogo: '${OPENAI_LOGO_SVG}',
+      litellmLogo: '${LITELLM_LOGO_SVG}',
     };
     function icon(name, size) {
       return '<span class="icon" style="font-size:' + (size || 16) + 'px">' + ICONS[name] + '</span>';
@@ -2463,23 +2845,26 @@ const SETUP_CLIENT_SCRIPT = `
       return key.slice(0, 13) + '••••••••' + key.slice(-4);
     }
 
+    const PROVIDER_DISPLAY_NAME = { anthropic: 'Claude', openai: 'ChatGPT', litellm: 'LiteLLM' };
+    const PROVIDER_LOGO_ICON = { anthropic: 'anthropicLogo', openai: 'openaiLogo', litellm: 'litellmLogo' };
+
     const state = {
       anthropic: { key: '', status: 'idle', error: '', reveal: false, copied: false, showDelegate: false },
       openai: { key: '', status: 'idle', error: '', reveal: false, copied: false, showDelegate: false },
+      litellm: { key: '', baseUrl: '', status: 'idle', error: '', reveal: false, copied: false, showDelegate: false },
       saving: false,
     };
 
     function cardHeader(key) {
       const p = PROVIDERS[key];
       const s = state[key];
-      const logoIcon = key === 'anthropic' ? 'anthropicLogo' : 'openaiLogo';
-      const left = '<div class="avatar" style="background:' + p.badgeBg + ';color:' + p.badgeFg + '">' + icon(logoIcon, 18) + '</div>';
+      const left = '<div class="avatar" style="background:' + p.badgeBg + ';color:' + p.badgeFg + '">' + icon(PROVIDER_LOGO_ICON[key], 18) + '</div>';
       const connectedTag = s.status === 'valid'
         ? '<div class="connected-tag">' + icon('check', 14) + '<span>Connected</span></div>'
         : '';
       return (
         '<div class="card-head">' + left +
-          '<div class="card-name">' + (key === 'anthropic' ? 'Claude' : 'ChatGPT') + '</div>' +
+          '<div class="card-name">' + PROVIDER_DISPLAY_NAME[key] + '</div>' +
           connectedTag +
         '</div>'
       );
@@ -2487,9 +2872,12 @@ const SETUP_CLIENT_SCRIPT = `
 
     function connectedSummary(key) {
       const s = state[key];
+      const p = PROVIDERS[key];
+      // LiteLLM's connected state also shows which base URL it's pointed at — unlike
+      // Anthropic/OpenAI, where the API's base URL is fixed and never worth repeating back.
       return (
         '<div class="connected-summary">' + icon('lock', 14) +
-          '<span class="connected-key">' + escapeHtml(maskKey(s.key)) + '</span>' +
+          '<span class="connected-key">' + (p.hasBaseUrlField ? escapeHtml(s.baseUrl) + ' &middot; ' : '') + escapeHtml(maskKey(s.key)) + '</span>' +
           '<button type="button" class="change-btn" data-action="change">' + icon('pencil', 12) + '<span>Change</span></button>' +
         '</div>'
       );
@@ -2510,6 +2898,18 @@ const SETUP_CLIENT_SCRIPT = `
       }).join('') + '</div>';
     }
 
+    function baseUrlField(key) {
+      const s = state[key];
+      const p = PROVIDERS[key];
+      if (!p.hasBaseUrlField) return '';
+      return (
+        '<div class="key-input-wrap" style="margin-bottom:10px">' +
+          '<input type="text" id="base-url-input-' + key + '" autocomplete="off" placeholder="' + escapeAttr(p.baseUrlPlaceholder) + '" value="' + escapeAttr(s.baseUrl) + '" />' +
+        '</div>' +
+        '<div class="key-format-hint" style="margin-bottom:10px">' + p.baseUrlLabel + '</div>'
+      );
+    }
+
     function keyField(key) {
       const s = state[key];
       const p = PROVIDERS[key];
@@ -2517,12 +2917,13 @@ const SETUP_CLIENT_SCRIPT = `
         ? icon('warning', 13) + '<span>' + s.error + '</span>'
         : '';
       return (
+        baseUrlField(key) +
         '<div class="key-input-wrap">' +
           '<input type="' + (s.reveal ? 'text' : 'password') + '" id="key-input-' + key + '" autocomplete="off" placeholder="Paste key here" value="' + escapeAttr(s.key) + '" class="' + (s.status === 'invalid' ? 'input-error' : '') + '" />' +
           (s.status === 'checking' ? '<span class="key-spinner spin">' + icon('spinner', 14) + '</span>' : '') +
           '<button type="button" class="reveal-btn" data-action="reveal">' + icon(s.reveal ? 'eyeOff' : 'eye', 15) + '</button>' +
         '</div>' +
-        '<div class="key-format-hint">Example format: ' + p.keyPrefix + '&hellip;</div>' +
+        (p.keyPrefix ? '<div class="key-format-hint">Example format: ' + p.keyPrefix + '&hellip;</div>' : '') +
         '<div class="field-error' + (s.error ? '' : '-slot') + '" id="field-error-' + key + '">' + errHtml + '</div>'
       );
     }
@@ -2580,22 +2981,24 @@ const SETUP_CLIENT_SCRIPT = `
     }
 
     function renderBottom() {
-      // Two shapes: first-run setup renders both cards and lets either one alone satisfy
-      // canProceed; add-provider mode renders a single card, so canProceed just tracks that
-      // one card's status.
+      // Two shapes: a multi-card page (first-run setup, or "two providers still missing")
+      // renders several cards and lets any one of them alone satisfy canProceed; a single-card
+      // add/change page just tracks that one card's status.
       const singleKey = PAGE.cards.length === 1 ? PAGE.cards[0] : null;
       let canProceed, hint;
       if (singleKey) {
         canProceed = state[singleKey].status === 'valid';
         hint = canProceed ? "You're all set." : 'Paste your key to continue.';
       } else {
-        const a = state.anthropic.status === 'valid';
-        const o = state.openai.status === 'valid';
-        canProceed = a || o;
-        hint = '';
-        if (a && o) hint = "You're all set.";
-        else if (a) hint = 'Add ChatGPT too for combined spend, or continue with just Claude.';
-        else if (o) hint = 'Add Claude too for combined spend, or continue with just ChatGPT.';
+        const validKeys = PAGE.cards.filter(function (k) { return state[k].status === 'valid'; });
+        canProceed = validKeys.length > 0;
+        if (validKeys.length === 0) hint = '';
+        else if (validKeys.length === PAGE.cards.length) hint = "You're all set.";
+        else {
+          const missing = PAGE.cards.filter(function (k) { return state[k].status !== 'valid'; });
+          hint = 'Add ' + missing.map(function (k) { return PROVIDER_DISPLAY_NAME[k]; }).join(' or ') +
+            ' too for combined spend, or continue with just ' + validKeys.map(function (k) { return PROVIDER_DISPLAY_NAME[k]; }).join(' + ') + '.';
+        }
       }
       const btn = document.getElementById('proceed-btn');
       btn.disabled = !canProceed || state.saving;
@@ -2642,12 +3045,31 @@ const SETUP_CLIENT_SCRIPT = `
         revealBtn.innerHTML = icon(s.reveal ? 'eyeOff' : 'eye', 15);
       });
 
-      const input = el.querySelector('input[type="password"], input[type="text"]');
+      const baseUrlInput = el.querySelector('#base-url-input-' + key);
+      if (baseUrlInput) {
+        baseUrlInput.addEventListener('input', function () {
+          s.baseUrl = baseUrlInput.value.trim();
+          s.status = 'idle';
+          clearTimeout(s.verifyDebounceTimer);
+          if (s.baseUrl && s.key) {
+            s.verifyDebounceTimer = setTimeout(function () { verifyProvider(key); }, 500);
+          }
+        });
+        baseUrlInput.addEventListener('blur', function () {
+          clearTimeout(s.verifyDebounceTimer);
+          if (s.baseUrl && s.key) verifyProvider(key);
+        });
+      }
+
+      const input = el.querySelector('input[type="password"], input[type="text"]:not([id^="base-url-input-"])');
       if (input) {
         input.addEventListener('input', function () {
           s.key = input.value.trim();
           s.status = 'idle';
-          const looksRight = !s.key || s.key.indexOf(p.keyPrefix) === 0;
+          // Only providers with a fixed key prefix (Anthropic/OpenAI) get this client-side
+          // format nudge — a self-hosted LiteLLM deployment's virtual keys have no fixed
+          // prefix to check against (see PROVIDER_COPY.litellm's keyPrefix: '').
+          const looksRight = !p.keyPrefix || !s.key || s.key.indexOf(p.keyPrefix) === 0;
           const errSlot = document.getElementById('field-error-' + key);
           if (looksRight) {
             s.error = '';
@@ -2663,29 +3085,31 @@ const SETUP_CLIENT_SCRIPT = `
           // Debounce the live check so pasting or typing a key verifies on its own after a
           // short pause — no need to click elsewhere first. Blur still checks immediately
           // (clearing any pending debounce) for the case where focus leaves before it fires.
+          // LiteLLM additionally needs a base URL before there's anything to verify against.
           clearTimeout(s.verifyDebounceTimer);
-          if (s.key) {
+          if (s.key && (!p.hasBaseUrlField || s.baseUrl)) {
             s.verifyDebounceTimer = setTimeout(function () { verifyProvider(key); }, 500);
           }
         });
         input.addEventListener('blur', function () {
           clearTimeout(s.verifyDebounceTimer);
-          verifyProvider(key);
+          if (s.key && (!p.hasBaseUrlField || s.baseUrl)) verifyProvider(key);
         });
       }
     }
 
     async function verifyProvider(key) {
       const s = state[key];
+      const p = PROVIDERS[key];
       const value = s.key.trim();
-      if (!value || s.status === 'checking') return;
+      if (!value || (p.hasBaseUrlField && !s.baseUrl) || s.status === 'checking') return;
       s.status = 'checking';
       renderCard(key);
       try {
         const res = await fetch('/verify-key', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ provider: key, key: value }),
+          body: JSON.stringify({ provider: key, key: value, baseUrl: s.baseUrl }),
         });
         const data = await res.json();
         if (data.valid) {
@@ -2708,16 +3132,23 @@ const SETUP_CLIENT_SCRIPT = `
       renderBottom();
       const anthropicKey = state.anthropic.status === 'valid' ? state.anthropic.key : '';
       const openaiKey = state.openai.status === 'valid' ? state.openai.key : '';
+      const litellmKey = state.litellm.status === 'valid' ? state.litellm.key : '';
+      const litellmBaseUrl = state.litellm.status === 'valid' ? state.litellm.baseUrl : '';
       try {
         const res = await fetch('/setup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ anthropicKey: anthropicKey, openaiKey: openaiKey }),
+          body: JSON.stringify({
+            anthropicKey: anthropicKey,
+            openaiKey: openaiKey,
+            litellmKey: litellmKey,
+            litellmBaseUrl: litellmBaseUrl,
+          }),
         });
         const data = await res.json();
         if (!res.ok) {
           state.saving = false;
-          const field = data.field === 'openai' || data.field === 'anthropic' ? data.field : null;
+          const field = ['openai', 'anthropic', 'litellm'].includes(data.field) ? data.field : null;
           if (field) {
             state[field].status = 'invalid';
             state[field].error = data.error || 'Something went wrong — try again.';
@@ -3348,17 +3779,22 @@ ${FAVICON_LINK_TAG}
 }
 
 function setupPageHtml(changeProvider) {
-  const mode =
-    changeProvider === "anthropic"
-      ? "change-anthropic"
-      : changeProvider === "openai"
-        ? "change-openai"
-        : ANTHROPIC_ENABLED && !OPENAI_ENABLED
-          ? "add-openai"
-          : !ANTHROPIC_ENABLED && OPENAI_ENABLED
-            ? "add-anthropic"
-            : "setup";
-  const pageCopy = setupPageCopy(mode);
+  let mode, missingCards;
+  if (changeProvider) {
+    mode = `change-${changeProvider}`;
+  } else {
+    const ENABLED = {
+      anthropic: ANTHROPIC_ENABLED,
+      openai: OPENAI_ENABLED,
+      litellm: LITELLM_ENABLED,
+    };
+    missingCards = Object.keys(ENABLED).filter((p) => !ENABLED[p]);
+    // Exactly one provider missing: the focused "add-X" copy (unlocks a specific thing,
+    // e.g. adoption tracking for Anthropic). Two or three missing: the generic multi-card
+    // "setup" layout, scoped to just the still-missing ones via setupPageCopy's `cards` arg.
+    mode = missingCards.length === 1 ? `add-${missingCards[0]}` : "setup";
+  }
+  const pageCopy = setupPageCopy(mode, missingCards);
   const providersJson = JSON.stringify(PROVIDER_COPY).replace(/</g, "\\u003c");
   const pageJson = JSON.stringify(pageCopy).replace(/</g, "\\u003c");
   return `<!doctype html>
@@ -3541,7 +3977,7 @@ export async function verifyKey(
 
 // Shared live-verification for both the per-field /verify-key check and the final /setup
 // save — same real API call either way, just triggered at different times.
-async function verifyProviderKey(provider, key) {
+async function verifyProviderKey(provider, key, baseUrl) {
   // Demo build: any non-empty string "verifies" instantly — no real network call, so the
   // key's actual content is never checked or used for anything.
   if (MOCK_MODE)
@@ -3573,6 +4009,31 @@ async function verifyProviderKey(provider, key) {
     );
     return error ? { ok: false, error } : { ok: true };
   }
+  if (provider === "litellm") {
+    const trimmedBaseUrl = String(baseUrl ?? "").trim().replace(/\/+$/, "");
+    if (!trimmedBaseUrl) return { ok: false, error: "A proxy base URL is required" };
+    let url;
+    try {
+      // buildLiteLlmUrl's allowlist also protects a setup-time verification call — a typo'd
+      // path here would be just as much a violation of the read-only/GET-only constraint as
+      // one from the real fetcher.
+      url = buildLiteLlmUrl(trimmedBaseUrl, "/user/daily/activity", {
+        start_date: new Date().toISOString().slice(0, 10),
+        end_date: new Date().toISOString().slice(0, 10),
+        page: "1",
+        page_size: "1",
+      });
+    } catch {
+      return { ok: false, error: "That doesn't look like a valid proxy base URL." };
+    }
+    const error = await verifyKey(
+      "LiteLLM",
+      url,
+      { Authorization: `Bearer ${key}` },
+      PROVIDER_COPY.litellm.permissionErrorMsg,
+    );
+    return error ? { ok: false, error } : { ok: true };
+  }
   return { ok: false, error: "Unknown provider" };
 }
 
@@ -3585,16 +4046,23 @@ async function handleVerifyKey(req, res) {
   } catch {
     return sendJson(res, 400, { valid: false, error: "Invalid request body" });
   }
-  const provider =
-    payload.provider === "openai" || payload.provider === "anthropic"
-      ? payload.provider
-      : null;
+  const provider = ["openai", "anthropic", "litellm"].includes(
+    payload.provider,
+  )
+    ? payload.provider
+    : null;
   const key = String(payload.key ?? "").trim();
+  const baseUrl = String(payload.baseUrl ?? "").trim();
   if (!provider)
     return sendJson(res, 400, { valid: false, error: "Unknown provider" });
   if (!key)
     return sendJson(res, 400, { valid: false, error: "Key is required" });
-  const result = await verifyProviderKey(provider, key);
+  if (provider === "litellm" && !baseUrl)
+    return sendJson(res, 400, {
+      valid: false,
+      error: "A proxy base URL is required",
+    });
+  const result = await verifyProviderKey(provider, key, baseUrl);
   sendJson(res, 200, {
     valid: result.ok,
     error: result.ok ? null : result.error,
@@ -3615,11 +4083,31 @@ export function resolveKeysToPersist({
   openaiEnabled,
   existingAnthropicKey,
   existingOpenaiKey,
+  litellmKey,
+  litellmBaseUrl,
+  litellmEnabled,
+  existingLitellmKey,
+  existingLitellmBaseUrl,
 }) {
   return {
     finalAnthropicKey:
       anthropicKey || (anthropicEnabled ? existingAnthropicKey : ""),
     finalOpenaiKey: openaiKey || (openaiEnabled ? existingOpenaiKey : ""),
+    // LiteLLM's two fields travel together — a submission with a key but no base URL (or
+    // vice versa) is treated as "not submitted", falling back to whatever's already saved,
+    // same as the single-value anthropic/openai fields above.
+    finalLitellmKey:
+      litellmKey && litellmBaseUrl
+        ? litellmKey
+        : litellmEnabled
+          ? existingLitellmKey
+          : "",
+    finalLitellmBaseUrl:
+      litellmKey && litellmBaseUrl
+        ? litellmBaseUrl
+        : litellmEnabled
+          ? existingLitellmBaseUrl
+          : "",
   };
 }
 
@@ -3634,9 +4122,19 @@ async function handleSetup(req, res) {
   }
   const anthropicKey = String(payload.anthropicKey ?? "").trim();
   const openaiKey = String(payload.openaiKey ?? "").trim();
-  if (!anthropicKey && !openaiKey) {
+  const litellmKey = String(payload.litellmKey ?? "").trim();
+  const litellmBaseUrl = String(payload.litellmBaseUrl ?? "")
+    .trim()
+    .replace(/\/+$/, "");
+  if (!anthropicKey && !openaiKey && !litellmKey) {
     return sendJson(res, 400, {
       error: "At least one provider's API key is required",
+    });
+  }
+  if (litellmKey && !litellmBaseUrl) {
+    return sendJson(res, 400, {
+      error: "A proxy base URL is required",
+      field: "litellm",
     });
   }
 
@@ -3652,15 +4150,40 @@ async function handleSetup(req, res) {
       return sendJson(res, 400, { error: result.error, field: "openai" });
   }
 
-  const { finalAnthropicKey, finalOpenaiKey } = resolveKeysToPersist({
+  if (litellmKey) {
+    const result = await verifyProviderKey(
+      "litellm",
+      litellmKey,
+      litellmBaseUrl,
+    );
+    if (!result.ok)
+      return sendJson(res, 400, { error: result.error, field: "litellm" });
+  }
+
+  const {
+    finalAnthropicKey,
+    finalOpenaiKey,
+    finalLitellmKey,
+    finalLitellmBaseUrl,
+  } = resolveKeysToPersist({
     anthropicKey,
     openaiKey,
     anthropicEnabled: ANTHROPIC_ENABLED,
     openaiEnabled: OPENAI_ENABLED,
     existingAnthropicKey: KEY,
     existingOpenaiKey: OPENAI_KEY,
+    litellmKey,
+    litellmBaseUrl,
+    litellmEnabled: LITELLM_ENABLED,
+    existingLitellmKey: LITELLM_KEY,
+    existingLitellmBaseUrl: LITELLM_BASE_URL,
   });
-  applyProviderKeys(finalAnthropicKey, finalOpenaiKey);
+  applyProviderKeys(
+    finalAnthropicKey,
+    finalOpenaiKey,
+    finalLitellmBaseUrl,
+    finalLitellmKey,
+  );
   sendJson(res, 200, { ok: true });
 }
 
@@ -3674,13 +4197,15 @@ async function handleRemoveKey(req, res) {
     return sendJson(res, 400, { error: "Invalid request body" });
   }
   const provider = payload.provider;
-  if (provider !== "anthropic" && provider !== "openai") {
+  if (!["anthropic", "openai", "litellm"].includes(provider)) {
     return sendJson(res, 400, { error: "Unknown provider" });
   }
   console.log(`Removing ${provider} key...`);
   applyProviderKeys(
     provider === "anthropic" ? "" : KEY,
     provider === "openai" ? "" : OPENAI_KEY,
+    provider === "litellm" ? "" : LITELLM_BASE_URL,
+    provider === "litellm" ? "" : LITELLM_KEY,
   );
   sendJson(res, 200, { ok: true });
 }
@@ -3707,11 +4232,17 @@ const server = createServer(async (req, res) => {
       const requestedProvider = url.searchParams.get("provider");
       const changeProvider =
         (requestedProvider === "anthropic" && ANTHROPIC_ENABLED) ||
-        (requestedProvider === "openai" && OPENAI_ENABLED)
+        (requestedProvider === "openai" && OPENAI_ENABLED) ||
+        (requestedProvider === "litellm" && LITELLM_ENABLED)
           ? requestedProvider
           : null;
-      if (!changeProvider && ANTHROPIC_ENABLED && OPENAI_ENABLED) {
-        // Both already configured and no specific one was asked for — nothing left to add.
+      if (
+        !changeProvider &&
+        ANTHROPIC_ENABLED &&
+        OPENAI_ENABLED &&
+        LITELLM_ENABLED
+      ) {
+        // All three already configured and no specific one was asked for — nothing left to add.
         res.writeHead(302, { Location: "/" });
         return res.end();
       }
@@ -3753,6 +4284,8 @@ const server = createServer(async (req, res) => {
       return await handleOpenAiProjects(res, url.searchParams);
     if (url.pathname === "/api/openai-model-costs")
       return await handleOpenAiModelCosts(res, url.searchParams);
+    if (url.pathname === "/api/litellm-attribution")
+      return await handleLiteLlmAttribution(res, url.searchParams);
     return await serveStatic(req, res, url.pathname);
   } catch (error) {
     if (error.code === "ENOENT") {

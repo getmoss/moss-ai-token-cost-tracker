@@ -2,10 +2,28 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { setupPageCopy, resolveKeysToPersist, verifyKey } from "../server.mjs";
 
-test("setupPageCopy: 'setup' mode (first run, neither provider configured) shows both cards", () => {
+test("setupPageCopy: 'setup' mode (first run, nothing configured) shows all three cards", () => {
   const copy = setupPageCopy("setup");
-  assert.deepEqual(copy.cards, ["anthropic", "openai"]);
+  assert.deepEqual(copy.cards, ["anthropic", "openai", "litellm"]);
   assert.equal(copy.buttonLabel, "Open dashboard");
+});
+
+test("setupPageCopy: 'setup' mode scopes cards to whichever providers are passed as still-missing", () => {
+  const copy = setupPageCopy("setup", ["openai", "litellm"]);
+  assert.deepEqual(copy.cards, ["openai", "litellm"]);
+});
+
+test("setupPageCopy: 'add-litellm' shows only the LiteLLM card", () => {
+  const copy = setupPageCopy("add-litellm");
+  assert.deepEqual(copy.cards, ["litellm"]);
+  assert.equal(copy.buttonLabel, "Add LiteLLM");
+});
+
+test("setupPageCopy: 'change-litellm' shows only the LiteLLM card, framed as an update", () => {
+  const copy = setupPageCopy("change-litellm");
+  assert.deepEqual(copy.cards, ["litellm"]);
+  assert.equal(copy.buttonLabel, "Save key");
+  assert.match(copy.title, /change/i);
 });
 
 test("setupPageCopy: 'add-openai' shows only the OpenAI card and never mentions adoption", () => {
@@ -41,8 +59,8 @@ test("setupPageCopy: 'change-openai' shows only the OpenAI card, framed as an up
 });
 
 // Regression coverage for the silent .env-overwrite bug fixed earlier: adding one provider
-// to an already-configured install must never drop the other, already-working key.
-test("resolveKeysToPersist: first run, both keys submitted, are both persisted", () => {
+// to an already-configured install must never drop another, already-working key.
+test("resolveKeysToPersist: first run, all three submitted, are all persisted", () => {
   const result = resolveKeysToPersist({
     anthropicKey: "sk-ant-new",
     openaiKey: "sk-openai-new",
@@ -50,11 +68,21 @@ test("resolveKeysToPersist: first run, both keys submitted, are both persisted",
     openaiEnabled: false,
     existingAnthropicKey: undefined,
     existingOpenaiKey: undefined,
+    litellmKey: "sk-litellm-new",
+    litellmBaseUrl: "https://litellm.example.com",
+    litellmEnabled: false,
+    existingLitellmKey: undefined,
+    existingLitellmBaseUrl: undefined,
   });
-  assert.deepEqual(result, { finalAnthropicKey: "sk-ant-new", finalOpenaiKey: "sk-openai-new" });
+  assert.deepEqual(result, {
+    finalAnthropicKey: "sk-ant-new",
+    finalOpenaiKey: "sk-openai-new",
+    finalLitellmKey: "sk-litellm-new",
+    finalLitellmBaseUrl: "https://litellm.example.com",
+  });
 });
 
-test("resolveKeysToPersist: first run, only one key submitted, the other stays empty (not undefined)", () => {
+test("resolveKeysToPersist: first run, only one key submitted, the others stay empty (not undefined)", () => {
   const result = resolveKeysToPersist({
     anthropicKey: "sk-ant-new",
     openaiKey: "",
@@ -62,8 +90,18 @@ test("resolveKeysToPersist: first run, only one key submitted, the other stays e
     openaiEnabled: false,
     existingAnthropicKey: undefined,
     existingOpenaiKey: undefined,
+    litellmKey: "",
+    litellmBaseUrl: "",
+    litellmEnabled: false,
+    existingLitellmKey: undefined,
+    existingLitellmBaseUrl: undefined,
   });
-  assert.deepEqual(result, { finalAnthropicKey: "sk-ant-new", finalOpenaiKey: "" });
+  assert.deepEqual(result, {
+    finalAnthropicKey: "sk-ant-new",
+    finalOpenaiKey: "",
+    finalLitellmKey: "",
+    finalLitellmBaseUrl: "",
+  });
 });
 
 test("resolveKeysToPersist: adding OpenAI to an Anthropic-only install keeps the existing Anthropic key", () => {
@@ -74,8 +112,18 @@ test("resolveKeysToPersist: adding OpenAI to an Anthropic-only install keeps the
     openaiEnabled: false,
     existingAnthropicKey: "sk-ant-existing",
     existingOpenaiKey: undefined,
+    litellmKey: "",
+    litellmBaseUrl: "",
+    litellmEnabled: false,
+    existingLitellmKey: undefined,
+    existingLitellmBaseUrl: undefined,
   });
-  assert.deepEqual(result, { finalAnthropicKey: "sk-ant-existing", finalOpenaiKey: "sk-openai-new" });
+  assert.deepEqual(result, {
+    finalAnthropicKey: "sk-ant-existing",
+    finalOpenaiKey: "sk-openai-new",
+    finalLitellmKey: "",
+    finalLitellmBaseUrl: "",
+  });
 });
 
 test("resolveKeysToPersist: adding Anthropic to an OpenAI-only install keeps the existing OpenAI key", () => {
@@ -86,11 +134,21 @@ test("resolveKeysToPersist: adding Anthropic to an OpenAI-only install keeps the
     openaiEnabled: true,
     existingAnthropicKey: undefined,
     existingOpenaiKey: "sk-openai-existing",
+    litellmKey: "",
+    litellmBaseUrl: "",
+    litellmEnabled: false,
+    existingLitellmKey: undefined,
+    existingLitellmBaseUrl: undefined,
   });
-  assert.deepEqual(result, { finalAnthropicKey: "sk-ant-new", finalOpenaiKey: "sk-openai-existing" });
+  assert.deepEqual(result, {
+    finalAnthropicKey: "sk-ant-new",
+    finalOpenaiKey: "sk-openai-existing",
+    finalLitellmKey: "",
+    finalLitellmBaseUrl: "",
+  });
 });
 
-test("resolveKeysToPersist: both providers already enabled with empty new-key inputs preserves both existing keys", () => {
+test("resolveKeysToPersist: all three already enabled with empty new-input preserves all three existing values", () => {
   const result = resolveKeysToPersist({
     anthropicKey: "",
     openaiKey: "",
@@ -98,8 +156,58 @@ test("resolveKeysToPersist: both providers already enabled with empty new-key in
     openaiEnabled: true,
     existingAnthropicKey: "sk-ant-existing",
     existingOpenaiKey: "sk-openai-existing",
+    litellmKey: "",
+    litellmBaseUrl: "",
+    litellmEnabled: true,
+    existingLitellmKey: "sk-litellm-existing",
+    existingLitellmBaseUrl: "https://litellm.example.com",
   });
-  assert.deepEqual(result, { finalAnthropicKey: "sk-ant-existing", finalOpenaiKey: "sk-openai-existing" });
+  assert.deepEqual(result, {
+    finalAnthropicKey: "sk-ant-existing",
+    finalOpenaiKey: "sk-openai-existing",
+    finalLitellmKey: "sk-litellm-existing",
+    finalLitellmBaseUrl: "https://litellm.example.com",
+  });
+});
+
+test("resolveKeysToPersist: adding LiteLLM to an Anthropic+OpenAI install keeps both existing keys", () => {
+  const result = resolveKeysToPersist({
+    anthropicKey: "",
+    openaiKey: "",
+    anthropicEnabled: true,
+    openaiEnabled: true,
+    existingAnthropicKey: "sk-ant-existing",
+    existingOpenaiKey: "sk-openai-existing",
+    litellmKey: "sk-litellm-new",
+    litellmBaseUrl: "https://litellm.example.com",
+    litellmEnabled: false,
+    existingLitellmKey: undefined,
+    existingLitellmBaseUrl: undefined,
+  });
+  assert.deepEqual(result, {
+    finalAnthropicKey: "sk-ant-existing",
+    finalOpenaiKey: "sk-openai-existing",
+    finalLitellmKey: "sk-litellm-new",
+    finalLitellmBaseUrl: "https://litellm.example.com",
+  });
+});
+
+test("resolveKeysToPersist: a LiteLLM key submitted without a base URL is treated as not submitted", () => {
+  const result = resolveKeysToPersist({
+    anthropicKey: "",
+    openaiKey: "",
+    anthropicEnabled: false,
+    openaiEnabled: false,
+    existingAnthropicKey: undefined,
+    existingOpenaiKey: undefined,
+    litellmKey: "sk-litellm-new",
+    litellmBaseUrl: "",
+    litellmEnabled: false,
+    existingLitellmKey: undefined,
+    existingLitellmBaseUrl: undefined,
+  });
+  assert.equal(result.finalLitellmKey, "");
+  assert.equal(result.finalLitellmBaseUrl, "");
 });
 
 function withStubbedFetch(impl, run) {
