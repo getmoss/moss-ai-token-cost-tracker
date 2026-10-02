@@ -619,14 +619,18 @@ function mockOpenAiUsageBuckets(startingAtUnix, endingAtUnix) {
 }
 
 // Matches fetchActivitySummaries's own return value (already unwrapped from {summaries:[...]})
-// — shapeActivitySummary/handleSeats run unmodified on top of this.
+// — shapeActivitySummary/handleSeats run unmodified on top of this. Runs from startingDate
+// through today, same as mockDaysInRange — a fixed 14-day window used to starve the Planning
+// section's adoption series whenever it requested a longer range (e.g. 24 weeks of history),
+// chunking it down to 0 usable months and showing "Not enough data" despite full spend/usage
+// history being available.
 function mockActivitySummaries(startingDate) {
   const totalSeats = 42;
   const out = [];
-  for (let i = 0; i < 14; i++) {
-    const dateIso = new Date(
-      new Date(startingDate).getTime() + i * DAY_MS,
-    ).toISOString();
+  const start = new Date(startingDate).getTime();
+  const days = Math.max(14, Math.round((Date.now() - start) / DAY_MS));
+  for (let i = 0; i < days; i++) {
+    const dateIso = new Date(start + i * DAY_MS).toISOString();
     const mau = Math.round(
       totalSeats * (0.55 + mockDailyValue("seats_mau", i, 0, 0.25, dateIso)),
     );
