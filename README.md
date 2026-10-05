@@ -6,17 +6,17 @@ A dashboard for tracking your team's AI token spend (Anthropic + OpenAI) - no da
 
 Complete the one-time installation below, then just repeat the "Start the tool" steps whenever you want to use the dashboard again.
 
-<details open>
+<details>
 <summary>AI prompt setup guide (GIF)</summary>
 
 ![AI prompt setup guide](assets/gif/MossAI-prompt.gif)
 
 #### Installation
 
-Just if you have [Claude Code](https://claude.com/claude-code) or [ChatGPT Codex](https://github.com/openai/codex), you can hand them the whole job - no manual commands needed.
+Just if you have [Claude Code](https://claude.com/claude-code) or [ChatGPT Codex](https://github.com/openai/codex), you can hand them the whole job.
 
-1. Open Terminal or PowerShell wherever you'd like the project folder to be created (e.g. your Desktop).
-2. Run `claude` or `codex`, then paste this prompt as your first message:
+1. Open Claude Code or Codex.
+2. Paste this prompt as your first message:
 
    ```
    Clone and set up the moss-ai-token-cost-tracker tool for me. Act as my
@@ -50,7 +50,7 @@ Just if you have [Claude Code](https://claude.com/claude-code) or [ChatGPT Codex
 
 #### How to run the app
 
-The same prompt works both for the initial setup and every time after, when you just want to run the tool again - just open Terminal or PowerShell inside the project folder, run `claude` or `codex`, and paste the same prompt.
+The same prompt works both for the initial setup and every time after, when you just want to run the tool again - just open Claude Code or Codex inside the project folder and paste the same prompt.
 
 </details>
 
@@ -61,11 +61,11 @@ The same prompt works both for the initial setup and every time after, when you 
 
 #### Installation (one-time)
 
-PowerShell is a text window for giving instructions directly to your computer. Every command below is shown in a code box - copy it, paste it into PowerShell, and press Enter. If a box contains several commands, run them one at a time.
+Terminal is a text window for giving instructions directly to your computer. Every command below is shown in a code box - copy it, paste it into Terminal, and press Enter. If a box contains several commands, run them one at a time.
 
-The installation commands below download the public code and the programs needed to run it, including Node.js. They do not access your AI accounts or spend data. If your company restricts software installation, ask your IT team to complete the setup.
+The installation commands below download the public code and the programs needed to run it. They do not access your AI accounts or spend data. If your company restricts software installation, ask your IT team to complete the setup.
 
-1. Open PowerShell: right-click the folder where you'd like the project to be created (e.g. your Desktop) and choose **Open in Terminal**. The tool will be installed inside whichever folder you click.
+1. Open Terminal: right-click the folder where you'd like the project to be created (e.g. your Desktop) and choose **Open in Terminal**. The tool will be installed inside whichever folder you click.
 
 2. Install Git (lets your computer copy the tool from GitHub):
 
@@ -73,7 +73,7 @@ The installation commands below download the public code and the programs needed
    winget install --id Git.Git -e
    ```
 
-   Approve the installation if asked, then close and reopen PowerShell.
+   Approve the installation if asked, then close and reopen Terminal.
 
 3. Clone this repo:
 
@@ -84,21 +84,13 @@ The installation commands below download the public code and the programs needed
 
 4. Install Node.js (version 24.21.0 or newer): download the installer from [nodejs.org/en/download](https://nodejs.org/en/download) and run it.
 
-5. If PowerShell blocks npm with a "running scripts is disabled" error, allow locally-created scripts to run:
-
-   ```bash
-   Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
-   ```
-
-   Confirm the change if asked. This only changes the setting for your Windows user and allows locally created scripts to run.
-
-**Troubleshooting tip**: if something does not work, take a screenshot of the PowerShell error and upload it to ChatGPT, Claude or another AI assistant asking what is blocking the setup and which command you should run next (make sure it contains no API keys or sensitive company data).
+**Troubleshooting tip**: if something does not work, take a screenshot of the Terminal error or copy the text and upload it to AI assistant asking what is blocking the setup and which command you should run next (make sure it contains no API keys or sensitive company data).
 
 #### How to run the app
 
-Once the initial installation is complete, you don't need to install anything else. Follow these steps whenever you want to open the dashboard, including the next time you restart your computer or close the tool.
+Follow these steps whenever you want to open the dashboard, including the next time you restart your computer or close the tool.
 
-1. Open PowerShell already inside the project folder — no need to type `cd`: in File Explorer, right-click the `moss-ai-token-cost-tracker` folder (the project root) and choose **Open in Terminal**.
+1. Open Terminal inside the project folder: right-click the `moss-ai-token-cost-tracker` folder and choose **Open in Terminal**.
 
 2. Start the tool:
 
@@ -106,19 +98,17 @@ Once the initial installation is complete, you don't need to install anything el
    npm start
    ```
 
-   Keep PowerShell open while using the dashboard - closing the window stops the tool.
+   Keep Terminal open while using the dashboard - closing the window stops the tool.
 
-3. Open the dashboard. The browser does not open automatically, so open the following address yourself:
+3. Open the dashboard. Copy the `localhost` address from the Terminal output and open it in your browser.
 
-   [http://localhost:4173](http://localhost:4173)
-
-   The dashboard runs locally on your computer rather than on a public website, and the address only works while the tool is running in PowerShell.
+   The dashboard runs locally on your computer rather than on a public website, and the address only works while the tool is running in Terminal.
 
 Follow the on-screen setup to connect your provider Admin API keys. Enter these keys only inside the local application - never in Terminal, email, Slack or a support message.
 
-To stop the tool, return to PowerShell and press `Ctrl + C`. To use it again later, repeat the steps above.
+To stop the tool, return to Terminal and press `Ctrl + C`. To use it again later, repeat the steps above.
 
-**Demo mode (no API keys needed)**: want to try it out without connecting real accounts? Run `npm run demo` instead of `npm start`, then open [http://localhost:4173](http://localhost:4173) and enter anything (e.g. `demo`) as the API key(s) on the setup screen. Every request is served from realistic mock data instead of calling Anthropic/OpenAI, so nothing real is read or charged. A "Demo - sample data" banner stays visible the whole time so it's never mistaken for a live dashboard.
+**Demo mode (no API keys needed)**: want to try it out without connecting real accounts? Run `npm run demo` instead of `npm start`, then open the `localhost` address shown in the Terminal output and enter anything (e.g. `demo`) as the API key(s) on the setup screen.
 
 **Useful commands**:
 
@@ -126,8 +116,7 @@ To stop the tool, return to PowerShell and press `Ctrl + C`. To use it again lat
 | --------------------------- | --------------------------------------------------------------------------------------------- |
 | `npm start`                 | Runs the local server on port `4173`                                                          |
 | `npm run demo`              | Runs the dashboard in demo mode with mock data, no API keys required                          |
-| `npm test`                  | Runs the test suite                                                                           |
-| `npm run reset-onboarding`  | Clears your `.env` (backed up to `.env.bak`) and restarts you into the first-run setup flow    |
+| `npm run reset-onboarding`  | Restarts you into the first-run setup flow    |
 
 `.env.bak` may contain your previous API keys, so treat it as confidential.
 
@@ -140,9 +129,9 @@ To stop the tool, return to PowerShell and press `Ctrl + C`. To use it again lat
 
 #### Installation (one-time)
 
-Terminal is a text window for giving instructions directly to your computer. Every command below is shown in a code box - copy it, paste it into Terminal, and press Return. If a box contains several commands, run them one at a time.
+Terminal is a text window for giving instructions directly to your computer. Every command below is shown in a code box - copy it, paste it into Terminal, and press Enter. If a box contains several commands, run them one at a time.
 
-The installation commands below download the public code and the programs needed to run it, including Node.js. They do not access your AI accounts or spend data. If your company restricts software installation, ask your IT team to complete the setup.
+The installation commands below download the public code and the programs needed to run it. They do not access your AI accounts or spend data. If your company restricts software installation, ask your IT team to complete the setup.
 
 1. Open Terminal: right-click the folder where you'd like the project to be created (e.g. your Desktop) and choose **New Terminal at Folder**. The tool will be installed inside whichever folder you click.
 
@@ -167,9 +156,9 @@ The installation commands below download the public code and the programs needed
 
 #### How to run the app
 
-Once the initial installation is complete, you don't need to install anything else. Follow these steps whenever you want to open the dashboard, including the next time you restart your computer or close the tool.
+Follow these steps whenever you want to open the dashboard, including the next time you restart your computer or close the tool.
 
-1. Open Terminal already inside the project folder — no need to type `cd`: in Finder, right-click the `moss-ai-token-cost-tracker` folder (the project root) and choose **New Terminal at Folder**.
+1.  Open Terminal inside the project folder: right-click the `moss-ai-token-cost-tracker` folder and choose **New Terminal at Folder**.
 
 2. Start the tool:
 
@@ -179,9 +168,7 @@ Once the initial installation is complete, you don't need to install anything el
 
    Keep Terminal open while using the dashboard - closing the window stops the tool.
 
-3. Open the dashboard. The browser does not open automatically, so open the following address yourself:
-
-   [http://localhost:4173](http://localhost:4173)
+3. Open the dashboard. Copy the `localhost` address from the Terminal output and open it in your browser.
 
    The dashboard runs locally on your computer rather than on a public website, and the address only works while the tool is running in Terminal.
 
@@ -189,7 +176,7 @@ Follow the on-screen setup to connect your provider Admin API keys. Enter these 
 
 To stop the tool, return to Terminal and press `Ctrl + C`. To use it again later, repeat the steps above.
 
-**Demo mode (no API keys needed)**: want to try it out without connecting real accounts? Run `npm run demo` instead of `npm start`, then open [http://localhost:4173](http://localhost:4173) and enter anything (e.g. `demo`) as the API key(s) on the setup screen. Every request is served from realistic mock data instead of calling Anthropic/OpenAI, so nothing real is read or charged. A "Demo - sample data" banner stays visible the whole time so it's never mistaken for a live dashboard.
+**Demo mode (no API keys needed)**: want to try it out without connecting real accounts? Run `npm run demo` instead of `npm start`, then open the `localhost` address shown in the Terminal output and enter anything (e.g. `demo`) as the API key(s) on the setup screen.
 
 **Useful commands**:
 
@@ -197,8 +184,7 @@ To stop the tool, return to Terminal and press `Ctrl + C`. To use it again later
 | --------------------------- | --------------------------------------------------------------------------------------------- |
 | `npm start`                 | Runs the local server on port `4173`                                                          |
 | `npm run demo`              | Runs the dashboard in demo mode with mock data, no API keys required                          |
-| `npm test`                  | Runs the test suite                                                                           |
-| `npm run reset-onboarding`  | Clears your `.env` (backed up to `.env.bak`) and restarts you into the first-run setup flow    |
+| `npm run reset-onboarding`  | Restarts you into the first-run setup flow    |
 
 `.env.bak` may contain your previous API keys, so treat it as confidential.
 
@@ -206,9 +192,9 @@ To stop the tool, return to Terminal and press `Ctrl + C`. To use it again later
 
 ## How it works and how your data stays local
 
-Everything lives in two files: `server.mjs` (a dependency-free Node HTTP server) and `index.html` (a single self-contained page - styles, fonts, and scripts all inlined, no build step). This is why the dashboard appears in a browser even though nothing is hosted online.
+This tool runs entirely on your own computer - no cloud server, no sign-up, no Moss-hosted service. Your API keys live only in a local `.env` file, and your computer uses them to fetch usage and spend data directly from Anthropic/OpenAI and show it on screen.
 
-Your Admin API keys are stored in your local `.env` file and used to request usage and cost data directly from the Anthropic and OpenAI Admin APIs. The returned data is processed on your computer - your keys and spend data are never sent to or stored by Moss.
+Nothing - not your keys, not your usage data, not your spend data - is ever sent to Moss or any other third party.
 
 ## Requirements
 
