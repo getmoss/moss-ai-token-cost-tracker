@@ -1,10 +1,10 @@
 # Moss AI Token Cost Tracker
 
-A dashboard for tracking your team's AI token spend (Anthropic + OpenAI) - no data leaves your machine.
+A dashboard for tracking your team's AI token spend (Claude + ChatGPT) - no data leaves your machine.
 
 ## Set up and run the tool
 
-Complete the one-time installation below, then just repeat the "Start the tool" steps whenever you want to use the dashboard again.
+Complete the one-time installation below, then just repeat the "How to run the app" steps whenever you want to use the dashboard again.
 
 <details>
 <summary>AI prompt setup guide (GIF)</summary>
@@ -13,7 +13,7 @@ Complete the one-time installation below, then just repeat the "Start the tool" 
 
 #### Installation
 
-Just if you have [Claude Code](https://claude.com/claude-code) or [ChatGPT Codex](https://github.com/openai/codex), you can hand them the whole job.
+If you have [Claude Code](https://claude.com/claude-code) or [ChatGPT Codex](https://github.com/openai/codex), you can hand them the whole job.
 
 1. Open Claude Code or Codex.
 2. Paste this prompt as your first message:
