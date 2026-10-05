@@ -150,7 +150,7 @@
         >
           <div class="section-copy">
             <div class="step-label"><b>1</b> Company overview</div>
-            <h2>How AI spend is developing across your company and its providers</h2>
+            <h2>How has your AI spend developed?</h2>
             <div class="collapse">
               <div class="collapse-inner">
                 <p>
@@ -296,7 +296,7 @@
         >
           <div class="section-copy">
             <div class="step-label"><b>2</b> Organisational allocation</div>
-            <h2>Trace where AI spend is coming from</h2>
+            <h2>Where is your AI spend coming from?</h2>
             <div class="collapse">
               <div class="collapse-inner">
                 <p>
@@ -547,13 +547,13 @@
         >
           <div class="section-copy">
             <div class="step-label"><b>3</b> Planning</div>
-            <h2>How might our AI spend develop?</h2>
+            <h2>What could your future AI spend look like?</h2>
             <div class="collapse">
               <div class="collapse-inner">
                 <p>
-                  Build a baseline forecast from spend, requests and
-                  adoption, then adjust usage, token prices, provider or
-                  model mix to test different futures.
+                  Build a baseline forecast from your spend, requests, and
+                  adoption. Adjust usage, token prices, providers, and
+                  models to compare scenarios.
                 </p>
               </div>
             </div>
@@ -568,75 +568,112 @@
         <div class="planning-body">
 
           <div class="planning-kpis">
-            <article class="planning-kpi">
+            <div class="planning-kpi-column">
               <div class="planning-kpi-title">Average weekly AI cost progression</div>
-              <div class="planning-compare">
-                <div class="planning-value-block">
-                  <span class="planning-value-label">Baseline forecast</span>
-                  <span class="planning-value" id="planningGrowthBaseline">&mdash;</span>
-                  <span class="planning-value-delta neutral">Average rise per week</span>
+              <article class="planning-kpi planning-kpi-card planning-kpi-card-inline">
+                <div class="planning-kpi-half">
+                  <span class="planning-kpi-label-row">
+                    <span class="planning-value-label">Baseline forecast</span>
+                  </span>
+                  <div class="planning-kpi-card-main">
+                    <div class="planning-kpi-icon planning-kpi-icon-framed">
+                      <img src="/assets/icons/icon-percentage.png" alt="" width="36" height="36" />
+                    </div>
+                    <div>
+                      <span class="planning-value" id="planningGrowthBaseline">&mdash;</span>
+                      <span class="planning-kpi-sublabel">Average change per week</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="planning-value-block">
-                  <span class="planning-value-label">Adjusted scenario</span>
-                  <span class="planning-value scenario" id="planningGrowthScenario">&mdash;</span>
-                  <span class="planning-value-delta neutral" id="planningGrowthDelta">Matches baseline</span>
+                <div class="planning-kpi-half planning-kpi-card-footnote">
+                  <span class="planning-kpi-label-row">
+                    <span class="planning-value-label">Adjusted scenario</span>
+                    <span class="planning-kpi-tag" id="planningGrowthDelta">Matches baseline</span>
+                  </span>
+                  <div class="planning-kpi-card-main">
+                    <div class="planning-kpi-icon planning-kpi-icon-framed">
+                      <img src="/assets/icons/icon-percentage.png" alt="" width="36" height="36" />
+                    </div>
+                    <div>
+                      <span class="planning-value scenario" id="planningGrowthScenario">&mdash;</span>
+                      <span class="planning-kpi-sublabel">Average change per week</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </article>
-            <article class="planning-kpi">
+              </article>
+            </div>
+            <div class="planning-kpi-column">
               <div class="planning-kpi-title">Projected monthly AI cost six months from now</div>
-              <div class="planning-compare">
-                <div class="planning-value-block">
-                  <span class="planning-value-label">Baseline forecast</span>
-                  <span class="planning-value" id="planningCostBaseline">&mdash;</span>
-                  <span class="planning-value-meta"><span class="planning-value-currencies" id="planningCostBaselineCurrencies"></span></span>
+              <article class="planning-kpi planning-kpi-card planning-kpi-card-inline">
+                <div class="planning-kpi-half">
+                  <span class="planning-kpi-label-row">
+                    <span class="planning-value-label">Baseline forecast</span>
+                  </span>
+                  <div class="planning-kpi-card-main">
+                    <div class="planning-kpi-icon planning-kpi-icon-framed">
+                      <img src="/assets/icons/icon-dollar.png" alt="" width="36" height="36" />
+                    </div>
+                    <div>
+                      <span class="planning-value" id="planningCostBaseline">&mdash;</span>
+                      <span class="planning-kpi-sublabel" id="planningCostBaselineCurrencies"></span>
+                    </div>
+                  </div>
                 </div>
-                <div class="planning-value-block">
-                  <span class="planning-value-label">Adjusted scenario</span>
-                  <span class="planning-value scenario" id="planningCostScenario">&mdash;</span>
-                  <span class="planning-value-meta"><span class="planning-value-currencies" id="planningCostScenarioCurrencies"></span><span class="planning-value-delta neutral" id="planningCostDelta">Matches baseline</span></span>
+                <div class="planning-kpi-half planning-kpi-card-footnote">
+                  <span class="planning-kpi-label-row">
+                    <span class="planning-value-label">Adjusted scenario</span>
+                    <span class="planning-kpi-tag" id="planningCostDelta">Matches baseline</span>
+                  </span>
+                  <div class="planning-kpi-card-main">
+                    <div class="planning-kpi-icon planning-kpi-icon-framed">
+                      <img src="/assets/icons/icon-dollar.png" alt="" width="36" height="36" />
+                    </div>
+                    <div>
+                      <span class="planning-value scenario" id="planningCostScenario">&mdash;</span>
+                      <span class="planning-kpi-sublabel" id="planningCostScenarioCurrencies"></span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="planning-toolbar">
-            <div class="planning-toolbar-right">
-              <div class="planning-field">
-                <label for="planningReference">Historic reference</label>
-                <select id="planningReference">
-                  <option value="4">1 month</option>
-                  <option value="13" selected>1 quarter</option>
-                  <option value="26">6 months</option>
-                  <option value="52">1 year</option>
-                </select>
-              </div>
-              <div class="planning-field">
-                <label>Future horizon</label>
-                <div class="segmented" id="planningHorizon" role="group" aria-label="Future horizon">
-                  <button type="button" data-value="1w" aria-selected="false">1 week</button>
-                  <button type="button" data-value="4w" aria-selected="false">4 weeks</button>
-                  <button type="button" data-value="6m" aria-selected="true">6 months</button>
-                  <button type="button" data-value="custom" aria-selected="false">Custom</button>
-                </div>
-              </div>
-              <div class="planning-field planning-custom-field" id="planningCustomField">
-                <label for="planningCustomDate">Forecast until</label>
-                <input id="planningCustomDate" type="date" />
-              </div>
+              </article>
             </div>
           </div>
 
+          <div class="planning-kpi-title planning-kpi-title-tight">Spend, usage and adoption forecast</div>
+          <div class="planning-kpi-sublabel planning-chart-subtitle">Baseline continues the typical weekly trend. Your adjusted scenario starts from the same point.</div>
           <section class="planning-chart-shell" aria-labelledby="planningChartTitle">
             <div class="planning-chart-header">
-              <div>
-                <div class="planning-chart-title" id="planningChartTitle"></div>
-                <div class="planning-chart-note" id="planningChartNote"></div>
+              <div class="planning-chart-header-row">
+                <div>
+                  <div class="planning-chart-title" id="planningChartTitle" hidden></div>
+                  <div class="planning-inline-filters">
+                    <span id="planningHorizonLabel">For the next</span>
+                    <div class="segmented" id="planningHorizon" role="group" aria-label="Future horizon">
+                      <button type="button" data-value="1w" aria-selected="false">Week</button>
+                      <button type="button" data-value="4w" aria-selected="false">4 weeks</button>
+                      <button type="button" data-value="6m" aria-selected="true">6 months</button>
+                      <input type="date" id="planningCustomDate" class="planning-custom-pill" aria-label="Custom forecast date" />
+                    </div>
+                    <span>based on the last</span>
+                    <select id="planningReference">
+                      <option value="4">month</option>
+                      <option value="13" selected>quarter</option>
+                      <option value="26">6 month</option>
+                      <option value="52">year</option>
+                    </select>
+                    <span>show</span>
+                    <div class="planning-legend" id="planningLegendToggles">
+                      <label class="planning-legend-item planning-legend-toggle" id="planningSpendLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--brand)"></span>Spend<input type="checkbox" data-metric="spend" checked /></label>
+                      <label class="planning-legend-item planning-legend-toggle" id="planningUsageLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-usage)"></span>Usage<input type="checkbox" data-metric="usage" checked /></label>
+                      <label class="planning-legend-item planning-legend-toggle" id="planningAdoptionLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-adoption)"></span>Adoption<input type="checkbox" data-metric="adoption" checked /></label>
+                    </div>
+                  </div>
+                  <div class="planning-chart-note" id="planningChartNote">
+                    <img src="/assets/icons/icon-info.png" alt="" width="16" height="16" class="planning-chart-note-icon" />
+                    <span id="planningChartNoteText"></span>
+                  </div>
+                </div>
               </div>
-              <div class="planning-legend">
-                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--brand)"></span>Spend</span>
-                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--planning-usage)"></span>Usage</span>
-                <span class="planning-legend-item" id="planningAdoptionLegendItem"><span class="planning-swatch" style="--swatch: var(--planning-adoption)"></span>Adoption</span>
+              <div class="planning-legend planning-legend-lines">
                 <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted); opacity: .55"></span>Actual</span>
                 <span class="planning-legend-item"><span class="planning-swatch dashed" style="--swatch: var(--text-muted)"></span>Baseline</span>
                 <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted)"></span>Scenario</span>
@@ -2229,6 +2266,7 @@
         scenarioTouched: false,
         referenceWeeks: 13,
         horizon: "6m",
+        visibleMetrics: new Set(["spend", "usage", "adoption"]),
       };
 
       function escapeHtml(value) {
@@ -2645,12 +2683,16 @@
           },
         );
         document.getElementById("planningGrowthDelta").textContent = "Matches baseline";
+        document.getElementById("planningGrowthDelta").classList.remove("planning-kpi-tag-touched");
         document.getElementById("planningCostDelta").textContent = "Matches baseline";
+        document.getElementById("planningCostDelta").classList.remove("planning-kpi-tag-touched");
         document.getElementById("planningCostBaselineCurrencies").textContent = "";
         document.getElementById("planningCostScenarioCurrencies").textContent = "";
         document.getElementById("scenarioResult").textContent = "No adjustments applied.";
         document.getElementById("planningChartTitle").textContent = "Spend, usage and adoption forecast";
-        document.getElementById("planningChartNote").textContent = message;
+        document.getElementById("planningChartNoteText").textContent = message;
+        document.getElementById("planningChartNote").classList.remove("planning-chart-note-warning");
+        document.getElementById("planningChartNote").hidden = !message;
         document.getElementById("planningChartSvg").innerHTML = "";
       }
 
@@ -2663,6 +2705,9 @@
         document.getElementById("planningGrowthDelta").textContent = state.planning.scenarioTouched
           ? `${growthDelta >= 0 ? "+" : ""}${growthDelta.toFixed(1)} pp vs baseline`
           : "Matches baseline";
+        document
+          .getElementById("planningGrowthDelta")
+          .classList.toggle("planning-kpi-tag-touched", state.planning.scenarioTouched);
 
         document.getElementById("planningCostBaseline").textContent = money(projection.baselineMonthly);
         document.getElementById("planningCostBaselineCurrencies").textContent = convertedLabel(projection.baselineMonthly);
@@ -2673,6 +2718,9 @@
         document.getElementById("planningCostDelta").textContent = state.planning.scenarioTouched
           ? `${costDelta >= 0 ? "+" : ""}${costDelta.toFixed(1)}% vs baseline`
           : "Matches baseline";
+        document
+          .getElementById("planningCostDelta")
+          .classList.toggle("planning-kpi-tag-touched", state.planning.scenarioTouched);
 
         document.getElementById("scenarioResult").textContent = state.planning.scenarioTouched
           ? `Adjusted six-month monthly cost: ${money(projection.scenarioMonthly)} (${costDelta >= 0 ? "+" : ""}${costDelta.toFixed(1)}% vs baseline forecast).`
@@ -2706,13 +2754,11 @@
         const tooltip = document.getElementById("planningTooltip");
         const width = 1100;
         const height = 420;
-        const margin = { top: 34, right: adoptionSeries ? 150 : 90, bottom: 40, left: 86 };
-        const plotW = width - margin.left - margin.right;
-        const plotH = height - margin.top - margin.bottom;
 
-        const metrics = [
-          { key: "SPEND · USD", name: "Spend", data: spendSeries, color: cssVar("--brand"), format: money, isPercent: false },
+        const allMetrics = [
+          { id: "spend", key: "SPEND · USD", name: "Spend", data: spendSeries, color: cssVar("--brand"), format: money, isPercent: false },
           {
+            id: "usage",
             key: "USAGE",
             name: "Usage",
             data: usageSeries,
@@ -2722,7 +2768,8 @@
           },
         ];
         if (adoptionSeries) {
-          metrics.push({
+          allMetrics.push({
+            id: "adoption",
             key: "ADOPTION",
             name: "Adoption",
             data: adoptionSeries,
@@ -2731,15 +2778,35 @@
             isPercent: true,
           });
         }
-        metrics.forEach((m, i) => {
-          m.axisX = i === 0 ? margin.left : i === 1 ? width - margin.right + 14 : width - margin.right + 96;
-        });
+        // User-toggled visibility (planningLegendToggles) picks which of the available
+        // metrics actually draw — axes reflow around whatever remains, see leftMetric/
+        // rightMetrics below.
+        const metrics = allMetrics.filter((m) => state.planning.visibleMetrics.has(m.id));
 
         const historyLen = spendSeries.history.length;
         const total = historyLen + config.future;
         chartEl.innerHTML = "";
         tooltip.style.opacity = "0";
-        if (total < 2 || historyLen < 1) return;
+        if (total < 2 || historyLen < 1 || metrics.length === 0) return;
+
+        // Spend keeps the left axis whenever it's visible (it owns the EUR-converted
+        // sub-labels below); otherwise whichever visible metric is next in priority
+        // takes over the left axis instead of leaving it empty.
+        const leftMetric = ["spend", "usage", "adoption"].map((id) => metrics.find((m) => m.id === id)).find(Boolean);
+        const rightMetrics = metrics.filter((m) => m !== leftMetric);
+        const margin = {
+          top: 34,
+          right: rightMetrics.length === 2 ? 150 : rightMetrics.length === 1 ? 90 : 40,
+          bottom: 40,
+          left: 86,
+        };
+        const plotW = width - margin.left - margin.right;
+        const plotH = height - margin.top - margin.bottom;
+
+        leftMetric.axisX = margin.left;
+        rightMetrics.forEach((m, i) => {
+          m.axisX = i === 0 ? width - margin.right + 14 : width - margin.right + 96;
+        });
 
         const x = xScale(total, plotW, margin.left);
         const dividerIndex = historyLen - 1;
@@ -2753,9 +2820,8 @@
           "aria-label": "Spend, usage and adoption history with baseline and adjusted forecasts",
         });
 
-        const spendMetric = metrics[0];
-        spendMetric.scale.ticks.forEach((v) => {
-          const py = spendMetric.scale.y(v);
+        leftMetric.scale.ticks.forEach((v) => {
+          const py = leftMetric.scale.y(v);
           svg.appendChild(
             createSvgElement("line", { class: "gridline", x1: margin.left, x2: width - margin.right, y1: py, y2: py }),
           );
@@ -2765,19 +2831,21 @@
             y: py - 3,
             "text-anchor": "end",
           });
-          label.textContent = spendMetric.format(v);
+          label.textContent = leftMetric.format(v);
           svg.appendChild(label);
-          const eur = createSvgElement("text", {
-            class: "axis-label-converted",
-            x: margin.left - 12,
-            y: py + 9,
-            "text-anchor": "end",
-          });
-          eur.textContent = fxLabel(v, EUR_RATE, "€");
-          svg.appendChild(eur);
+          if (leftMetric.id === "spend") {
+            const eur = createSvgElement("text", {
+              class: "axis-label-converted",
+              x: margin.left - 12,
+              y: py + 9,
+              "text-anchor": "end",
+            });
+            eur.textContent = fxLabel(v, EUR_RATE, "€");
+            svg.appendChild(eur);
+          }
         });
 
-        metrics.slice(1).forEach((m) => {
+        rightMetrics.forEach((m) => {
           m.scale.ticks.forEach((v) => {
             const label = createSvgElement("text", {
               class: "planning-colour-axis",
@@ -2800,10 +2868,10 @@
           );
         });
 
-        metrics.forEach((m, i) => {
+        metrics.forEach((m) => {
           const label = createSvgElement("text", {
             class: "planning-axis-title",
-            x: i === 0 ? margin.left : m.axisX - 7,
+            x: m === leftMetric ? margin.left : m.axisX - 7,
             y: margin.top - 14,
             fill: m.color,
           });
@@ -3085,9 +3153,10 @@
         const warning = [spendSeries.historyWarning, usageSeries.historyWarning, adoptionSeries?.historyWarning].find(
           Boolean,
         );
-        document.getElementById("planningChartNote").textContent =
-          warning ??
-          `Baseline forecast uses the typical week-over-week trend across the last ${planningReferenceLabel()}. Adjusted scenarios branch from the same starting point.`;
+        const chartNoteEl = document.getElementById("planningChartNote");
+        document.getElementById("planningChartNoteText").textContent = warning ?? "";
+        chartNoteEl.classList.toggle("planning-chart-note-warning", Boolean(warning));
+        chartNoteEl.hidden = !warning;
 
         renderPlanningSvg({
           config,
@@ -4430,21 +4499,59 @@
         renderPlanningChart();
       });
 
-      document.querySelectorAll("#planningHorizon button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document
-            .querySelectorAll("#planningHorizon button")
-            .forEach((b) => b.setAttribute("aria-selected", "false"));
-          btn.setAttribute("aria-selected", "true");
-          state.planning.horizon = btn.dataset.value;
-          document
-            .getElementById("planningCustomField")
-            .classList.toggle("visible", state.planning.horizon === "custom");
+      // Lets users focus on one or two signals instead of always plotting all three —
+      // mirrors renderLegend()'s toggle pattern (state.visibility) but these three checkboxes
+      // are fixed/static rather than built per-series, so they're wired once here.
+      document.querySelectorAll("#planningLegendToggles [data-metric]").forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          const metric = checkbox.dataset.metric;
+          const set = state.planning.visibleMetrics;
+          if (checkbox.checked) {
+            set.add(metric);
+          } else if (set.size > 1) {
+            set.delete(metric);
+          } else {
+            checkbox.checked = true; // keep at least one metric visible
+            return;
+          }
           renderPlanningChart();
         });
       });
 
-      document.getElementById("planningCustomDate").addEventListener("change", renderPlanningChart);
+      function deselectPlanningHorizonButtons() {
+        document
+          .querySelectorAll("#planningHorizon button")
+          .forEach((b) => b.setAttribute("aria-selected", "false"));
+        document.getElementById("planningCustomDate").removeAttribute("data-selected");
+      }
+
+      document.querySelectorAll("#planningHorizon button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          deselectPlanningHorizonButtons();
+          btn.setAttribute("aria-selected", "true");
+          state.planning.horizon = btn.dataset.value;
+          document.getElementById("planningHorizonLabel").textContent = "For the next";
+          renderPlanningChart();
+        });
+      });
+
+      function selectPlanningCustomDate() {
+        const input = document.getElementById("planningCustomDate");
+        if (state.planning.horizon === "custom") return;
+        deselectPlanningHorizonButtons();
+        input.setAttribute("data-selected", "true");
+        state.planning.horizon = "custom";
+        document.getElementById("planningHorizonLabel").textContent = "Until";
+        renderPlanningChart();
+      }
+
+      const planningCustomDateInput = document.getElementById("planningCustomDate");
+      planningCustomDateInput.addEventListener("mousedown", selectPlanningCustomDate);
+      planningCustomDateInput.addEventListener("focus", selectPlanningCustomDate);
+      planningCustomDateInput.addEventListener("change", () => {
+        selectPlanningCustomDate();
+        renderPlanningChart();
+      });
 
       PLANNING_SLIDER_IDS.forEach((id) => {
         document.getElementById(id).addEventListener("input", () => {

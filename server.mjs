@@ -620,15 +620,18 @@ function mockOpenAiUsageBuckets(startingAtUnix, endingAtUnix) {
 
 // Matches fetchActivitySummaries's own return value (already unwrapped from {summaries:[...]})
 // — shapeActivitySummary/handleSeats run unmodified on top of this. Runs from startingDate
-// through today, same as mockDaysInRange — a fixed 14-day window used to starve the Planning
-// section's adoption series whenever it requested a longer range (e.g. 24 weeks of history),
-// chunking it down to 0 usable months and showing "Not enough data" despite full spend/usage
-// history being available.
-function mockActivitySummaries(startingDate) {
+// through endingDate, counted the same way mockDaysInRange's own while(t < end) loop counts
+// days: Math.ceil, not Math.round. endingDate is resolveRange's endingAt, which is clamped to
+// the live clock (Date.now()) rather than a clean midnight boundary, so the span is essentially
+// never an exact multiple of a day — Math.round silently rounds a trailing partial day down to
+// zero (167 instead of 168), one week short of cost-summary's own day count, which breaks
+// Planning's month-chunking for any 6-month/1-year Historic reference.
+function mockActivitySummaries(startingDate, endingDate) {
   const totalSeats = 42;
   const out = [];
   const start = new Date(startingDate).getTime();
-  const days = Math.max(14, Math.round((Date.now() - start) / DAY_MS));
+  const end = new Date(endingDate).getTime();
+  const days = Math.max(14, Math.ceil((end - start) / DAY_MS));
   for (let i = 0; i < days; i++) {
     const dateIso = new Date(start + i * DAY_MS).toISOString();
     const mau = Math.round(
@@ -1573,9 +1576,9 @@ async function handleEfficiencyByModel(res, searchParams) {
   sendJson(res, 200, { models });
 }
 
-async function fetchActivitySummaries(startingDate) {
+async function fetchActivitySummaries(startingDate, endingDate) {
   if (!ANTHROPIC_ENABLED) return [];
-  if (MOCK_MODE) return mockActivitySummaries(startingDate);
+  if (MOCK_MODE) return mockActivitySummaries(startingDate, endingDate);
   const url = new URL(`${API_BASE}/summaries`);
   url.searchParams.set("starting_date", startingDate);
   const data = await cachedFetchJson(url);
@@ -1603,10 +1606,13 @@ async function handleSeats(res, searchParams) {
   // start against the latest one. For a custom range, this uses the "from" date but always
   // compares up through "now" (not "to") — a custom range's own end date isn't threaded
   // through here, since /summaries mainly matters as a live, current-moment metric.
-  const requestedStartingDate = resolveRange(searchParams).startingAt.slice(
-    0,
-    10,
-  );
+  const resolvedRange = resolveRange(searchParams);
+  const requestedStartingDate = resolvedRange.startingAt.slice(0, 10);
+  // Full timestamp (not date-truncated) so MOCK_MODE's day-count math sees the real
+  // clamped-to-now boundary resolveRange computed, instead of rounding it down to midnight
+  // and silently losing almost a full day — the mismatch that made this endpoint return one
+  // fewer day than cost-summary's own (date-string-based, but internally consistent) count.
+  const requestedEndingDateTime = resolvedRange.endingAt;
   // A week-old starting_date is always past the ~1-day reporting lag, so this never 400s —
   // used as a fallback if the period-start date predates the org's available history
   // (see cachedFetchJsonRanged; /summaries hits the same floor but with a different error
@@ -1616,10 +1622,10 @@ async function handleSeats(res, searchParams) {
   let summaries;
   let hasFullPreviousPeriod = true;
   try {
-    summaries = await fetchActivitySummaries(requestedStartingDate);
+    summaries = await fetchActivitySummaries(requestedStartingDate, requestedEndingDateTime);
   } catch {
     hasFullPreviousPeriod = false;
-    summaries = await fetchActivitySummaries(fallbackStartingDate);
+    summaries = await fetchActivitySummaries(fallbackStartingDate, requestedEndingDateTime);
   }
   if (!summaries.length) return sendJson(res, 200, { available: false });
 
