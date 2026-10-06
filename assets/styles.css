@@ -444,9 +444,14 @@
 
       .kpis {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 10px;
         margin-bottom: 12px;
+      }
+      @media (max-width: 960px) {
+        .kpis {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
       }
       @media (max-width: 720px) {
         .kpis {
@@ -1190,25 +1195,6 @@
         font-weight: 500;
         font-size: 13px;
       }
-      .avg-spend-row {
-        align-items: baseline;
-        gap: 8px;
-        padding: 12px 16px;
-        margin-bottom: 16px;
-        background: var(--surface-soft);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-      }
-      .avg-spend-label {
-        font-size: 12px;
-        font-weight: 650;
-        color: var(--text-secondary);
-      }
-      .avg-spend-value {
-        font-size: 16px;
-        font-weight: 780;
-        color: var(--text-primary);
-      }
       #peopleFilter {
         font: inherit;
         padding: 8px 12px;
@@ -1522,6 +1508,15 @@
   color: var(--text-primary);
   padding: 0 9px;
   font-size: 11px;
+}
+.planning-field select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M5.70711 9.71069C5.31658 10.1012 5.31658 10.7344 5.70711 11.1249L10.5993 16.0123C11.3805 16.7927 12.6463 16.7924 13.4271 16.0117L18.3174 11.1213C18.708 10.7308 18.708 10.0976 18.3174 9.70708C17.9269 9.31655 17.2937 9.31655 16.9032 9.70708L12.7176 13.8927C12.3271 14.2833 11.6939 14.2832 11.3034 13.8927L7.12132 9.71069C6.7308 9.32016 6.09763 9.32016 5.70711 9.71069Z' fill='%235b5858'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  background-size: 16px 16px;
 }
 .planning-custom-field {
   display: none;

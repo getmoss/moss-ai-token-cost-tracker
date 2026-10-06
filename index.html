@@ -405,10 +405,6 @@
               </span>
             </div>
           </div>
-          <div id="investigationAvgSpendRow" class="avg-spend-row" style="display: none">
-            <span class="avg-spend-label" id="investigationAvgSpendLabel">Average employee spend</span>
-            <span class="avg-spend-value" id="investigationAvgSpendValue"></span>
-          </div>
           <div class="table-view-wrap">
             <table id="investigationTable">
               <thead>
@@ -960,6 +956,7 @@
         tableView: false,
         cost: null,
         people: null,
+        peoplePreviousAverageAmount: null,
         peopleFilter: "",
         efficiency: null,
         seats: null,
@@ -1147,13 +1144,13 @@
         return investigationState.period;
       }
 
-      // The exact wording of whichever #allocationPeriodPicker button is currently
-      // active ("1 week"/"4 weeks"/"6 months") — used so other UI referencing the
+      // The exact wording of whichever #periodPicker button is currently active
+      // ("1 week"/"4 weeks"/"6 months") — used so other UI referencing the
       // selected range echoes its label verbatim instead of restating it as a
       // generic "this period"/day count.
-      function activeAllocationPeriodLabel() {
+      function activePeriodLabel() {
         const activeBtn = document.querySelector(
-          '#allocationPeriodPicker [aria-selected="true"]',
+          '#periodPicker [aria-selected="true"]',
         );
         if (!activeBtn) return "";
         return activeBtn.dataset.days === "custom"
@@ -1645,15 +1642,6 @@
           "investigationTokenCostColumn",
         ).style.display = hasTokenCost ? "" : "none";
 
-        const isPerson = dimension === "person";
-        const avgSpendRow = document.getElementById("investigationAvgSpendRow");
-        const avgSpendValue = document.getElementById("investigationAvgSpendValue");
-        avgSpendRow.style.display = isPerson ? "flex" : "none";
-        if (isPerson) {
-          document.getElementById("investigationAvgSpendLabel").textContent =
-            `Average employee spend · ${activeAllocationPeriodLabel()}`;
-        }
-
         const rows = investigationFullRows();
         body.innerHTML = "";
 
@@ -1661,7 +1649,6 @@
           document.getElementById("investigationTableTitle").textContent =
             titleCase;
           document.getElementById("investigationTableNote").textContent = "";
-          if (isPerson) avgSpendValue.textContent = "—";
           seeAllBtn.hidden = true;
           const row = document.createElement("tr");
           const cell = document.createElement("td");
@@ -1677,7 +1664,6 @@
           document.getElementById("investigationTableTitle").textContent =
             titleCase;
           document.getElementById("investigationTableNote").textContent = "";
-          if (isPerson) avgSpendValue.textContent = "—";
           seeAllBtn.hidden = true;
           const row = document.createElement("tr");
           const cell = document.createElement("td");
@@ -1693,7 +1679,6 @@
         // share/benchmark depend on the full unsorted list's totals.
         const totalSpend = rows.reduce((sum, r) => sum + r.spend, 0);
         const averageSpend = totalSpend / rows.length;
-        if (isPerson) avgSpendValue.textContent = money(averageSpend);
         const enriched = rows.map((r) => ({
           ...r,
           trend: r.previousSpend != null ? pctChange(r.spend, r.previousSpend) : null,
@@ -2013,6 +1998,7 @@
             ["peopleCard"],
             (data) => {
               state.people = data.people;
+              state.peoplePreviousAverageAmount = data.previousAverageAmount;
               renderKpis();
               renderPeople();
             },
@@ -2150,6 +2136,7 @@
         const q = currentRangeQuery();
         state.cost =
           state.people =
+          state.peoplePreviousAverageAmount =
           state.efficiency =
           state.seats =
           state.segments =
@@ -3159,6 +3146,11 @@
         const seats = state.seats;
         const geo = state.segments?.geo;
         const speed = state.segments?.speed;
+        const averageEmployeeSpend =
+          state.people && state.people.length
+            ? state.people.reduce((sum, p) => sum + p.amount, 0) /
+              state.people.length
+            : null;
         const kpis = [
           {
             label: "Total AI cost",
@@ -3219,9 +3211,25 @@
                 },
               ),
           },
+          {
+            label: "Average employee spend",
+            info: "Total AI spend divided by the number of employees with any AI activity in the period.",
+            ready: !!state.people,
+            value:
+              state.people &&
+              (state.people.length ? money(averageEmployeeSpend) : "—"),
+            sub: `Per active employee · ${activePeriodLabel()}`,
+            delta:
+              state.people &&
+              state.people.length &&
+              deltaLine(averageEmployeeSpend, state.peoplePreviousAverageAmount, {
+                formatAbs: signedMoney,
+                invert: true,
+              }),
+          },
         ];
 
-        // "Add Claude" action tile — always exactly 3 KPI tiles, never 4. When Anthropic is
+        // "Add Claude" action tile — always exactly 4 KPI tiles, never 5. When Anthropic is
         // connected (OpenAI missing or not), the "Claude adoption rate" tile has genuine data
         // and stays as-is; the banner above is the only OpenAI nudge in that case. Only when
         // OpenAI is connected and Anthropic isn't does this REPLACE the adoption tile — its
@@ -4906,6 +4914,12 @@
           isAnthropic,
           providerName,
         );
+        // Same "can't un-mix an already-combined number" reasoning as previousAmount
+        // inside correctCostAndPeopleForProviderDrop — this was already averaged
+        // server-side across both providers, so drop the comparison rather than show
+        // a misleading delta against a number that still silently includes the
+        // just-removed provider.
+        state.peoplePreviousAverageAmount = null;
 
         // Every other endpoint is exclusively backed by one provider — clearing to null
         // matches exactly what a fresh fetch would return with that provider disabled, and
@@ -4930,7 +4944,11 @@
         // cleared by clearStaleProviderMixState, same as before this change.
         const key = currentRangeKey();
         if (state.cost) writeRangeCache("cost-summary", key, state.cost);
-        if (state.people) writeRangeCache("people", key, { people: state.people });
+        if (state.people)
+          writeRangeCache("people", key, {
+            people: state.people,
+            previousAverageAmount: state.peoplePreviousAverageAmount,
+          });
 
         // Organisational allocation's own copy — same correction, its own (possibly
         // different) range, so it never shows stale mixed-provider numbers either.
@@ -5003,7 +5021,7 @@
           // before are stale (same cleanup as the setup flow's proceed() in server.mjs).
           try {
             Object.keys(sessionStorage)
-              .filter((k) => k.indexOf("atsCache:v1:") === 0)
+              .filter((k) => k.indexOf("atsCache:v2:") === 0)
               .forEach((k) => sessionStorage.removeItem(k));
           } catch (e) {
             // sessionStorage unavailable — nothing to clear
