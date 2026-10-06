@@ -375,6 +375,19 @@ function mockDimensionCombos(groupBy) {
 }
 
 // Shared by every cost_report/usage_report caller via fetchAllBuckets, below.
+// Engineering's mock spend gets a deliberate, guaranteed boost in the most recent 7
+// calendar days (independent of whatever `dayIndex`-relative range is being requested) —
+// otherwise whether the Saving opportunities panel's alert thresholds ever actually trip
+// in demo mode is left up to the same per-day pseudo-random weights as every other combo,
+// which (see /tmp analysis during development) only clears the default 30%/$250 spike
+// thresholds by chance. This keeps the demo's "Team spend spike" case reliable without
+// making any other mock series less realistic.
+function mockRecentWeekBoost(combo, dateIso) {
+  if (combo.rbac_group_id !== "team-engineering") return 1;
+  const daysAgo = Math.floor((Date.now() - new Date(dateIso).getTime()) / DAY_MS);
+  return daysAgo < 7 ? 1.6 : 1;
+}
+
 function mockCostReportBuckets(startingAt, endingAt, groupBy) {
   const combos = mockDimensionCombos(groupBy);
   return mockDaysInRange(startingAt, endingAt).map(({ dateIso, dayIndex }) => {
@@ -388,7 +401,8 @@ function mockCostReportBuckets(startingAt, endingAt, groupBy) {
         1.4,
         dateIso,
       );
-      const amountDollars = (dayTotal / combos.length) * weight;
+      const amountDollars =
+        (dayTotal / combos.length) * weight * mockRecentWeekBoost(combo, dateIso);
       const requests = Math.max(
         1,
         Math.round(
@@ -546,6 +560,27 @@ function mockOpenAiCostBuckets(startingAtUnix, endingAtUnix, groupBy) {
           ),
         },
       }));
+    } else if (groupBy?.includes("line_item")) {
+      // Line item strings match the real Costs API's own format (parsed by
+      // parseOpenAiLineItem) — model names line up with OPENAI_MODEL_PRICING
+      // in lib/format.mjs so the demo's per-model rate table has something
+      // real to show against those list prices.
+      const models = ["gpt-6-astra", "gpt-5.6-sol", "gpt-5.6-terra", "gpt-5.6-luna"];
+      const tokenTypes = ["input", "cached input", "output"];
+      results = models.flatMap((model) =>
+        tokenTypes.map((tokenType) => ({
+          line_item: `${model}, ${tokenType}`,
+          amount: {
+            value: mockDailyValue(
+              `oai_lineitem:${model}:${tokenType}`,
+              dayIndex,
+              1,
+              40,
+              dateIso,
+            ),
+          },
+        })),
+      );
     } else {
       results = [
         {
@@ -1457,12 +1492,26 @@ async function handleEfficiency(res, searchParams) {
   const previous = previousUsage
     ? {
         cacheHitRate: previousUsage.cacheHitRate,
+        totalInputTokens: previousUsage.totalInputTokens,
+        outputTokens: previousUsage.outputTokens,
+        // Additive alongside actualInputCost/hypotheticalInputCost above — the Saving
+        // opportunities rate panel's blendedRate() (lib/savings.mjs) needs the output side
+        // of the bill too, not just the cache-discountable input side computeCachingSavings
+        // already covers.
+        outputCost: prevTokenTypeCosts.get("output_tokens") ?? 0,
+        tokenTypeCosts: Object.fromEntries(prevTokenTypeCosts),
         ...computeCachingSavings(previousUsage, prevTokenTypeCosts),
       }
     : null;
 
   sendJson(res, 200, {
     ...usage,
+    outputCost: tokenTypeCosts.get("output_tokens") ?? 0,
+    // Raw $ per token_type (uncached_input_tokens, cache_read_input_tokens,
+    // cache_creation.ephemeral_5m/1h_input_tokens, output_tokens) — additive
+    // to the blended actualInputCost/hypotheticalInputCost below, for the
+    // Saving opportunities rate panel's per-token-type breakdown table.
+    tokenTypeCosts: Object.fromEntries(tokenTypeCosts),
     ...computeCachingSavings(usage, tokenTypeCosts),
     previous,
   });
@@ -1680,10 +1729,16 @@ async function fetchSkills(startingAt, limit, endingAt = null) {
 }
 
 async function handleSkills(res, searchParams) {
-  const { startingAt, prevStartingAt, prevEndingAt } =
+  const { startingAt, endingAt, prevStartingAt, prevEndingAt } =
     resolveRange(searchParams);
+  // An explicit ?from=&to= (e.g. the Saving opportunities panel fetching a
+  // specific past week) must bound the "current" period fetch too — only the
+  // default, no-args case (the Allocation tab's normal preset ranges) should
+  // keep deferring to the API's own "most recent available day" (see
+  // fetchSkills's own comment on why ending_date is otherwise omitted).
+  const explicitTo = isValidDateParam(searchParams.get("to"));
   const [skills, previousSkills] = await Promise.all([
-    fetchSkills(startingAt, 50),
+    fetchSkills(startingAt, 50, explicitTo ? endingAt : null),
     // Confirmed live: adjacent /skills windows sharing a boundary date
     // partition cleanly (no double-count) — prevEndingAt equals the current
     // period's own starting_date, so this is an exact "immediately before" window.
@@ -1949,6 +2004,14 @@ async function handleCostSummary(res, searchParams) {
     return {
       ...m,
       totalTokens: usage ? usage.totalInputTokens + usage.outputTokens : null,
+      // Per-token-type breakdown, additive to totalTokens above — the Saving
+      // opportunities rate panel's per-model list-price reference
+      // (modelListPriceCost in lib/savings.mjs) needs each type's own count,
+      // not just the total.
+      uncachedInputTokens: usage?.uncachedInputTokens ?? null,
+      cacheReadInputTokens: usage?.cacheReadInputTokens ?? null,
+      cacheCreationTokens: usage?.cacheCreationTokens ?? null,
+      outputTokens: usage?.outputTokens ?? null,
     };
   });
 
@@ -2107,13 +2170,54 @@ async function handlePeople(res, searchParams) {
   }
   people.sort((a, b) => b.amount - a.amount);
 
-  sendJson(res, 200, { people });
+  // Same best-effort, not-full-period-gated comparison as previousAmount above —
+  // backs the Company overview's "Average employee spend" KPI delta. Previous
+  // period's active-employee count comes from previousAmountByEmail itself
+  // (everyone who had any spend that period), independent of who's in `people`.
+  const previousTotalAmount = [...previousAmountByEmail.values()].reduce(
+    (sum, amount) => sum + amount,
+    0,
+  );
+  const previousAverageAmount = previousAmountByEmail.size
+    ? previousTotalAmount / previousAmountByEmail.size
+    : null;
+
+  sendJson(res, 200, { people, previousAverageAmount });
 }
 
 async function handleOpenAiProjects(res, searchParams) {
   const { startingAtUnix, endingAtUnix } = resolveRange(searchParams);
   const projects = await fetchOpenAiProjectCosts(startingAtUnix, endingAtUnix);
   sendJson(res, 200, { projects });
+}
+
+// Only consumer today is the Saving opportunities "Token and model rate" panel's per-model
+// reference table — deliberately its own endpoint rather than folded into /api/cost-summary
+// (which every section fetches on every load) since the underlying line_item grouping is
+// nothing else needs. Dollar amounts only: unlike Anthropic, OpenAI's Costs/Usage APIs never
+// expose token *counts* per model, so there's no $/1M-token figure to compute here, only a
+// $ mix by model and token type (see OPENAI_MODEL_PRICING's own comment in lib/format.mjs).
+export function aggregateOpenAiCostByModel(buckets) {
+  const byModel = new Map();
+  for (const bucket of buckets) {
+    for (const row of bucket.results) {
+      const { model, tokenType } = parseOpenAiLineItem(row.line_item ?? "");
+      const amount = row.amount?.value ?? 0;
+      if (!byModel.has(model)) byModel.set(model, { name: model, spend: 0, byTokenType: {} });
+      const m = byModel.get(model);
+      m.spend += amount;
+      m.byTokenType[tokenType] = (m.byTokenType[tokenType] ?? 0) + amount;
+    }
+  }
+  return [...byModel.values()].sort((a, b) => b.spend - a.spend);
+}
+
+async function handleOpenAiModelCosts(res, searchParams) {
+  const { startingAtUnix, endingAtUnix } = resolveRange(searchParams);
+  const buckets = await fetchOpenAiCostBuckets(startingAtUnix, endingAtUnix, [
+    "line_item",
+  ]);
+  sendJson(res, 200, { models: aggregateOpenAiCostByModel(buckets) });
 }
 
 // The packaged build has no source tree to read index.html from — it's embedded as a SEA
@@ -2204,13 +2308,13 @@ async function serveStatic(req, res, pathname) {
 // separate ChatGPT "Admin Console" product, not for this one. See HANDOFF.md.
 const PROVIDER_COPY = {
   anthropic: {
-    title: "Add Anthropic (Claude) Analytics API key",
-    shortName: "Anthropic",
+    title: "Add Claude Analytics API key",
+    shortName: "Claude",
     credentialName: "Analytics API key",
     badgeBg: "#d6f1e5",
     badgeFg: "#265f4f",
     intro:
-      "This dashboard reads Anthropic's Claude Enterprise Analytics API to show your Claude spend, usage and adoption.",
+      "This dashboard reads the Claude Enterprise Analytics API to show your Claude spend, usage and adoption.",
     consoleUrl: "https://claude.ai/admin-settings/api-access",
     helpGuideUrl: "https://support.claude.com/en/articles/15330651-claude-enterprise-admin-api-reference-guide?utm_source=chatgpt.com",
     helpGuideLabel: "Claude Admin API key guide",
@@ -2223,17 +2327,17 @@ const PROVIDER_COPY = {
       { text: "Turn on public API access if it isn't already." },
       { text: "Create an Analytics API key, then copy it and paste it below." },
     ],
-    fieldLabelSelf: "Anthropic Analytics API key",
+    fieldLabelSelf: "Claude Analytics API key",
     reservedNote:
       "This key only grants read:analytics access — it can read usage and cost data but can't make any changes to your account.",
     delegateIntro: "Send this to your organization's primary owner:",
-    messageCardTitle: "Message for your Anthropic org owner",
+    messageCardTitle: "Message for your Claude org owner",
     invalidFormatMsg:
-      "That doesn't look like an Anthropic key — double-check what they sent, or that you copied the whole value.",
+      "That doesn't look like a Claude key — double-check what they sent, or that you copied the whole value.",
     permissionErrorMsg:
-      "This Anthropic key doesn't have the right access. Ask whoever created it to generate an Analytics API key, not a regular API key.",
+      "This Claude key doesn't have the right access. Ask whoever created it to generate an Analytics API key, not a regular API key.",
     requestMessage:
-      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Analytics API key for our Anthropic organisation?\n\n" +
+      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Analytics API key for our Claude organisation?\n\n" +
       "1. Go to https://claude.ai/admin-settings/api-access\n\n" +
       "2. Turn on public API access if needed.\n\n" +
       "3. Create an Analytics API key.\n\n" +
@@ -2241,8 +2345,8 @@ const PROVIDER_COPY = {
       "The key only grants read access and cannot make changes. It stays on my device and is never sent to Moss. I can also share the GitHub code for review.",
   },
   openai: {
-    title: "Add OpenAI (ChatGPT) Admin API key",
-    shortName: "OpenAI",
+    title: "Add ChatGPT Admin API key",
+    shortName: "ChatGPT",
     credentialName: "Admin API key",
     badgeBg: "#f1f1f1",
     badgeFg: "#5b5858",
@@ -2250,26 +2354,26 @@ const PROVIDER_COPY = {
       "Add this to see combined spend across both providers. You can always add it later from settings.",
     consoleUrl: "https://platform.openai.com/settings/organization/admin-keys",
     helpGuideUrl: "https://help.openai.com/en/articles/20001407?utm_source=chatgpt.com",
-    helpGuideLabel: "OpenAI Admin key guide",
+    helpGuideLabel: "ChatGPT Admin key guide",
     keyPrefix: "sk-",
     steps: [
-      { text: "Go to your OpenAI Platform admin keys page.", chip: true },
+      { text: "Go to your ChatGPT admin keys page.", chip: true },
       { text: "Click <b>Create new admin key</b>." },
       {
         text: "If it asks you to choose permissions, select <b>Read only</b> - then copy the key and paste it below either way.",
       },
     ],
-    fieldLabelSelf: "OpenAI Admin API key",
+    fieldLabelSelf: "ChatGPT Admin API key",
     reservedNote:
       "If you were able to choose Read only permissions, this key can only read spend and usage data — nothing can be changed with it.",
-    delegateIntro: "Send this to whoever manages your OpenAI account:",
-    messageCardTitle: "Message for your OpenAI admin",
+    delegateIntro: "Send this to whoever manages your ChatGPT account:",
+    messageCardTitle: "Message for your ChatGPT admin",
     invalidFormatMsg:
-      "That doesn't look like a valid OpenAI key — double-check what your admin sent, or that you copied the whole value.",
+      "That doesn't look like a valid ChatGPT key — double-check what your admin sent, or that you copied the whole value.",
     permissionErrorMsg:
-      "This OpenAI key doesn't have Admin permissions. Ask whoever created it to generate an Admin API key, not a standard API key.",
+      "This ChatGPT key doesn't have Admin permissions. Ask whoever created it to generate an Admin API key, not a standard API key.",
     requestMessage:
-      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Admin API key for our OpenAI organisation?\n\n" +
+      "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Admin API key for our ChatGPT organisation?\n\n" +
       "1. Go to https://platform.openai.com/settings/organization/keys\n\n" +
       '2. Click "Create new admin key".\n\n' +
       '3. Select "Read only" if asked to choose permissions.\n\n' +
@@ -2289,20 +2393,20 @@ const PROVIDER_COPY = {
 export function setupPageCopy(mode) {
   if (mode === "add-openai") {
     return {
-      title: "Add OpenAI (ChatGPT)",
+      title: "Add ChatGPT",
       subtitle:
-        "Add OpenAI to see combined AI cost and usage across both providers.",
+        "Add ChatGPT to see combined AI cost and usage across both providers.",
       cards: ["openai"],
-      buttonLabel: "Add OpenAI",
+      buttonLabel: "Add ChatGPT",
     };
   }
   if (mode === "add-anthropic") {
     return {
-      title: "Add Anthropic (Claude)",
+      title: "Add Claude",
       subtitle:
-        "Add Anthropic to see combined AI cost and usage across both providers, plus Claude adoption tracking.",
+        "Add Claude to see combined AI cost and usage across both providers, plus adoption tracking.",
       cards: ["anthropic"],
-      buttonLabel: "Add Anthropic",
+      buttonLabel: "Add Claude",
     };
   }
   // Reached from the dashboard header's "Change key" action (see setupPageHtml's
@@ -2310,7 +2414,7 @@ export function setupPageCopy(mode) {
   // already connected, so the copy and button read as an update rather than a first connect.
   if (mode === "change-anthropic") {
     return {
-      title: "Change your Anthropic key",
+      title: "Change your Claude key",
       subtitle:
         "Paste a new Admin API key to replace the one currently connected.",
       cards: ["anthropic"],
@@ -2319,7 +2423,7 @@ export function setupPageCopy(mode) {
   }
   if (mode === "change-openai") {
     return {
-      title: "Change your OpenAI key",
+      title: "Change your ChatGPT key",
       subtitle:
         "Paste a new Admin API key to replace the one currently connected.",
       cards: ["openai"],
@@ -2502,8 +2606,8 @@ const SETUP_CLIENT_SCRIPT = `
         canProceed = a || o;
         hint = '';
         if (a && o) hint = "You're all set.";
-        else if (a) hint = 'Add OpenAI too for combined spend, or continue with just Anthropic.';
-        else if (o) hint = 'Add Anthropic too for combined spend, or continue with just OpenAI.';
+        else if (a) hint = 'Add ChatGPT too for combined spend, or continue with just Claude.';
+        else if (o) hint = 'Add Claude too for combined spend, or continue with just ChatGPT.';
       }
       const btn = document.getElementById('proceed-btn');
       btn.disabled = !canProceed || state.saving;
@@ -2646,7 +2750,7 @@ const SETUP_CLIENT_SCRIPT = `
         // right when we know the provider mix just changed.
         try {
           Object.keys(sessionStorage)
-            .filter(function (k) { return k.indexOf('atsCache:v1:') === 0; })
+            .filter(function (k) { return k.indexOf('atsCache:v2:') === 0; })
             .forEach(function (k) { sessionStorage.removeItem(k); });
         } catch (e) {
           // sessionStorage unavailable — nothing to clear
@@ -3463,7 +3567,7 @@ async function verifyProviderKey(provider, key) {
       new Date().toISOString().slice(0, 10),
     );
     const error = await verifyKey(
-      "Anthropic",
+      "Claude",
       url,
       { "x-api-key": key, "anthropic-version": "2023-06-01" },
       PROVIDER_COPY.anthropic.permissionErrorMsg,
@@ -3474,7 +3578,7 @@ async function verifyProviderKey(provider, key) {
     const url = new URL(`${OPENAI_API_BASE}/costs`);
     url.searchParams.set("limit", "1");
     const error = await verifyKey(
-      "OpenAI",
+      "ChatGPT",
       url,
       { Authorization: `Bearer ${key}` },
       PROVIDER_COPY.openai.permissionErrorMsg,
@@ -3659,6 +3763,8 @@ const server = createServer(async (req, res) => {
       return await handleSkills(res, url.searchParams);
     if (url.pathname === "/api/openai-projects")
       return await handleOpenAiProjects(res, url.searchParams);
+    if (url.pathname === "/api/openai-model-costs")
+      return await handleOpenAiModelCosts(res, url.searchParams);
     return await serveStatic(req, res, url.pathname);
   } catch (error) {
     if (error.code === "ENOENT") {
