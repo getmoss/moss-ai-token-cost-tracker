@@ -658,12 +658,14 @@
                 <button type="button" data-value="6m" aria-selected="true">6 months</button>
                 <input type="date" id="planningCustomDate" class="planning-custom-pill" aria-label="Custom forecast date" />
               </div>
-              <span>show</span>
-              <div class="planning-legend" id="planningLegendToggles">
-                <label class="planning-legend-item planning-legend-toggle" id="planningSpendLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--brand)"></span>Spend<input type="checkbox" data-metric="spend" checked /></label>
-                <label class="planning-legend-item planning-legend-toggle" id="planningUsageLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-usage)"></span>Usage<input type="checkbox" data-metric="usage" checked /></label>
-                <label class="planning-legend-item planning-legend-toggle" id="planningAdoptionLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-adoption)"></span>Adoption<input type="checkbox" data-metric="adoption" checked /></label>
-              </div>
+              <span class="planning-show-group">
+                <span>show</span>
+                <div class="planning-legend" id="planningLegendToggles">
+                  <label class="planning-legend-item planning-legend-toggle" id="planningSpendLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--brand)"></span>Spend<input type="checkbox" data-metric="spend" checked /></label>
+                  <label class="planning-legend-item planning-legend-toggle" id="planningUsageLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-usage)"></span>Usage<input type="checkbox" data-metric="usage" checked /></label>
+                  <label class="planning-legend-item planning-legend-toggle" id="planningAdoptionLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-adoption)"></span>Adoption<input type="checkbox" data-metric="adoption" checked /></label>
+                </div>
+              </span>
             </div>
             <div class="planning-legend planning-legend-lines">
               <span class="planning-legend-item"><span class="planning-swatch dashed" style="--swatch: var(--text-muted)"></span>Baseline</span>

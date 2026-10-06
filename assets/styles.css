@@ -1709,6 +1709,12 @@
   font-size: 14px;
   font-weight: 400;
 }
+.planning-show-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
 .planning-legend {
   display: flex;
   align-items: center;
