@@ -1813,7 +1813,7 @@
 }
 .planning-divider-label {
   fill: var(--text-muted);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
 }
 .planning-point {
@@ -1821,13 +1821,19 @@
   stroke-width: 2;
 }
 .planning-axis-title {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.035em;
 }
 .planning-colour-axis {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 700;
+}
+#planningChartSvg .axis-label {
+  font-size: 13px;
+}
+#planningChartSvg .axis-label-converted {
+  font-size: 11px;
 }
 .planning-colour-axis-line {
   stroke-width: 2;
@@ -1868,6 +1874,7 @@
 .control-centre-title {
   margin: 0 0 4px;
   font-size: 16px;
+  font-weight: 400;
   letter-spacing: -0.015em;
 }
 .control-centre-copy {
