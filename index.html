@@ -684,15 +684,14 @@
 
           <section class="control-centre" aria-labelledby="controlCentreTitle">
             <div class="control-centre-head">
-              <div>
+              <div class="control-centre-head-top">
                 <h3 class="control-centre-title" id="controlCentreTitle">Scenario controls</h3>
-                <p class="control-centre-copy">
-                  Adjust company-wide assumptions. The baseline forecast
-                  stays visible for comparison.
-                </p>
-                <div class="scenario-result" id="scenarioResult" aria-live="polite">No adjustments applied.</div>
+                <button class="table-toggle scenario-header-reset-btn" id="resetScenario" type="button">Reset to baseline</button>
               </div>
-              <button class="table-toggle" id="resetScenario" type="button">Reset to baseline</button>
+              <p class="control-centre-copy">
+                Adjust company-wide assumptions. The baseline forecast
+                stays visible for comparison.
+              </p>
             </div>
             <div class="scenario-grid">
               <div class="scenario-control" id="adoptionScenarioControl">
@@ -2687,7 +2686,6 @@
         document.getElementById("planningCostDelta").classList.remove("planning-kpi-tag-touched");
         document.getElementById("planningCostBaselineCurrencies").textContent = "";
         document.getElementById("planningCostScenarioCurrencies").textContent = "";
-        document.getElementById("scenarioResult").textContent = "No adjustments applied.";
         document.getElementById("planningChartTitle").textContent = "Spend, usage and adoption forecast";
         document.getElementById("planningChartNoteText").textContent = message;
         document.getElementById("planningChartNote").classList.remove("planning-chart-note-warning");
@@ -2720,10 +2718,6 @@
         document
           .getElementById("planningCostDelta")
           .classList.toggle("planning-kpi-tag-touched", state.planning.scenarioTouched);
-
-        document.getElementById("scenarioResult").textContent = state.planning.scenarioTouched
-          ? `Adjusted six-month monthly cost: ${money(projection.scenarioMonthly)} (${costDelta >= 0 ? "+" : ""}${costDelta.toFixed(1)}% vs baseline forecast).`
-          : "No adjustments applied.";
       }
 
       // Independent y-scale per metric (Spend/Usage/Adoption have unrelated ranges) — Spend and
