@@ -696,26 +696,21 @@
             <div class="scenario-grid">
               <div class="scenario-control" id="adoptionScenarioControl">
                 <div class="scenario-control-head">
-                  <div>
+                  <div class="scenario-control-head-top">
                     <span class="scenario-control-title">AI adoption rate</span>
-                    <span class="scenario-control-note">Share of employees actively using AI</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="adoptionValue">&mdash;</span>
+                      <button
+                        class="scenario-reset-btn"
+                        type="button"
+                        data-slider="adoptionSlider"
+                        aria-label="Reset AI adoption rate to baseline"
+                      >
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </div>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="adoptionValue">&mdash;</span>
-                    <button
-                      class="scenario-reset-btn"
-                      type="button"
-                      id="adoptionResetBtn"
-                      data-slider="adoptionSlider"
-                      aria-label="Reset AI adoption rate to baseline"
-                      title="Reset to default"
-                    >
-                      <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
-                        <path d="M16.5 10a6.5 6.5 0 1 1-2.02-4.71" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M16.7 3.8v3.6h-3.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-                      </svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Share of employees actively using AI</span>
                 </div>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -728,16 +723,16 @@
               </div>
               <label class="scenario-control" for="usageSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Requests per active employee</span>
-                    <span class="scenario-control-note">Average weekly usage intensity</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="usageValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="usageSlider" aria-label="Reset requests per active employee to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="usageValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="usageSlider" aria-label="Reset requests per active employee to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Average weekly usage intensity</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -750,16 +745,16 @@
               </label>
               <label class="scenario-control" for="tokensSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Tokens per request</span>
-                    <span class="scenario-control-note">Average input and output workload size</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="tokensValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="tokensSlider" aria-label="Reset tokens per request to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="tokensValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="tokensSlider" aria-label="Reset tokens per request to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Average input and output workload size</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -772,16 +767,16 @@
               </label>
               <label class="scenario-control" for="priceSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Company average token price</span>
-                    <span class="scenario-control-note">Your blended company rate per 1M tokens</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="priceValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="priceSlider" aria-label="Reset company average token price to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="priceValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="priceSlider" aria-label="Reset company average token price to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Your blended company rate per 1M tokens</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -794,16 +789,16 @@
               </label>
               <label class="scenario-control" for="providerPriceSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Provider average token price</span>
-                    <span class="scenario-control-note">Average list rate across your provider and model mix</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="providerPriceValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="providerPriceSlider" aria-label="Reset provider average token price to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="providerPriceValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="providerPriceSlider" aria-label="Reset provider average token price to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Average list rate across your provider and model mix</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -816,16 +811,16 @@
               </label>
               <label class="scenario-control" for="modelMixSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Higher-cost model share</span>
-                    <span class="scenario-control-note">Share of tokens routed to premium models across providers</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="modelMixValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="modelMixSlider" aria-label="Reset higher-cost model share to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="modelMixValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="modelMixSlider" aria-label="Reset higher-cost model share to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Share of tokens routed to premium models across providers</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -838,16 +833,16 @@
               </label>
               <label class="scenario-control" for="employeesSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Employees count</span>
-                    <span class="scenario-control-note">Current AI users, expected to grow with headcount</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="employeesValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="employeesSlider" aria-label="Reset employees count to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="employeesValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="employeesSlider" aria-label="Reset employees count to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Current AI users, expected to grow with headcount</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -2567,10 +2562,6 @@
         }
 
         PLANNING_SLIDER_IDS.forEach(updateSliderVisual);
-        const adoptionResetBtn = document.getElementById("adoptionResetBtn");
-        const atDefault = d ? Math.abs(controls.adoption - d.adoption) < 0.26 : true;
-        adoptionResetBtn.disabled = atDefault;
-        adoptionResetBtn.title = atDefault || !d ? "Already at default" : `Reset to default (${d.adoption.toFixed(1)}%)`;
       }
 
       // Keeps a scenario slider's custom-drawn fill/thumb in sync with its underlying (visually

@@ -1858,13 +1858,18 @@
   padding: 0 24px;
 }
 .control-centre {
+  border: 1px solid #e3e2e2;
   border-radius: 8px;
   background: var(--surface-soft);
   overflow-y: auto;
   overflow-x: hidden;
 }
 .control-centre-head {
+  position: sticky;
+  top: 0;
+  z-index: 5;
   padding: 16px;
+  background: var(--surface-soft);
   border-bottom: 1px solid var(--border);
 }
 .control-centre-head-top {
@@ -1897,8 +1902,9 @@
 }
 .control-centre-copy {
   margin: 0;
-  color: var(--text-secondary);
-  font-size: 10px;
+  color: #717171;
+  font-size: 12px;
+  font-weight: 400;
   line-height: 1.4;
 }
 
@@ -1917,11 +1923,14 @@
   cursor: pointer;
 }
 .scenario-control-head {
+  display: block;
+  margin-bottom: 9px;
+}
+.scenario-control-head-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 9px;
 }
 .scenario-control-title {
   display: block;
@@ -1932,7 +1941,7 @@
   display: block;
   margin-top: 2px;
   color: var(--text-muted);
-  font-size: 8px;
+  font-size: 10px;
 }
 .scenario-control-value {
   color: var(--brand);
@@ -2000,7 +2009,7 @@
   justify-content: space-between;
   color: var(--text-muted);
   font-size: 8px;
-  margin-top: 4px;
+  margin-top: 1px;
 }
 
 @media (max-width: 760px) {
