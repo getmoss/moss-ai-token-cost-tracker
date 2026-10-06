@@ -1660,30 +1660,24 @@
 }
 
 .planning-chart-shell {
-  border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface-1);
   overflow: hidden;
-}
-.planning-chart-header {
-  padding: 24px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.planning-chart-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
 }
 .planning-chart-title {
   font-size: 12px;
   font-weight: 700;
 }
+.planning-inline-filters-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 24px 24px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
 .planning-chart-note {
-  margin-top: 3px;
+  padding: 16px 24px 0;
   color: var(--text-muted);
   font-size: 14px;
   font-weight: 400;
@@ -1709,6 +1703,7 @@
 .planning-inline-filters {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   color: var(--text-primary);
   font-size: 14px;
@@ -1774,7 +1769,7 @@
 }
 .planning-chart {
   position: relative;
-  padding: 8px 8px 4px;
+  padding: 8px 0 4px;
 }
 .planning-chart svg {
   display: block;
@@ -1843,11 +1838,24 @@
   font-weight: 700;
 }
 
-.control-centre {
+.planning-forecast-shell {
   border: 1px solid var(--border);
   border-radius: 8px;
+  background: var(--surface-1);
+  padding: 24px 0;
+}
+.planning-forecast-row {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 0 24px;
+}
+.control-centre {
+  border-radius: 8px;
   background: var(--surface-soft);
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .control-centre-head {
   padding: 16px;
@@ -1878,7 +1886,7 @@
 .scenario-grid {
   padding: 14px 16px 16px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 10px;
 }
 .scenario-control {
@@ -1978,8 +1986,11 @@
 
 @media (max-width: 760px) {
   .planning-kpis,
-  .scenario-grid {
+  .planning-forecast-row {
     grid-template-columns: 1fr;
+  }
+  .control-centre {
+    overflow: visible;
   }
   .planning-compare {
     grid-template-columns: 1fr;
@@ -1993,7 +2004,7 @@
     border-left: 0;
     border-top: 1px solid var(--border);
   }
-  .planning-chart-header,
+  .planning-inline-filters-row,
   .control-centre-head {
     align-items: flex-start;
     flex-direction: column;

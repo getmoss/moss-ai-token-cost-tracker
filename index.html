@@ -640,43 +640,41 @@
 
           <div class="planning-kpi-title planning-kpi-title-tight">Spend, usage and adoption forecast</div>
           <div class="planning-kpi-sublabel planning-chart-subtitle">Baseline continues the typical weekly trend. Your adjusted scenario starts from the same point.</div>
-          <section class="planning-chart-shell" aria-labelledby="planningChartTitle">
-            <div class="planning-chart-header">
-              <div class="planning-chart-header-row">
-                <div>
-                  <div class="planning-chart-title" id="planningChartTitle" hidden></div>
-                  <div class="planning-inline-filters">
-                    <span>Based on the last</span>
-                    <select id="planningReference">
-                      <option value="4">month</option>
-                      <option value="13" selected>quarter</option>
-                      <option value="26">6 month</option>
-                      <option value="52">year</option>
-                    </select>
-                    <span id="planningHorizonLabel">projecting the next</span>
-                    <div class="segmented" id="planningHorizon" role="group" aria-label="Future horizon">
-                      <button type="button" data-value="1w" aria-selected="false">Week</button>
-                      <button type="button" data-value="4w" aria-selected="false">4 weeks</button>
-                      <button type="button" data-value="6m" aria-selected="true">6 months</button>
-                      <input type="date" id="planningCustomDate" class="planning-custom-pill" aria-label="Custom forecast date" />
-                    </div>
-                    <span>show</span>
-                    <div class="planning-legend" id="planningLegendToggles">
-                      <label class="planning-legend-item planning-legend-toggle" id="planningSpendLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--brand)"></span>Spend<input type="checkbox" data-metric="spend" checked /></label>
-                      <label class="planning-legend-item planning-legend-toggle" id="planningUsageLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-usage)"></span>Usage<input type="checkbox" data-metric="usage" checked /></label>
-                      <label class="planning-legend-item planning-legend-toggle" id="planningAdoptionLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-adoption)"></span>Adoption<input type="checkbox" data-metric="adoption" checked /></label>
-                    </div>
-                  </div>
-                  <div class="planning-chart-note" id="planningChartNote">
-                    <img src="/assets/icons/icon-info.png" alt="" width="16" height="16" class="planning-chart-note-icon" />
-                    <span id="planningChartNoteText"></span>
-                  </div>
-                </div>
-                <div class="planning-legend planning-legend-lines">
-                  <span class="planning-legend-item"><span class="planning-swatch dashed" style="--swatch: var(--text-muted)"></span>Baseline</span>
-                  <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted)"></span>Scenario</span>
-                </div>
+          <div class="planning-chart-title" id="planningChartTitle" hidden></div>
+          <div class="planning-forecast-shell">
+          <div class="planning-inline-filters-row">
+            <div class="planning-inline-filters">
+              <span>Based on the last</span>
+              <select id="planningReference">
+                <option value="4">month</option>
+                <option value="13" selected>quarter</option>
+                <option value="26">6 month</option>
+                <option value="52">year</option>
+              </select>
+              <span id="planningHorizonLabel">projecting the next</span>
+              <div class="segmented" id="planningHorizon" role="group" aria-label="Future horizon">
+                <button type="button" data-value="1w" aria-selected="false">Week</button>
+                <button type="button" data-value="4w" aria-selected="false">4 weeks</button>
+                <button type="button" data-value="6m" aria-selected="true">6 months</button>
+                <input type="date" id="planningCustomDate" class="planning-custom-pill" aria-label="Custom forecast date" />
               </div>
+              <span>show</span>
+              <div class="planning-legend" id="planningLegendToggles">
+                <label class="planning-legend-item planning-legend-toggle" id="planningSpendLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--brand)"></span>Spend<input type="checkbox" data-metric="spend" checked /></label>
+                <label class="planning-legend-item planning-legend-toggle" id="planningUsageLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-usage)"></span>Usage<input type="checkbox" data-metric="usage" checked /></label>
+                <label class="planning-legend-item planning-legend-toggle" id="planningAdoptionLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-adoption)"></span>Adoption<input type="checkbox" data-metric="adoption" checked /></label>
+              </div>
+            </div>
+            <div class="planning-legend planning-legend-lines">
+              <span class="planning-legend-item"><span class="planning-swatch dashed" style="--swatch: var(--text-muted)"></span>Baseline</span>
+              <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted)"></span>Scenario</span>
+            </div>
+          </div>
+          <div class="planning-forecast-row">
+          <section class="planning-chart-shell" aria-labelledby="planningChartTitle">
+            <div class="planning-chart-note" id="planningChartNote">
+              <img src="/assets/icons/icon-info.png" alt="" width="16" height="16" class="planning-chart-note-icon" />
+              <span id="planningChartNoteText"></span>
             </div>
             <div class="planning-chart" id="planningChart">
               <div id="planningChartSvg"></div>
@@ -863,6 +861,8 @@
               </label>
             </div>
           </section>
+          </div>
+          </div>
 
         </div>
         </div>
@@ -4572,6 +4572,19 @@
         state.planning.scenarioTouched = false;
         renderPlanningChart();
       });
+
+      // Scenario controls box is capped to the chart's height (never taller) and scrolls
+      // internally beyond that — driven by the chart's actual rendered height via
+      // ResizeObserver rather than a fixed CSS value, since the chart's height varies with
+      // window width, metric toggles, and whether a historyWarning note is showing.
+      const planningChartShellEl = document.querySelector(".planning-chart-shell");
+      const controlCentreEl = document.querySelector(".control-centre");
+      if (planningChartShellEl && controlCentreEl) {
+        new ResizeObserver((entries) => {
+          const height = entries[0].contentRect.height;
+          controlCentreEl.style.maxHeight = window.innerWidth > 760 ? `${height}px` : "";
+        }).observe(planningChartShellEl);
+      }
 
       function openModal(id) {
         document.getElementById(id).classList.add("visible");
