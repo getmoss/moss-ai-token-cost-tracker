@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "start": "node --env-file-if-exists=.env server.mjs",
-    "demo": "node demo.mjs",
     "reset-onboarding": "bash reset-onboarding.sh",
     "test": "node --test"
   }

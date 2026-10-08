@@ -195,6 +195,21 @@ let ANTHROPIC_ENABLED = Boolean(KEY);
 let OPENAI_KEY = process.env.OPENAI_ADMIN_KEY;
 let OPENAI_ENABLED = Boolean(OPENAI_KEY);
 
+// A build-time flag (never read from .env — see build-mac-demo.sh, which bakes this in via
+// esbuild's --define at bundle time) that swaps every real fetchX for a mock-data generator
+// returning realistic, deterministic sample data, and skips real key verification. Absent
+// (undefined) in the normal dev/production build, so this is always false there at boot.
+// Kept separately from the mutable MOCK_MODE below so /exit-demo (setup page's "Preview with
+// sample data" button) knows what to fall back to — ENV_MOCK_MODE is never reassigned.
+// Declared here (ahead of isSetupMode below, which reads it) rather than down by the rest of
+// the mock-data plumbing, since isSetupMode runs once immediately at module load.
+const ENV_MOCK_MODE = process.env.ATS_MOCK_MODE === "1";
+// Mutable, not const: the setup page's "Preview with sample data" button (handlePreviewDemo)
+// and its "Exit demo" counterpart (handleExitDemo) flip this on the *running* process, the
+// same way applyProviderKeys mutates KEY/OPENAI_KEY in place — no relaunch, no .env write,
+// since demo mode is explicitly never meant to persist across a restart.
+let MOCK_MODE = ENV_MOCK_MODE;
+
 // Shared with the client-side copy inside SETUP_CLIENT_SCRIPT (that one masks what the user
 // just typed, before it's ever sent anywhere; this one masks an already-saved key server-side
 // before it's embedded in the dashboard page — the real value must never reach the browser).
@@ -207,9 +222,11 @@ function maskKey(key) {
 // key is saved — a non-technical user double-clicking an app has no terminal to read an error
 // in. A function, not a frozen boolean, since ANTHROPIC_ENABLED/OPENAI_ENABLED can now change
 // live (see applyProviderKeys) without a relaunch — a cached boolean would go stale the first
-// time a key is added or removed.
+// time a key is added or removed. MOCK_MODE also counts as "configured" — /preview-demo flips
+// it on without ever setting a real key, and the demo preview still needs to reach the
+// dashboard rather than looping back to this same setup screen.
 function isSetupMode() {
-  return !ANTHROPIC_ENABLED && !OPENAI_ENABLED;
+  return !ANTHROPIC_ENABLED && !OPENAI_ENABLED && !MOCK_MODE;
 }
 if (isSetupMode()) {
   console.warn(
@@ -253,6 +270,13 @@ function applyProviderKeys(anthropicKey, openaiKey) {
   HEADERS = { "x-api-key": KEY, "anthropic-version": "2023-06-01" };
   OPENAI_HEADERS = { Authorization: `Bearer ${OPENAI_KEY}` };
 
+  // While MOCK_MODE is on (packaged demo build, or an active "Preview with sample data"
+  // session), KEY/OPENAI_KEY hold fake placeholder values, not real keys — writing those to
+  // .env would clobber a genuinely-saved real key the moment someone hits "Change key" or
+  // "Remove key" on a demo-preview provider chip. Skip the disk write entirely; the in-memory
+  // values above still drive the running demo session.
+  if (MOCK_MODE) return;
+
   const lines = [];
   if (KEY) lines.push(`ANTHROPIC_ADMIN_KEY=${KEY}`);
   if (OPENAI_KEY) lines.push(`OPENAI_ADMIN_KEY=${OPENAI_KEY}`);
@@ -276,12 +300,6 @@ const MIME = {
   ".json": "application/json",
   ".svg": "image/svg+xml",
 };
-
-// A build-time-only flag (never read from .env — see build-mac-demo.sh, which bakes this in
-// via esbuild's --define at bundle time) that swaps every real fetchX for a mock-data
-// generator returning realistic, deterministic sample data, and skips real key verification.
-// Absent (undefined) in the normal dev/production build, so this is always false there.
-const MOCK_MODE = process.env.ATS_MOCK_MODE === "1";
 
 // Tiny deterministic PRNG (mulberry32) so mock data varies day-to-day like real data would,
 // but stays stable across repeated views/reloads of the same range within a demo — unlike
@@ -2237,10 +2255,17 @@ async function loadIndexHtml() {
     ? getAsset("index.html", "utf8")
     : await readFile(join(ROOT, "index.html"), "utf8");
   const inject = [];
-  // Only ever true for the demo build (see build-mac-demo.sh) — real builds serve this file
-  // byte-for-byte unchanged. index.html reads this flag to show a persistent "Demo — sample
-  // data" badge so mock data is never mistaken for a real connected account.
+  // True for both the packaged demo build (see build-mac-demo.sh) and anyone who clicked
+  // "Preview with sample data" on the setup page. index.html reads this flag to show a
+  // persistent "Demo — sample data" badge so mock data is never mistaken for a real
+  // connected account.
   if (MOCK_MODE) inject.push("window.__ATS_MOCK_MODE__=true;");
+  // Only true for a live /preview-demo session, never the packaged demo build (which boots
+  // straight into MOCK_MODE via ENV_MOCK_MODE with no real setup to "exit" back to) — lets
+  // index.html decide whether the demo badge offers an "Exit demo" action or is just a
+  // static label.
+  if (MOCK_MODE && !ENV_MOCK_MODE)
+    inject.push("window.__ATS_MOCK_MODE_EXITABLE__=true;");
   // The header's per-provider status chips need to know what's actually connected — never
   // the real key, only whether one exists and its masked form (see maskKey above).
   const providers = JSON.stringify({
@@ -2400,6 +2425,13 @@ const PROVIDER_COPY = {
 // provider name: connecting Anthropic genuinely unlocks Claude adoption tracking (see
 // available-data-points.md — "Seat and adoption summaries" only exists under Anthropic),
 // connecting OpenAI never does, so only one of them can honestly mention it.
+// Only first-run setup offers a demo preview — add-provider/change-key modes already have a
+// real, working dashboard connected, and switching it to mock data mid-session would be
+// disruptive rather than helpful (see setupPageHtml()'s proceed-col).
+export function shouldShowPreviewDemoButton(mode) {
+  return mode === "setup";
+}
+
 export function setupPageCopy(mode) {
   if (mode === "add-openai") {
     return {
@@ -2790,9 +2822,25 @@ const SETUP_CLIENT_SCRIPT = `
       }
     }
 
+    async function previewDemo() {
+      const btn = document.getElementById('preview-demo-btn');
+      btn.disabled = true;
+      btn.textContent = 'Loading preview…';
+      try {
+        await fetch('/preview-demo', { method: 'POST' });
+        location.href = '/';
+      } catch (e) {
+        btn.disabled = false;
+        btn.textContent = 'Preview with sample data';
+        alert('Could not load the preview — try again.');
+      }
+    }
+
     document.getElementById('page-title').textContent = PAGE.title;
     document.getElementById('page-subtitle').textContent = PAGE.subtitle;
     document.getElementById('proceed-btn').addEventListener('click', proceed);
+    const previewDemoBtn = document.getElementById('preview-demo-btn');
+    if (previewDemoBtn) previewDemoBtn.addEventListener('click', previewDemo);
     PAGE.cards.forEach(renderCard);
     renderBottom();
 `;
@@ -3352,13 +3400,9 @@ ${FAVICON_LINK_TAG}
     .build-row > div:not(:first-child) { border-left: none; padding-left: 0; }
   }
 
-  .demo-banner { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 24px; background: var(--orange-110); border-bottom: 1px solid var(--orange-150); color: var(--orange-900); font: 600 13px/18px var(--font); }
-  .demo-banner-close { flex: none; border: 0; background: none; padding: 0; color: inherit; font: inherit; font-size: 16px; line-height: 1; cursor: pointer; opacity: 0.7; }
-  .demo-banner-close:hover { opacity: 1; }
 </style>
 </head>
 <body>
-  ${MOCK_MODE ? '<div class="demo-banner"><span>Demo mode - no real API keys needed. Enter "demo" at the connection step. All data shown is mocked.</span><button type="button" class="demo-banner-close" aria-label="Dismiss" onclick="this.closest(\'.demo-banner\').remove()">&times;</button></div>' : ""}
   <div id="root"></div>
   <script>
     const MOSS_WORDMARK = ${JSON.stringify(MOSS_WORDMARK_SVG)};
@@ -3469,6 +3513,9 @@ ${FAVICON_LINK_TAG}
   .proceed-col button { min-width: 240px; padding: 13px 28px; background: #265f4f; color: #ffffff; border: none; border-radius: 8px; font: 600 15px/20px var(--font); cursor: pointer; }
   .proceed-col button:disabled { background: #e3e2e2; color: #8e8b8b; cursor: not-allowed; }
   .proceed-hint { font: 400 12px/16px var(--font); color: #8e8b8b; }
+  .preview-demo-btn.preview-demo-btn { min-width: 0; margin-top: 4px; padding: 6px 10px; background: none; color: #5b5858; font: 600 13px/18px var(--font); }
+  .preview-demo-btn.preview-demo-btn:hover { background: #f1f1f1; color: #131212; }
+  .preview-demo-btn.preview-demo-btn:disabled { background: none; color: #b7b4b4; }
 
   .footer-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; background: #ffffff; border-top: 1px solid #e3e2e2; padding: 0 24px; height: 64px; display: flex; align-items: center; }
   .footer-nav-inner { width: 100%; max-width: 904px; margin: 0 auto; display: flex; align-items: center; }
@@ -3480,14 +3527,20 @@ ${FAVICON_LINK_TAG}
   .done-sub { font: 400 13px/18px var(--font); color: #5b5858; }
 
   .demo-banner { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 10px 24px; background: #fef5ef; border-bottom: 1px solid #f8d5b5; color: #5c2b06; font: 600 13px/18px var(--font); }
-  .demo-banner-close { flex: none; border: 0; background: none; padding: 0; color: inherit; font: inherit; font-size: 16px; line-height: 1; cursor: pointer; opacity: 0.7; }
-  .demo-banner-close:hover { opacity: 1; }
 </style>
 </head>
 <body>
   <script type="application/json" id="providers-data">${providersJson}</script>
   <script type="application/json" id="page-data">${pageJson}</script>
-  ${MOCK_MODE ? '<div class="demo-banner"><span>No API key yet? Enter &ldquo;demo&rdquo; to explore with example data. It is always possible to add API keys at a later stage.</span><button type="button" class="demo-banner-close" aria-label="Dismiss" onclick="this.closest(\'.demo-banner\').remove()">&times;</button></div>' : ""}
+  ${
+    // Only the packaged demo build boots straight into MOCK_MODE without visiting this page
+    // via the "Preview with sample data" button (which makes the real action self-evident) —
+    // that build has no real keys to set up at all, so this static banner only ever applies
+    // there now.
+    MOCK_MODE && ENV_MOCK_MODE
+      ? '<div class="demo-banner"><span>Demo mode - no real API keys needed. All data shown is mocked.</span></div>'
+      : ""
+  }
   <div class="nav-bar">
     <span class="nav-bar-logo">${MOSS_WORDMARK_SVG}</span>
     ${
@@ -3523,6 +3576,11 @@ ${FAVICON_LINK_TAG}
     <div class="proceed-col">
       <button type="button" id="proceed-btn" disabled>${pageCopy.buttonLabel}</button>
       <div class="proceed-hint" id="proceed-hint">${pageCopy.cards.length > 1 ? "" : "Paste your key to continue."}</div>
+      ${
+        shouldShowPreviewDemoButton(mode)
+          ? '<button type="button" id="preview-demo-btn" class="preview-demo-btn">Preview with sample data</button>'
+          : ""
+      }
     </div>
   </div>
   ${
@@ -3564,8 +3622,9 @@ export async function verifyKey(
 // Shared live-verification for both the per-field /verify-key check and the final /setup
 // save — same real API call either way, just triggered at different times.
 async function verifyProviderKey(provider, key) {
-  // Demo build: any non-empty string "verifies" instantly — no real network call, so the
-  // key's actual content is never checked or used for anything.
+  // Mock mode (packaged demo build, or /preview-demo): any non-empty string "verifies"
+  // instantly — no real network call, so the key's actual content is never checked or used
+  // for anything.
   if (MOCK_MODE)
     return key.trim()
       ? { ok: true }
@@ -3706,6 +3765,42 @@ async function handleRemoveKey(req, res) {
   );
   sendJson(res, 200, { ok: true });
 }
+
+// Every fetchX/handleX checks ANTHROPIC_ENABLED/OPENAI_ENABLED before it ever reaches its
+// MOCK_MODE mock-data branch (see fetchCostBuckets etc.) — flipping MOCK_MODE alone isn't
+// enough to make mock data actually show up, those flags need to read as "connected" too.
+// Snapshotted here (not persisted — applyProviderKeys would write a placeholder "key" to
+// .env, clobbering a real saved one) so handleExitDemo can put back whatever was really
+// configured before the preview started.
+let preDemoState = null;
+
+async function handlePreviewDemo(req, res) {
+  if (!preDemoState) {
+    preDemoState = { KEY, OPENAI_KEY, ANTHROPIC_ENABLED, OPENAI_ENABLED };
+  }
+  MOCK_MODE = true;
+  KEY = "demo-preview";
+  OPENAI_KEY = "demo-preview";
+  ANTHROPIC_ENABLED = true;
+  OPENAI_ENABLED = true;
+  HEADERS = { "x-api-key": KEY, "anthropic-version": "2023-06-01" };
+  OPENAI_HEADERS = { Authorization: `Bearer ${OPENAI_KEY}` };
+  sendJson(res, 200, { ok: true });
+}
+
+// Falls back to ENV_MOCK_MODE, not unconditionally false — a packaged demo build (which boots
+// with ATS_MOCK_MODE=1) has no real "exit demo" to offer, so this is a no-op there rather than
+// breaking the only mode that build has.
+async function handleExitDemo(req, res) {
+  MOCK_MODE = ENV_MOCK_MODE;
+  if (preDemoState) {
+    ({ KEY, OPENAI_KEY, ANTHROPIC_ENABLED, OPENAI_ENABLED } = preDemoState);
+    HEADERS = { "x-api-key": KEY, "anthropic-version": "2023-06-01" };
+    OPENAI_HEADERS = { Authorization: `Bearer ${OPENAI_KEY}` };
+    preDemoState = null;
+  }
+  sendJson(res, 200, { ok: true });
+}
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host}`);
@@ -3722,6 +3817,10 @@ const server = createServer(async (req, res) => {
       return await handleVerifyKey(req, res);
     if (req.method === "POST" && url.pathname === "/remove-key")
       return await handleRemoveKey(req, res);
+    if (req.method === "POST" && url.pathname === "/preview-demo")
+      return await handlePreviewDemo(req, res);
+    if (req.method === "POST" && url.pathname === "/exit-demo")
+      return await handleExitDemo(req, res);
     if (url.pathname === "/connect") {
       // ?provider=X (from the dashboard's "Change key" action) explicitly targets an
       // already-connected provider's card, which otherwise wouldn't be reachable here —
