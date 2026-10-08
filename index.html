@@ -150,7 +150,7 @@
         >
           <div class="section-copy">
             <div class="step-label"><b>1</b> Company overview</div>
-            <h2>How AI spend is developing across your company and its providers</h2>
+            <h2>How has your AI spend developed?</h2>
             <div class="collapse">
               <div class="collapse-inner">
                 <p>
@@ -296,7 +296,7 @@
         >
           <div class="section-copy">
             <div class="step-label"><b>2</b> Organisational allocation</div>
-            <h2>Trace where AI spend is coming from</h2>
+            <h2>Where is your AI spend coming from?</h2>
             <div class="collapse">
               <div class="collapse-inner">
                 <p>
@@ -543,13 +543,13 @@
         >
           <div class="section-copy">
             <div class="step-label"><b>3</b> Planning</div>
-            <h2>How might our AI spend develop?</h2>
+            <h2>What could your future AI spend look like?</h2>
             <div class="collapse">
               <div class="collapse-inner">
                 <p>
-                  Build a baseline forecast from spend, requests and
-                  adoption, then adjust usage, token prices, provider or
-                  model mix to test different futures.
+                  Build a baseline forecast from your spend, requests, and
+                  adoption. Adjust usage, token prices, providers, and
+                  models to compare scenarios.
                 </p>
               </div>
             </div>
@@ -564,79 +564,115 @@
         <div class="planning-body">
 
           <div class="planning-kpis">
-            <article class="planning-kpi">
+            <div class="planning-kpi-column">
               <div class="planning-kpi-title">Average weekly AI cost progression</div>
-              <div class="planning-compare">
-                <div class="planning-value-block">
-                  <span class="planning-value-label">Baseline forecast</span>
-                  <span class="planning-value" id="planningGrowthBaseline">&mdash;</span>
-                  <span class="planning-value-delta neutral">Average rise per week</span>
+              <article class="planning-kpi planning-kpi-card planning-kpi-card-inline">
+                <div class="planning-kpi-half">
+                  <span class="planning-kpi-label-row">
+                    <span class="planning-value-label">Baseline forecast</span>
+                  </span>
+                  <div class="planning-kpi-card-main">
+                    <div class="planning-kpi-icon planning-kpi-icon-framed">
+                      <img src="/assets/icons/icon-percentage.svg" alt="" width="36" height="36" />
+                    </div>
+                    <div>
+                      <span class="planning-value" id="planningGrowthBaseline">&mdash;</span>
+                      <span class="planning-kpi-sublabel">Average change per week</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="planning-value-block">
-                  <span class="planning-value-label">Adjusted scenario</span>
-                  <span class="planning-value scenario" id="planningGrowthScenario">&mdash;</span>
-                  <span class="planning-value-delta neutral" id="planningGrowthDelta">Matches baseline</span>
+                <div class="planning-kpi-half planning-kpi-card-footnote">
+                  <span class="planning-kpi-label-row">
+                    <span class="planning-value-label">Adjusted scenario</span>
+                    <span class="planning-kpi-tag" id="planningGrowthDelta">Matches baseline</span>
+                  </span>
+                  <div class="planning-kpi-card-main">
+                    <div class="planning-kpi-icon planning-kpi-icon-framed">
+                      <img src="/assets/icons/icon-percentage.svg" alt="" width="36" height="36" />
+                    </div>
+                    <div>
+                      <span class="planning-value scenario" id="planningGrowthScenario">&mdash;</span>
+                      <span class="planning-kpi-sublabel">Average change per week</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </article>
-            <article class="planning-kpi">
+              </article>
+            </div>
+            <div class="planning-kpi-column">
               <div class="planning-kpi-title">Projected monthly AI cost six months from now</div>
-              <div class="planning-compare">
-                <div class="planning-value-block">
-                  <span class="planning-value-label">Baseline forecast</span>
-                  <span class="planning-value" id="planningCostBaseline">&mdash;</span>
-                  <span class="planning-value-meta"><span class="planning-value-currencies" id="planningCostBaselineCurrencies"></span></span>
+              <article class="planning-kpi planning-kpi-card planning-kpi-card-inline">
+                <div class="planning-kpi-half">
+                  <span class="planning-kpi-label-row">
+                    <span class="planning-value-label">Baseline forecast</span>
+                  </span>
+                  <div class="planning-kpi-card-main">
+                    <div class="planning-kpi-icon planning-kpi-icon-framed">
+                      <img src="/assets/icons/icon-dollar.svg" alt="" width="36" height="36" />
+                    </div>
+                    <div>
+                      <span class="planning-value" id="planningCostBaseline">&mdash;</span>
+                      <span class="planning-kpi-sublabel" id="planningCostBaselineCurrencies"></span>
+                    </div>
+                  </div>
                 </div>
-                <div class="planning-value-block">
-                  <span class="planning-value-label">Adjusted scenario</span>
-                  <span class="planning-value scenario" id="planningCostScenario">&mdash;</span>
-                  <span class="planning-value-meta"><span class="planning-value-currencies" id="planningCostScenarioCurrencies"></span><span class="planning-value-delta neutral" id="planningCostDelta">Matches baseline</span></span>
+                <div class="planning-kpi-half planning-kpi-card-footnote">
+                  <span class="planning-kpi-label-row">
+                    <span class="planning-value-label">Adjusted scenario</span>
+                    <span class="planning-kpi-tag" id="planningCostDelta">Matches baseline</span>
+                  </span>
+                  <div class="planning-kpi-card-main">
+                    <div class="planning-kpi-icon planning-kpi-icon-framed">
+                      <img src="/assets/icons/icon-dollar.svg" alt="" width="36" height="36" />
+                    </div>
+                    <div>
+                      <span class="planning-value scenario" id="planningCostScenario">&mdash;</span>
+                      <span class="planning-kpi-sublabel" id="planningCostScenarioCurrencies"></span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </article>
-          </div>
-
-          <div class="planning-toolbar">
-            <div class="planning-toolbar-right">
-              <div class="planning-field">
-                <label for="planningReference">Historic reference</label>
-                <select id="planningReference">
-                  <option value="4">1 month</option>
-                  <option value="13" selected>1 quarter</option>
-                  <option value="26">6 months</option>
-                  <option value="52">1 year</option>
-                </select>
-              </div>
-              <div class="planning-field">
-                <label>Future horizon</label>
-                <div class="segmented" id="planningHorizon" role="group" aria-label="Future horizon">
-                  <button type="button" data-value="1w" aria-selected="false">1 week</button>
-                  <button type="button" data-value="4w" aria-selected="false">4 weeks</button>
-                  <button type="button" data-value="6m" aria-selected="true">6 months</button>
-                  <button type="button" data-value="custom" aria-selected="false">Custom</button>
-                </div>
-              </div>
-              <div class="planning-field planning-custom-field" id="planningCustomField">
-                <label for="planningCustomDate">Forecast until</label>
-                <input id="planningCustomDate" type="date" />
-              </div>
+              </article>
             </div>
           </div>
 
+          <div class="planning-kpi-title planning-kpi-title-tight">Spend, usage and adoption forecast</div>
+          <div class="planning-kpi-sublabel planning-chart-subtitle">Baseline continues the typical weekly trend. Your adjusted scenario starts from the same point.</div>
+          <div class="planning-chart-title" id="planningChartTitle" hidden></div>
+          <div class="planning-forecast-shell">
+          <div class="planning-inline-filters-row">
+            <div class="planning-inline-filters">
+              <span>Based on the last</span>
+              <select id="planningReference">
+                <option value="4">month</option>
+                <option value="13" selected>quarter</option>
+                <option value="26">6 month</option>
+                <option value="52">year</option>
+              </select>
+              <span id="planningHorizonLabel">projecting the next</span>
+              <div class="segmented" id="planningHorizon" role="group" aria-label="Future horizon">
+                <button type="button" data-value="1w" aria-selected="false">Week</button>
+                <button type="button" data-value="4w" aria-selected="false">4 weeks</button>
+                <button type="button" data-value="6m" aria-selected="true">6 months</button>
+                <input type="date" id="planningCustomDate" class="planning-custom-pill" aria-label="Custom forecast date" />
+              </div>
+              <span class="planning-show-group">
+                <span>show</span>
+                <div class="planning-legend" id="planningLegendToggles">
+                  <label class="planning-legend-item planning-legend-toggle" id="planningSpendLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--brand)"></span>Spend<input type="checkbox" data-metric="spend" checked /></label>
+                  <label class="planning-legend-item planning-legend-toggle" id="planningUsageLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-usage)"></span>Usage<input type="checkbox" data-metric="usage" checked /></label>
+                  <label class="planning-legend-item planning-legend-toggle" id="planningAdoptionLegendItem"><span class="planning-swatch-dot" style="--swatch: var(--planning-adoption)"></span>Adoption<input type="checkbox" data-metric="adoption" checked /></label>
+                </div>
+              </span>
+            </div>
+            <div class="planning-legend planning-legend-lines">
+              <span class="planning-legend-item"><span class="planning-swatch dashed" style="--swatch: var(--text-muted)"></span>Baseline</span>
+              <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted)"></span>Scenario</span>
+            </div>
+          </div>
+          <div class="planning-forecast-row">
           <section class="planning-chart-shell" aria-labelledby="planningChartTitle">
-            <div class="planning-chart-header">
-              <div>
-                <div class="planning-chart-title" id="planningChartTitle"></div>
-                <div class="planning-chart-note" id="planningChartNote"></div>
-              </div>
-              <div class="planning-legend">
-                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--brand)"></span>Spend</span>
-                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--planning-usage)"></span>Usage</span>
-                <span class="planning-legend-item" id="planningAdoptionLegendItem"><span class="planning-swatch" style="--swatch: var(--planning-adoption)"></span>Adoption</span>
-                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted); opacity: .55"></span>Actual</span>
-                <span class="planning-legend-item"><span class="planning-swatch dashed" style="--swatch: var(--text-muted)"></span>Baseline</span>
-                <span class="planning-legend-item"><span class="planning-swatch" style="--swatch: var(--text-muted)"></span>Scenario</span>
-              </div>
+            <div class="planning-chart-note" id="planningChartNote">
+              <img src="/assets/icons/icon-info.png" alt="" width="16" height="16" class="planning-chart-note-icon" />
+              <span id="planningChartNoteText"></span>
             </div>
             <div class="planning-chart" id="planningChart">
               <div id="planningChartSvg"></div>
@@ -646,39 +682,33 @@
 
           <section class="control-centre" aria-labelledby="controlCentreTitle">
             <div class="control-centre-head">
-              <div>
+              <div class="control-centre-head-top">
                 <h3 class="control-centre-title" id="controlCentreTitle">Scenario controls</h3>
-                <p class="control-centre-copy">
-                  Adjust company-wide assumptions. The baseline forecast
-                  stays visible for comparison.
-                </p>
-                <div class="scenario-result" id="scenarioResult" aria-live="polite">No adjustments applied.</div>
+                <button class="table-toggle scenario-header-reset-btn" id="resetScenario" type="button">Reset to baseline</button>
               </div>
-              <button class="table-toggle" id="resetScenario" type="button">Reset to baseline</button>
+              <p class="control-centre-copy">
+                Adjust company-wide assumptions. The baseline forecast
+                stays visible for comparison.
+              </p>
             </div>
             <div class="scenario-grid">
               <div class="scenario-control" id="adoptionScenarioControl">
                 <div class="scenario-control-head">
-                  <div>
+                  <div class="scenario-control-head-top">
                     <span class="scenario-control-title">AI adoption rate</span>
-                    <span class="scenario-control-note">Share of employees actively using AI</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="adoptionValue">&mdash;</span>
+                      <button
+                        class="scenario-reset-btn"
+                        type="button"
+                        data-slider="adoptionSlider"
+                        aria-label="Reset AI adoption rate to baseline"
+                      >
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </div>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="adoptionValue">&mdash;</span>
-                    <button
-                      class="scenario-reset-btn"
-                      type="button"
-                      id="adoptionResetBtn"
-                      data-slider="adoptionSlider"
-                      aria-label="Reset AI adoption rate to baseline"
-                      title="Reset to default"
-                    >
-                      <svg width="13" height="13" viewBox="0 0 20 20" fill="none">
-                        <path d="M16.5 10a6.5 6.5 0 1 1-2.02-4.71" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M16.7 3.8v3.6h-3.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
-                      </svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Share of employees actively using AI</span>
                 </div>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -691,16 +721,16 @@
               </div>
               <label class="scenario-control" for="usageSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Requests per active employee</span>
-                    <span class="scenario-control-note">Average weekly usage intensity</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="usageValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="usageSlider" aria-label="Reset requests per active employee to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="usageValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="usageSlider" aria-label="Reset requests per active employee to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Average weekly usage intensity</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -713,16 +743,16 @@
               </label>
               <label class="scenario-control" for="tokensSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Tokens per request</span>
-                    <span class="scenario-control-note">Average input and output workload size</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="tokensValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="tokensSlider" aria-label="Reset tokens per request to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="tokensValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="tokensSlider" aria-label="Reset tokens per request to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Average input and output workload size</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -735,16 +765,16 @@
               </label>
               <label class="scenario-control" for="priceSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Company average token price</span>
-                    <span class="scenario-control-note">Your blended company rate per 1M tokens</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="priceValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="priceSlider" aria-label="Reset company average token price to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="priceValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="priceSlider" aria-label="Reset company average token price to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Your blended company rate per 1M tokens</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -757,16 +787,16 @@
               </label>
               <label class="scenario-control" for="providerPriceSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Provider average token price</span>
-                    <span class="scenario-control-note">Average list rate across your provider and model mix</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="providerPriceValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="providerPriceSlider" aria-label="Reset provider average token price to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="providerPriceValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="providerPriceSlider" aria-label="Reset provider average token price to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Average list rate across your provider and model mix</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -779,16 +809,16 @@
               </label>
               <label class="scenario-control" for="modelMixSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Higher-cost model share</span>
-                    <span class="scenario-control-note">Share of tokens routed to premium models across providers</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="modelMixValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="modelMixSlider" aria-label="Reset higher-cost model share to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="modelMixValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="modelMixSlider" aria-label="Reset higher-cost model share to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Share of tokens routed to premium models across providers</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -801,16 +831,16 @@
               </label>
               <label class="scenario-control" for="employeesSlider">
                 <span class="scenario-control-head">
-                  <span>
+                  <span class="scenario-control-head-top">
                     <span class="scenario-control-title">Employees count</span>
-                    <span class="scenario-control-note">Current AI users, expected to grow with headcount</span>
+                    <span class="scenario-control-head-right">
+                      <span class="scenario-control-value" id="employeesValue">&mdash;</span>
+                      <button class="scenario-reset-btn" type="button" data-slider="employeesSlider" aria-label="Reset employees count to baseline">
+                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
+                      </button>
+                    </span>
                   </span>
-                  <span class="scenario-control-head-right">
-                    <span class="scenario-control-value" id="employeesValue">&mdash;</span>
-                    <button class="scenario-reset-btn" type="button" data-slider="employeesSlider" aria-label="Reset employees count to baseline">
-                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.06189 13C4.02104 12.6724 4 12.3387 4 12C4 7.58172 7.58172 4 12 4C14.5006 4 16.7332 5.14727 18.2002 6.94416M19.9381 11C19.979 11.3276 20 11.6613 20 12C20 16.4183 16.4183 20 12 20C9.61061 20 7.46589 18.9525 6 17.2916M9 17H6V17.2916M18.2002 4V6.94416M18.2002 6.94416V6.99993L15.2002 7M6 20V17.2916"/></svg>
-                    </button>
-                  </span>
+                  <span class="scenario-control-note">Current AI users, expected to grow with headcount</span>
                 </span>
                 <div class="ai-slider-track-wrap">
                   <div class="ai-slider-track"></div>
@@ -823,6 +853,8 @@
               </label>
             </div>
           </section>
+          </div>
+          </div>
 
         </div>
         </div>
@@ -2216,6 +2248,7 @@
         scenarioTouched: false,
         referenceWeeks: 13,
         horizon: "6m",
+        visibleMetrics: new Set(["spend", "usage", "adoption"]),
       };
 
       function escapeHtml(value) {
@@ -2518,10 +2551,6 @@
         }
 
         PLANNING_SLIDER_IDS.forEach(updateSliderVisual);
-        const adoptionResetBtn = document.getElementById("adoptionResetBtn");
-        const atDefault = d ? Math.abs(controls.adoption - d.adoption) < 0.26 : true;
-        adoptionResetBtn.disabled = atDefault;
-        adoptionResetBtn.title = atDefault || !d ? "Already at default" : `Reset to default (${d.adoption.toFixed(1)}%)`;
       }
 
       // Keeps a scenario slider's custom-drawn fill/thumb in sync with its underlying (visually
@@ -2632,12 +2661,15 @@
           },
         );
         document.getElementById("planningGrowthDelta").textContent = "Matches baseline";
+        document.getElementById("planningGrowthDelta").classList.remove("planning-kpi-tag-touched");
         document.getElementById("planningCostDelta").textContent = "Matches baseline";
+        document.getElementById("planningCostDelta").classList.remove("planning-kpi-tag-touched");
         document.getElementById("planningCostBaselineCurrencies").textContent = "";
         document.getElementById("planningCostScenarioCurrencies").textContent = "";
-        document.getElementById("scenarioResult").textContent = "No adjustments applied.";
         document.getElementById("planningChartTitle").textContent = "Spend, usage and adoption forecast";
-        document.getElementById("planningChartNote").textContent = message;
+        document.getElementById("planningChartNoteText").textContent = message;
+        document.getElementById("planningChartNote").classList.remove("planning-chart-note-warning");
+        document.getElementById("planningChartNote").hidden = !message;
         document.getElementById("planningChartSvg").innerHTML = "";
       }
 
@@ -2650,6 +2682,9 @@
         document.getElementById("planningGrowthDelta").textContent = state.planning.scenarioTouched
           ? `${growthDelta >= 0 ? "+" : ""}${growthDelta.toFixed(1)} pp vs baseline`
           : "Matches baseline";
+        document
+          .getElementById("planningGrowthDelta")
+          .classList.toggle("planning-kpi-tag-touched", state.planning.scenarioTouched);
 
         document.getElementById("planningCostBaseline").textContent = money(projection.baselineMonthly);
         document.getElementById("planningCostBaselineCurrencies").textContent = convertedLabel(projection.baselineMonthly);
@@ -2660,10 +2695,9 @@
         document.getElementById("planningCostDelta").textContent = state.planning.scenarioTouched
           ? `${costDelta >= 0 ? "+" : ""}${costDelta.toFixed(1)}% vs baseline`
           : "Matches baseline";
-
-        document.getElementById("scenarioResult").textContent = state.planning.scenarioTouched
-          ? `Adjusted six-month monthly cost: ${money(projection.scenarioMonthly)} (${costDelta >= 0 ? "+" : ""}${costDelta.toFixed(1)}% vs baseline forecast).`
-          : "No adjustments applied.";
+        document
+          .getElementById("planningCostDelta")
+          .classList.toggle("planning-kpi-tag-touched", state.planning.scenarioTouched);
       }
 
       // Independent y-scale per metric (Spend/Usage/Adoption have unrelated ranges) — Spend and
@@ -2693,13 +2727,11 @@
         const tooltip = document.getElementById("planningTooltip");
         const width = 1100;
         const height = 420;
-        const margin = { top: 34, right: adoptionSeries ? 150 : 90, bottom: 40, left: 86 };
-        const plotW = width - margin.left - margin.right;
-        const plotH = height - margin.top - margin.bottom;
 
-        const metrics = [
-          { key: "SPEND · USD", name: "Spend", data: spendSeries, color: cssVar("--brand"), format: money, isPercent: false },
+        const allMetrics = [
+          { id: "spend", key: "SPEND · USD", name: "Spend", data: spendSeries, color: cssVar("--brand"), format: money, isPercent: false },
           {
+            id: "usage",
             key: "USAGE",
             name: "Usage",
             data: usageSeries,
@@ -2709,7 +2741,8 @@
           },
         ];
         if (adoptionSeries) {
-          metrics.push({
+          allMetrics.push({
+            id: "adoption",
             key: "ADOPTION",
             name: "Adoption",
             data: adoptionSeries,
@@ -2718,15 +2751,35 @@
             isPercent: true,
           });
         }
-        metrics.forEach((m, i) => {
-          m.axisX = i === 0 ? margin.left : i === 1 ? width - margin.right + 14 : width - margin.right + 96;
-        });
+        // User-toggled visibility (planningLegendToggles) picks which of the available
+        // metrics actually draw — axes reflow around whatever remains, see leftMetric/
+        // rightMetrics below.
+        const metrics = allMetrics.filter((m) => state.planning.visibleMetrics.has(m.id));
 
         const historyLen = spendSeries.history.length;
         const total = historyLen + config.future;
         chartEl.innerHTML = "";
         tooltip.style.opacity = "0";
-        if (total < 2 || historyLen < 1) return;
+        if (total < 2 || historyLen < 1 || metrics.length === 0) return;
+
+        // Spend keeps the left axis whenever it's visible (it owns the EUR-converted
+        // sub-labels below); otherwise whichever visible metric is next in priority
+        // takes over the left axis instead of leaving it empty.
+        const leftMetric = ["spend", "usage", "adoption"].map((id) => metrics.find((m) => m.id === id)).find(Boolean);
+        const rightMetrics = metrics.filter((m) => m !== leftMetric);
+        const margin = {
+          top: 34,
+          right: rightMetrics.length === 2 ? 150 : rightMetrics.length === 1 ? 90 : 40,
+          bottom: 40,
+          left: 86,
+        };
+        const plotW = width - margin.left - margin.right;
+        const plotH = height - margin.top - margin.bottom;
+
+        leftMetric.axisX = margin.left;
+        rightMetrics.forEach((m, i) => {
+          m.axisX = i === 0 ? width - margin.right + 14 : width - margin.right + 96;
+        });
 
         const x = xScale(total, plotW, margin.left);
         const dividerIndex = historyLen - 1;
@@ -2740,9 +2793,8 @@
           "aria-label": "Spend, usage and adoption history with baseline and adjusted forecasts",
         });
 
-        const spendMetric = metrics[0];
-        spendMetric.scale.ticks.forEach((v) => {
-          const py = spendMetric.scale.y(v);
+        leftMetric.scale.ticks.forEach((v) => {
+          const py = leftMetric.scale.y(v);
           svg.appendChild(
             createSvgElement("line", { class: "gridline", x1: margin.left, x2: width - margin.right, y1: py, y2: py }),
           );
@@ -2752,19 +2804,21 @@
             y: py - 3,
             "text-anchor": "end",
           });
-          label.textContent = spendMetric.format(v);
+          label.textContent = leftMetric.format(v);
           svg.appendChild(label);
-          const eur = createSvgElement("text", {
-            class: "axis-label-converted",
-            x: margin.left - 12,
-            y: py + 9,
-            "text-anchor": "end",
-          });
-          eur.textContent = fxLabel(v, EUR_RATE, "€");
-          svg.appendChild(eur);
+          if (leftMetric.id === "spend") {
+            const eur = createSvgElement("text", {
+              class: "axis-label-converted",
+              x: margin.left - 12,
+              y: py + 9,
+              "text-anchor": "end",
+            });
+            eur.textContent = fxLabel(v, EUR_RATE, "€");
+            svg.appendChild(eur);
+          }
         });
 
-        metrics.slice(1).forEach((m) => {
+        rightMetrics.forEach((m) => {
           m.scale.ticks.forEach((v) => {
             const label = createSvgElement("text", {
               class: "planning-colour-axis",
@@ -2787,10 +2841,10 @@
           );
         });
 
-        metrics.forEach((m, i) => {
+        metrics.forEach((m) => {
           const label = createSvgElement("text", {
             class: "planning-axis-title",
-            x: i === 0 ? margin.left : m.axisX - 7,
+            x: m === leftMetric ? margin.left : m.axisX - 7,
             y: margin.top - 14,
             fill: m.color,
           });
@@ -3072,9 +3126,10 @@
         const warning = [spendSeries.historyWarning, usageSeries.historyWarning, adoptionSeries?.historyWarning].find(
           Boolean,
         );
-        document.getElementById("planningChartNote").textContent =
-          warning ??
-          `Baseline forecast uses the typical week-over-week trend across the last ${planningReferenceLabel()}. Adjusted scenarios branch from the same starting point.`;
+        const chartNoteEl = document.getElementById("planningChartNote");
+        document.getElementById("planningChartNoteText").textContent = warning ?? "";
+        chartNoteEl.classList.toggle("planning-chart-note-warning", Boolean(warning));
+        chartNoteEl.hidden = !warning;
 
         renderPlanningSvg({
           config,
@@ -4438,21 +4493,59 @@
         renderPlanningChart();
       });
 
-      document.querySelectorAll("#planningHorizon button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document
-            .querySelectorAll("#planningHorizon button")
-            .forEach((b) => b.setAttribute("aria-selected", "false"));
-          btn.setAttribute("aria-selected", "true");
-          state.planning.horizon = btn.dataset.value;
-          document
-            .getElementById("planningCustomField")
-            .classList.toggle("visible", state.planning.horizon === "custom");
+      // Lets users focus on one or two signals instead of always plotting all three —
+      // mirrors renderLegend()'s toggle pattern (state.visibility) but these three checkboxes
+      // are fixed/static rather than built per-series, so they're wired once here.
+      document.querySelectorAll("#planningLegendToggles [data-metric]").forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          const metric = checkbox.dataset.metric;
+          const set = state.planning.visibleMetrics;
+          if (checkbox.checked) {
+            set.add(metric);
+          } else if (set.size > 1) {
+            set.delete(metric);
+          } else {
+            checkbox.checked = true; // keep at least one metric visible
+            return;
+          }
           renderPlanningChart();
         });
       });
 
-      document.getElementById("planningCustomDate").addEventListener("change", renderPlanningChart);
+      function deselectPlanningHorizonButtons() {
+        document
+          .querySelectorAll("#planningHorizon button")
+          .forEach((b) => b.setAttribute("aria-selected", "false"));
+        document.getElementById("planningCustomDate").removeAttribute("data-selected");
+      }
+
+      document.querySelectorAll("#planningHorizon button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          deselectPlanningHorizonButtons();
+          btn.setAttribute("aria-selected", "true");
+          state.planning.horizon = btn.dataset.value;
+          document.getElementById("planningHorizonLabel").textContent = "projecting the next";
+          renderPlanningChart();
+        });
+      });
+
+      function selectPlanningCustomDate() {
+        const input = document.getElementById("planningCustomDate");
+        if (state.planning.horizon === "custom") return;
+        deselectPlanningHorizonButtons();
+        input.setAttribute("data-selected", "true");
+        state.planning.horizon = "custom";
+        document.getElementById("planningHorizonLabel").textContent = "Until";
+        renderPlanningChart();
+      }
+
+      const planningCustomDateInput = document.getElementById("planningCustomDate");
+      planningCustomDateInput.addEventListener("mousedown", selectPlanningCustomDate);
+      planningCustomDateInput.addEventListener("focus", selectPlanningCustomDate);
+      planningCustomDateInput.addEventListener("change", () => {
+        selectPlanningCustomDate();
+        renderPlanningChart();
+      });
 
       PLANNING_SLIDER_IDS.forEach((id) => {
         document.getElementById(id).addEventListener("input", () => {
@@ -4474,6 +4567,19 @@
         state.planning.scenarioTouched = false;
         renderPlanningChart();
       });
+
+      // Scenario controls box is capped to the chart's height (never taller) and scrolls
+      // internally beyond that — driven by the chart's actual rendered height via
+      // ResizeObserver rather than a fixed CSS value, since the chart's height varies with
+      // window width, metric toggles, and whether a historyWarning note is showing.
+      const planningChartShellEl = document.querySelector(".planning-chart-shell");
+      const controlCentreEl = document.querySelector(".control-centre");
+      if (planningChartShellEl && controlCentreEl) {
+        new ResizeObserver((entries) => {
+          const height = entries[0].contentRect.height;
+          controlCentreEl.style.maxHeight = window.innerWidth > 760 ? `${height}px` : "";
+        }).observe(planningChartShellEl);
+      }
 
       function openModal(id) {
         document.getElementById(id).classList.add("visible");
