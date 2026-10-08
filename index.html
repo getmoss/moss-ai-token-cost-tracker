@@ -12,10 +12,24 @@
         <span class="brand-mark"><!--ICON:moss-wordmark--></span>
       </div>
       <div class="app-bar-title-group">
-        <div class="demo-badge" id="demoBadge" hidden>Demo &middot; sample data</div>
+        <button type="button" class="demo-badge" id="demoBadge" hidden>
+          <span id="demoBadgeLabel">Demo &middot; sample data</span>
+          <span class="demo-badge-exit-icon" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="12"
+              height="12"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ><path d="M18 6L6 18M6 6l12 12" /></svg>
+          </span>
+        </button>
       </div>
-      <div class="app-bar-right">
-        <div class="connection-status">
+      <div class="app-bar-right" id="appBarRight">
+        <div class="connection-status" id="connectionStatusRow">
           <i></i><span id="connectionStatus">Connecting&hellip;</span>
         </div>
         <div class="provider-chip" id="providerChip-anthropic">
@@ -3018,7 +3032,18 @@
             const wrapBounds = chartWrap.getBoundingClientRect();
             const scaleX = bounds.width / width;
             const scaleY = bounds.height / height;
-            tooltip.style.left = `${bounds.left - wrapBounds.left + x(i) * scaleX}px`;
+            // Clamped to stay within the chart wrapper's width — the plot's right margin
+            // shrinks as fewer metrics are shown (see the `margin` calc above), so a point
+            // near the right edge (e.g. the forecast's last "+6m" point with only Spend
+            // visible) would otherwise center the tooltip partly outside .planning-chart-shell,
+            // which clips overflow and silently cuts it off instead of just looking misaligned.
+            const tipWidth = tooltip.offsetWidth;
+            const idealLeft = bounds.left - wrapBounds.left + x(i) * scaleX;
+            const clampedLeft = Math.max(
+              tipWidth / 2,
+              Math.min(idealLeft, wrapBounds.width - tipWidth / 2),
+            );
+            tooltip.style.left = `${clampedLeft}px`;
 
             // Anchor above the topmost hovered value rather than a fixed offset from the chart's
             // top edge — a fixed offset combined with the shared .tooltip class's -110% transform
@@ -4914,11 +4939,42 @@
       // that lazy-loads it if a user collapses and reopens this card later.
       loadPlanningData().catch((err) => console.error(err));
 
-      // Set only by loadIndexHtml() in the demo build (see build-mac-demo.sh) — real builds
-      // never inject this, so the badge stays hidden and this is a no-op there.
+      // window.__ATS_MOCK_MODE__ is set by loadIndexHtml() (server.mjs) for both the packaged
+      // demo build (see build-mac-demo.sh) and anyone who clicked "Preview with sample data"
+      // on the setup page — real builds never inject it, so the badge stays hidden and this
+      // whole block is a no-op there. __ATS_MOCK_MODE_EXITABLE__ is only set for the latter —
+      // the packaged demo build has no real setup to exit back to, so its badge is just a
+      // static label.
       if (window.__ATS_MOCK_MODE__) {
         const demoBadge = document.getElementById("demoBadge");
-        if (demoBadge) demoBadge.hidden = false;
+        if (demoBadge) {
+          demoBadge.hidden = false;
+          if (window.__ATS_MOCK_MODE_EXITABLE__) {
+            // The demo preview's "connected" providers are a fake placeholder key, not real
+            // accounts (see handlePreviewDemo in server.mjs) — showing the real connection
+            // status text and per-provider "Change key"/"Remove key" menus here would let
+            // someone remove/change a provider that was never actually set up, and there's
+            // nothing meaningful to report as "connected" anyway. The demo badge is the only
+            // provider-related control shown during a preview.
+            document.getElementById("connectionStatusRow").hidden = true;
+            document.getElementById("providerChip-anthropic").hidden = true;
+            document.getElementById("providerChip-openai").hidden = true;
+
+            demoBadge.classList.add("exitable");
+            document.getElementById("demoBadgeLabel").textContent = "Demo · Exit to add your keys";
+            demoBadge.setAttribute("aria-label", "Exit demo and connect your own API keys");
+            demoBadge.title = "Exit demo and connect your own API keys";
+            demoBadge.addEventListener("click", async () => {
+              demoBadge.disabled = true;
+              document.getElementById("demoBadgeLabel").textContent = "Exiting demo…";
+              try {
+                await fetch("/exit-demo", { method: "POST" });
+              } finally {
+                location.href = "/connect";
+              }
+            });
+          }
+        }
       }
 
       // Header status chips: view the masked key, change it, or remove it, for each

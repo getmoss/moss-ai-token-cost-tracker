@@ -1,11 +1,27 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { setupPageCopy, resolveKeysToPersist, verifyKey } from "../server.mjs";
+import {
+  setupPageCopy,
+  resolveKeysToPersist,
+  verifyKey,
+  shouldShowPreviewDemoButton,
+} from "../server.mjs";
 
 test("setupPageCopy: 'setup' mode (first run, neither provider configured) shows both cards", () => {
   const copy = setupPageCopy("setup");
   assert.deepEqual(copy.cards, ["anthropic", "openai"]);
   assert.equal(copy.buttonLabel, "Open dashboard");
+});
+
+// The "Preview with sample data" button only makes sense before anything real is connected —
+// add-provider/change-key modes are reached from an already-live dashboard, where switching
+// to mock data mid-session would be disruptive rather than helpful.
+test("shouldShowPreviewDemoButton: shown only for first-run 'setup' mode", () => {
+  assert.equal(shouldShowPreviewDemoButton("setup"), true);
+  assert.equal(shouldShowPreviewDemoButton("add-anthropic"), false);
+  assert.equal(shouldShowPreviewDemoButton("add-openai"), false);
+  assert.equal(shouldShowPreviewDemoButton("change-anthropic"), false);
+  assert.equal(shouldShowPreviewDemoButton("change-openai"), false);
 });
 
 test("setupPageCopy: 'add-openai' shows only the OpenAI card and never mentions adoption", () => {
