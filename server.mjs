@@ -2180,7 +2180,19 @@ async function handlePeople(res, searchParams) {
   }
   people.sort((a, b) => b.amount - a.amount);
 
-  sendJson(res, 200, { people });
+  // Same best-effort, not-full-period-gated comparison as previousAmount above —
+  // backs the Company overview's "Average employee spend" KPI delta. Previous
+  // period's active-employee count comes from previousAmountByEmail itself
+  // (everyone who had any spend that period), independent of who's in `people`.
+  const previousTotalAmount = [...previousAmountByEmail.values()].reduce(
+    (sum, amount) => sum + amount,
+    0,
+  );
+  const previousAverageAmount = previousAmountByEmail.size
+    ? previousTotalAmount / previousAmountByEmail.size
+    : null;
+
+  sendJson(res, 200, { people, previousAverageAmount });
 }
 
 async function handleOpenAiProjects(res, searchParams) {
@@ -2748,7 +2760,7 @@ const SETUP_CLIENT_SCRIPT = `
         // right when we know the provider mix just changed.
         try {
           Object.keys(sessionStorage)
-            .filter(function (k) { return k.indexOf('atsCache:v1:') === 0; })
+            .filter(function (k) { return k.indexOf('atsCache:v2:') === 0; })
             .forEach(function (k) { sessionStorage.removeItem(k); });
         } catch (e) {
           // sessionStorage unavailable — nothing to clear
