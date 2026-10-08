@@ -444,9 +444,14 @@
 
       .kpis {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 10px;
         margin-bottom: 12px;
+      }
+      @media (max-width: 960px) {
+        .kpis {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
       }
       @media (max-width: 720px) {
         .kpis {
@@ -1189,25 +1194,6 @@
         color: var(--text-secondary);
         font-weight: 500;
         font-size: 13px;
-      }
-      .avg-spend-row {
-        align-items: baseline;
-        gap: 8px;
-        padding: 12px 16px;
-        margin-bottom: 16px;
-        background: var(--surface-soft);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-      }
-      .avg-spend-label {
-        font-size: 12px;
-        font-weight: 650;
-        color: var(--text-secondary);
-      }
-      .avg-spend-value {
-        font-size: 16px;
-        font-weight: 780;
-        color: var(--text-primary);
       }
       #peopleFilter {
         font: inherit;
