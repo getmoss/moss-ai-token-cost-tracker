@@ -2388,7 +2388,7 @@ const PROVIDER_COPY = {
     intro:
       "Add this to see combined spend across both providers. You can always add it later from settings.",
     consoleUrl: "https://platform.openai.com/settings/organization/admin-keys",
-    helpGuideUrl: "https://help.openai.com/en/articles/20001407?utm_source=chatgpt.com",
+    helpGuideUrl: "https://help.openai.com/en/articles/9687866-admin-and-audit-logs-api-for-the-api-platform",
     helpGuideLabel: "ChatGPT Admin key guide",
     keyPrefix: "sk-",
     steps: [
