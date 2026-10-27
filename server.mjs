@@ -2356,6 +2356,9 @@ const PROVIDER_COPY = {
     keyPrefix: "sk-ant-",
     steps: [
       {
+        text: "Make sure you're signed in as your organization's <b>primary owner</b> — only they can create Analytics API keys. Other roles (including org owner) only see Compliance API scopes here, not Analytics.",
+      },
+      {
         text: "Go to your organization's API access settings in claude.ai.",
         chip: true,
       },
@@ -2370,9 +2373,10 @@ const PROVIDER_COPY = {
     invalidFormatMsg:
       "That doesn't look like a Claude key — double-check what they sent, or that you copied the whole value.",
     permissionErrorMsg:
-      "This Claude key doesn't have the right access. Ask whoever created it to generate an Analytics API key, not a regular API key.",
+      "This Claude key doesn't have the right access. Ask whoever created it to generate an Analytics API key, not a regular API key — and make sure they're the organization's primary owner, since other roles can't create Analytics keys (they'll only see Compliance API scopes).",
     requestMessage:
       "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Analytics API key for our Claude organisation?\n\n" +
+      "Note: only your organization's primary owner can do this — if you only see Compliance API scopes (not Analytics) when creating a key, you're not the primary owner and someone else will need to do this instead.\n\n" +
       "1. Go to https://claude.ai/admin-settings/api-access\n\n" +
       "2. Turn on public API access if needed.\n\n" +
       "3. Create an Analytics API key.\n\n" +
