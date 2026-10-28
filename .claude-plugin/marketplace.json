@@ -6,7 +6,7 @@
     {
       "name": "moss-tracker",
       "source": "./",
-      "description": "Local dashboard for tracking your team's Claude + ChatGPT token spend"
+      "description": "AI Spend Control is a local application that connects directly to the Anthropic and OpenAI Admin APIs, combines the same usage and cost data from their separate dashboards on your computer, and brings LLM cost management into one view designed for finance rather than IT administration. Designed and developed with love by Moss, spend management platform. Learn more about Moss at getmoss.com"
     }
   ]
 }
