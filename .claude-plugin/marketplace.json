@@ -1,0 +1,12 @@
+{
+  "name": "moss-ai-token-cost-tracker",
+  "owner": { "name": "Moss" },
+  "metadata": { "description": "Marketplace for the Moss AI Token Cost Tracker dashboard" },
+  "plugins": [
+    {
+      "name": "moss-tracker",
+      "source": "./",
+      "description": "Local dashboard for tracking your team's Claude + ChatGPT token spend"
+    }
+  ]
+}

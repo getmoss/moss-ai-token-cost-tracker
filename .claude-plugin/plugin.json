@@ -1,0 +1,8 @@
+{
+  "name": "moss-tracker",
+  "displayName": "Moss AI Token Cost Tracker",
+  "description": "Local dashboard for tracking your team's Claude + ChatGPT token spend. No data leaves your machine.",
+  "author": { "name": "Moss" },
+  "license": "MIT",
+  "keywords": ["anthropic", "openai", "cost", "usage", "dashboard"]
+}
