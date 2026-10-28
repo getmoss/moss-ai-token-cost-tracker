@@ -30,6 +30,11 @@ function resolveRoot() {
   return bundleMatch ? dirname(bundleMatch[1]) : execDir;
 }
 const ROOT = resolveRoot();
+// Where to persist user state (.env, .server.pid) — defaults to ROOT for the manual-clone/
+// npm-start flow, but a plugin's own directory (${CLAUDE_PLUGIN_ROOT}) is a versioned cache
+// that can be replaced on update, so the Claude Code skill points this at the plugin's
+// persistent data dir instead via MOSS_STATE_DIR.
+const STATE_DIR = process.env.MOSS_STATE_DIR || ROOT;
 
 // Icons used to be hand-flattened SVG strings baked directly into the ICONS maps below and
 // into index.html itself — hard to browse or tweak as one-line strings buried in a huge
@@ -115,7 +120,7 @@ const FAVICON_LINK_TAG = `<link rel="icon" type="image/svg+xml" href="data:image
 // `npm start` just falls back to the next one, piling up over time. This file records
 // whichever process last actually bound the port; startup uses it to stop that one first,
 // so the port is always free again.
-const PID_FILE = join(ROOT, ".server.pid");
+const PID_FILE = join(STATE_DIR, ".server.pid");
 
 function isProcessAlive(pid) {
   try {
@@ -172,7 +177,7 @@ async function killStalePreviousInstance() {
 // their API keys in. In dev this just finds nothing until the setup flow is used there
 // too, and --env-file=.env (see package.json) keeps doing the work as before.
 function loadExternalConfig() {
-  const configPath = join(ROOT, ".env");
+  const configPath = join(STATE_DIR, ".env");
   if (!existsSync(configPath)) return;
   for (const line of readFileSync(configPath, "utf8").split("\n")) {
     const trimmed = line.trim();
@@ -280,7 +285,7 @@ function applyProviderKeys(anthropicKey, openaiKey) {
   const lines = [];
   if (KEY) lines.push(`ANTHROPIC_ADMIN_KEY=${KEY}`);
   if (OPENAI_KEY) lines.push(`OPENAI_ADMIN_KEY=${OPENAI_KEY}`);
-  const configPath = join(ROOT, ".env");
+  const configPath = join(STATE_DIR, ".env");
   // Synchronous and immediate, not deferred to "later" — a few bytes to a local file is
   // effectively instant, and doing it synchronously means two overlapping requests can't
   // interleave two partial writes (Node can't preempt this function mid-execution).
@@ -2356,7 +2361,7 @@ const PROVIDER_COPY = {
     keyPrefix: "sk-ant-",
     steps: [
       {
-        text: "Make sure you're signed in as your organization's <b>primary owner</b> — only they can create Analytics API keys. Other roles (including org owner) only see Compliance API scopes here, not Analytics.",
+        text: "Make sure you're signed in as your organization's <b>primary owner</b> - only they can create Analytics API keys. Other roles (including org owner) only see Compliance API scopes here, not Analytics.",
       },
       {
         text: "Go to your organization's API access settings in claude.ai.",
@@ -2396,10 +2401,13 @@ const PROVIDER_COPY = {
     helpGuideLabel: "ChatGPT Admin key guide",
     keyPrefix: "sk-",
     steps: [
+      {
+        text: "Make sure you're signed in with the <b>owner</b> role in your organization - only owners can create Admin API keys. If you don't have this role, ask your organization's owner to create one instead.",
+      },
       { text: "Go to your ChatGPT admin keys page.", chip: true },
       { text: "Click <b>Create new admin key</b>." },
       {
-        text: "If it asks you to choose permissions, select <b>Read only</b> - then copy the key and paste it below either way.",
+        text: "If it asks you to choose permissions, select <b>Read only</b> — then copy the key and paste it below either way.",
       },
     ],
     fieldLabelSelf: "ChatGPT Admin API key",

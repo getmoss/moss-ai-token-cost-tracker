@@ -7,6 +7,36 @@ A dashboard for tracking your team's AI token spend (Claude + ChatGPT) - no data
 Complete the one-time installation below, then just repeat the "How to run the app" steps whenever you want to use the dashboard again.
 
 <details>
+<summary>Claude Code plugin (fastest option)</summary>
+
+Works in a terminal Claude Code session, or in the **Code** tab of the [Claude desktop app](https://claude.com/download) (make sure the session's environment is set to **Local**, not Cloud or SSH - this tool needs to run on your own machine).
+
+1. Start a Claude Code session: open a terminal and run `claude`, or open the **Code** tab in the Claude desktop app and start a new Local session.
+2. Install the plugin:
+   - **Terminal**: inside the session, run:
+     ```
+     /plugin marketplace add getmoss/moss-ai-token-cost-tracker
+     /plugin install moss-tracker@moss-ai-token-cost-tracker
+     ```
+   - **Desktop app**: click **+** next to the prompt box, select **Add plugins** (or **Manage plugins** → **Browse plugins**), then search for and install `moss-tracker`. You can also type the same `/plugin` commands directly in the prompt box.
+3. After installing, `/moss-tracker:start` won't work yet in the same session - run `/reload-plugins`, or just start a new session, before using it.
+
+#### How to run the app
+
+Inside a Claude Code session (terminal or desktop app), run `/moss-tracker:start` any time you want to start or restart the dashboard.
+
+#### Keeping it up to date
+
+Either turn on auto-update once (`/plugin` → Marketplaces → select this marketplace → "Enable auto-update"), or update manually:
+
+```
+/plugin marketplace update moss-ai-token-cost-tracker
+/plugin update moss-tracker@moss-ai-token-cost-tracker
+```
+
+</details>
+
+<details>
 <summary>AI prompt setup guide (GIF)</summary>
 
 ![AI prompt setup guide](assets/gif/MossAI-prompt.gif)
