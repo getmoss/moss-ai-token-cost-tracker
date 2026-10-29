@@ -63,7 +63,12 @@ connections are kept outside the plugin installation and survive plugin updates.
 
 #### Keeping it up to date
 
-Ask Codex to update the Moss plugin, or refresh its marketplace from your terminal:
+On the first dashboard start or open request in each chat, the plugin instructs
+Codex to check its marketplace and apply a newer version when the client supports
+it. If a new chat, app restart, or action in Plugins is needed, Codex will tell you.
+If the update check fails, the installed version can still open.
+
+You can also ask Codex to update explicitly, or refresh its marketplace from your terminal:
 
 ```sh
 codex plugin marketplace upgrade moss-ai-token-cost-tracker
@@ -95,7 +100,9 @@ Inside a Claude Code session (terminal or desktop app), run `/moss-tracker:start
 
 #### Keeping it up to date
 
-Either turn on auto-update once (`/plugin` → Marketplaces → select this marketplace → "Enable auto-update"), or update manually:
+The launch skill checks for updates on its first start/open request in each chat.
+You can also enable Claude Code's marketplace auto-update (`/plugin` → Marketplaces
+→ select this marketplace → "Enable auto-update"), or update manually:
 
 ```
 /plugin marketplace update moss-ai-token-cost-tracker
