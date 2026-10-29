@@ -21,9 +21,25 @@ Run the bundled dashboard on the user's computer. Installation already includes
    dependencies to install. Use an existing compatible runtime or version manager
    when available. If Node is missing, follow the platform's installation guidance
    in the bundled README; do not assume nvm is installed or use an outdated runtime.
-4. Run the helper below, replacing `<plugin-root>` with the resolved absolute path.
-   Keep it in a managed, long-running terminal session and retain that session for
-   later stop requests. Do not wait for the server process to exit before replying.
+4. **Reuse before launching.** A request to start or open the dashboard does not
+   mean restart it. Check the managed terminal session from an earlier launch.
+   If it is still running, open its existing URL and do not launch another process.
+   In a new chat, determine the same persistent state directory described below
+   (the helper exports `resolveStateDirectory()`), read only its `.server.pid`,
+   and use the operating system's process/listener tools to verify that PID belongs
+   to Moss and find its actual listening port. Open that existing URL if healthy.
+   If the PID file is missing or stale, inspect listeners on the requested port
+   (default 4173) and the fallback range through port + 9 for a running Moss server.
+   Verify the process's command and app path; a busy port alone does not identify
+   Moss. Do not inspect dashboard pages, provider data, or `.env` for this check.
+   If a confirmed Moss instance is running, reuse it even if it was launched from
+   an older plugin cache or a manual installation. Do not start a second instance
+   with a different state directory merely because the current PID file is absent.
+
+   Only if no running Moss instance is found, run the helper below, replacing
+   `<plugin-root>` with the resolved absolute path. Keep it in a managed,
+   long-running terminal session and retain its URL and server PID for later
+   requests. Do not wait for the server process to exit before replying.
 
    ```sh
    node "<plugin-root>/scripts/start-plugin.mjs"
@@ -44,17 +60,27 @@ Run the bundled dashboard on the user's computer. Installation already includes
    the user can connect accounts through the local setup screen.
 5. Wait for the server's `AI token spend dashboard running at ...` message.
    Open that exact URL with an available local browser-opening tool, and provide
-   a clickable link. The default is `http://localhost:4173`, but the server tries
-   subsequent ports if needed. If browser opening is unavailable, provide the link
-   for the user to open. Never claim startup succeeded before seeing the URL.
+   a clickable link. The default is `http://localhost:4173`. The server can try
+   subsequent ports, but allow this only when the preferred port belongs to a
+   different application. If another Moss process occupies it, reuse that process
+   instead. Do not change `PORT` or repeatedly relaunch to bypass an existing Moss
+   instance. If sandbox permissions prevent process inspection or stopping an
+   instance, resolve the permission failure or explain it; do not create another
+   instance on a higher port. If browser opening is unavailable, provide the link
+   for the user to open. For a reused instance, verify its process and listener
+   are still alive before reporting the existing URL.
 6. Explain that they can enter provider Admin API keys in the local dashboard, or
    choose **Preview with sample data** without keys. Leave key entry to the user.
    Do not inspect dashboard contents or retrieve spend data merely to verify launch.
 
 ## Stop, restart, and update
 
-- To restart, run the same helper with the same state directory. The server
-  replaces its previous instance using its own PID file.
+- Restart only when the user explicitly requests it, or after applying an app
+  update. Stop the verified existing Moss instance first and wait for its process
+  to exit and listening port to be released. Then run the helper with the same
+  state directory and preferred port. The server's PID-file cleanup is a fallback;
+  do not assume it succeeded. If stopping fails, diagnose that failure instead of
+  launching another copy. Never switch state directories to work around it.
 - To stop, interrupt the managed terminal session you started, or send SIGTERM
   only to its known server PID. If ownership is unclear, verify the process's
   command and server path first. Never use `pkill`, name-pattern matching, or stop

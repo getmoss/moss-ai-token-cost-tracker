@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "moss-tracker",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Use this when the user wants to review or understand their organisation’s OpenAI or Anthropic API usage and costs from connected accounts, or to set up, open, restart, or stop the Moss AI Spend Tracker dashboard. Opens the local dashboard, which retrieves usage and cost data for finance reporting; does not retrieve data into chat. Does not change provider settings or enforce spending limits. Do not use for ChatGPT or Claude subscription billing, or general model pricing questions.",
   "author": {
     "name": "Moss",
