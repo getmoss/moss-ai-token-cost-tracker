@@ -7,7 +7,75 @@ A dashboard for tracking your team's AI token spend (Claude + ChatGPT) - no data
 Complete the one-time installation below, then just repeat the "How to run the app" steps whenever you want to use the dashboard again.
 
 <details>
-<summary>Claude Code plugin (fastest option)</summary>
+<summary>Codex / ChatGPT desktop plugin</summary>
+
+Works in a local Codex chat in the ChatGPT desktop app, or in Codex CLI. The
+dashboard runs on your own computer. You do not need to clone this project or
+open its folder.
+
+#### Installation (one-time)
+
+**ChatGPT desktop app**
+
+1. Open Codex in the ChatGPT desktop app and start a **Local** chat.
+2. Ask Codex:
+
+   ```text
+   Install the moss-tracker plugin from the GitHub marketplace
+   getmoss/moss-ai-token-cost-tracker for me.
+   ```
+
+   Codex can run the installation commands below for you. The plugin is downloaded
+   automatically from GitHub.
+3. Restart the desktop app, open **Plugins**, and enable **Moss AI Token Cost Tracker**
+   from the **Moss AI Token Cost Tracker** marketplace source if it is not already enabled.
+4. Start a new local chat before using the plugin for the first time.
+
+**Terminal / Codex CLI**
+
+Run these commands in your terminal from any folder:
+
+```sh
+codex plugin marketplace add getmoss/moss-ai-token-cost-tracker
+codex plugin add moss-tracker@moss-ai-token-cost-tracker
+codex
+```
+
+In Codex, `/plugins` opens the plugin browser. Start a new session after installing
+if Codex was already running.
+
+#### How to run the app
+
+In a local Codex chat (desktop or terminal), ask:
+
+```text
+Use the moss-tracker plugin to start the dashboard.
+```
+
+Codex checks Node.js, launches the installed plugin, and opens the local dashboard
+in your browser. Node.js 24.21.0 or newer is required; Codex can help set it up if
+it is missing. Enter provider Admin API keys only in the local dashboard, or click
+**Preview with sample data** to try it without keys.
+
+Use the same request whenever you want to open the app again. You can also ask
+Codex to restart the dashboard or stop the instance it started. Saved provider
+connections are kept outside the plugin installation and survive plugin updates.
+
+#### Keeping it up to date
+
+Ask Codex to update the Moss plugin, or refresh its marketplace from your terminal:
+
+```sh
+codex plugin marketplace upgrade moss-ai-token-cost-tracker
+```
+
+Apply the plugin update in **Plugins**, then start a new local chat and ask Codex
+to start the dashboard again.
+
+</details>
+
+<details>
+<summary>Claude Code plugin</summary>
 
 Works in a terminal Claude Code session, or in the **Code** tab of the [Claude desktop app](https://claude.com/download) (make sure the session's environment is set to **Local**, not Cloud or SSH - this tool needs to run on your own machine).
 

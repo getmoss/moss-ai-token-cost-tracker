@@ -1,0 +1,20 @@
+{
+  "name": "moss-ai-token-cost-tracker",
+  "interface": {
+    "displayName": "Moss AI Token Cost Tracker"
+  },
+  "plugins": [
+    {
+      "name": "moss-tracker",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
