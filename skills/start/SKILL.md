@@ -6,6 +6,45 @@ description: Use this when the user wants to review or understand their organisa
 Run the bundled dashboard on the user's computer. Installation already includes
 `server.mjs`, `index.html`, `lib/`, and assets; do not clone another copy.
 
+## Check for updates before opening
+
+On the first start/open/restart request in each chat, check this plugin's configured
+marketplace for updates before selecting the app to run. Do not repeat the check
+in the same chat unless the user asks to update. A stop-only request skips it.
+Respect an explicit request to skip updates. Check only the configured source and
+ref; do not switch branches, unpin a release, or overwrite a local development copy.
+
+- **Codex:** refresh with
+  `codex plugin marketplace upgrade moss-ai-token-cost-tracker`, then inspect
+  `codex plugin list --available --marketplace moss-ai-token-cost-tracker --json`.
+  Compare the available plugin version with the installed `plugin.json` version.
+  If a newer version exists, use the client's supported update mechanism. The
+  CLI provides `codex plugin add moss-tracker@moss-ai-token-cost-tracker`; verify
+  its result and installed manifest rather than assuming an already-installed
+  plugin was updated. If this client only applies updates through Plugins, report
+  the available version and the required action. Do not uninstall the plugin as
+  an update workaround or modify the installed cache by hand.
+- **Claude Code:** refresh with
+  `/plugin marketplace update moss-ai-token-cost-tracker`, then apply available
+  updates with `/plugin update moss-tracker@moss-ai-token-cost-tracker`. Use these
+  as Claude Code commands, not shell commands. Verify the resulting version.
+- A marketplace refresh alone does not prove the installed plugin was updated.
+  After a verified update, resolve the new installed plugin root and read its
+  `skills/start/SKILL.md` before continuing. Retain the same persistent state
+  directory, and mark the update check complete to avoid recursive update checks.
+  If the client requires a new chat or app restart to load the update, explain
+  that requirement rather than claiming the current chat has loaded the new skill.
+- If the check fails because the network, permissions, or update mechanism is
+  unavailable, do not retry repeatedly or block opening an otherwise working
+  dashboard. Continue with the installed version and mention briefly that the
+  update check or application could not complete. Never claim an update succeeded
+  without verification. Do not fetch keys, provider usage, or dashboard contents
+  to check for updates.
+
+If a newer version was installed and can be used in this chat, restart a verified
+running Moss instance once using the restart procedure below, keeping its state
+directory and preferred port. Otherwise reuse the running instance as usual.
+
 ## Set up and open
 
 1. Use a local execution environment with terminal access. A cloud or remote
@@ -87,14 +126,10 @@ Run the bundled dashboard on the user's computer. Installation already includes
   an unrelated process occupying the preferred port.
 - Diagnose failures using the exit status and non-secret error output. Explain
   missing runtime or permission requirements without exposing credentials.
-- Update only when requested. In Claude Code use
-  `/plugin marketplace update moss-ai-token-cost-tracker`, then
-  `/plugin update moss-tracker@moss-ai-token-cost-tracker`. In Codex refresh this
-  marketplace with `codex plugin marketplace upgrade moss-ai-token-cost-tracker`
-  and use the desktop plugin manager to apply the update. For a locally edited
-  marketplace, refresh/reinstall the plugin from that source. Restart the desktop
-  app or start a new chat if necessary to load the changed skill, then relaunch.
-  Do not run `git pull` in an installed plugin cache.
+- For an explicit update request, run the update check above even if this chat
+  already checked. Report an update failure clearly. For a local development
+  marketplace, use the client's refresh/reinstall flow without changing source
+  files. Do not run `git pull` in an installed plugin cache.
 
 ## Credentials and scope
 
