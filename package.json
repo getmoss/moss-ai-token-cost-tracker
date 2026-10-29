@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node --env-file-if-exists=.env server.mjs",
     "reset-onboarding": "bash reset-onboarding.sh",
-    "test": "node --test"
+    "test": "node --test",
+    "start:plugin": "node scripts/start-plugin.mjs",
+    "package:plugin": "python3 scripts/package-plugin.py"
   }
 }

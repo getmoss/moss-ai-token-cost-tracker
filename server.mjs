@@ -31,9 +31,9 @@ function resolveRoot() {
 }
 const ROOT = resolveRoot();
 // Where to persist user state (.env, .server.pid) — defaults to ROOT for the manual-clone/
-// npm-start flow, but a plugin's own directory (${CLAUDE_PLUGIN_ROOT}) is a versioned cache
-// that can be replaced on update, so the Claude Code skill points this at the plugin's
-// persistent data dir instead via MOSS_STATE_DIR.
+// npm-start flow. Plugin installs live in versioned caches that can be replaced on
+// update, so scripts/start-plugin.mjs selects a persistent data directory and passes
+// it via MOSS_STATE_DIR for both Codex and Claude Code.
 const STATE_DIR = process.env.MOSS_STATE_DIR || ROOT;
 
 // Icons used to be hand-flattened SVG strings baked directly into the ICONS maps below and
