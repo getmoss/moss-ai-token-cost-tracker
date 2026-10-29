@@ -10,8 +10,7 @@ Complete the one-time installation below, then just repeat the "How to run the a
 <summary>Codex / ChatGPT desktop plugin</summary>
 
 Works in a local Codex chat in the ChatGPT desktop app, or in Codex CLI. The
-dashboard runs on your own computer. You do not need to clone this project or
-open its folder.
+dashboard runs on your own computer.
 
 #### Installation (one-time)
 
@@ -57,8 +56,9 @@ in your browser. Node.js 24.21.0 or newer is required; Codex can help set it up 
 it is missing. Enter provider Admin API keys only in the local dashboard, or click
 **Preview with sample data** to try it without keys.
 
-Use the same request whenever you want to open the app again. You can also ask
-Codex to restart the dashboard or stop the instance it started. Saved provider
+Use the same request whenever you want to open the app again. Codex reuses an
+already-running dashboard and its existing address. You can also ask Codex to
+restart the dashboard or stop the instance it started. Saved provider
 connections are kept outside the plugin installation and survive plugin updates.
 
 #### Keeping it up to date
