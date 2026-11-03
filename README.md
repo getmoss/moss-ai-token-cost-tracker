@@ -290,11 +290,13 @@ To stop the tool, return to Terminal and press `Ctrl + C`. To use it again later
 
 </details>
 
-## How it works and how your data stays local
+## Privacy
 
 This tool runs entirely on your own computer - no cloud server, no sign-up, no Moss-hosted service. Your API keys live only in a local `.env` file, and your computer uses them to fetch usage and spend data directly from Anthropic/OpenAI and show it on screen.
 
-Nothing - not your keys, not your usage data, not your spend data - is ever sent to Moss or any other third party.
+To build the per-user cost and usage breakdown, the dashboard reads names and email addresses that Anthropic's and OpenAI's own admin APIs return for your organisation's members. That data is only ever displayed in your browser - it is cached briefly in memory on your machine and in your browser's local/session storage so the dashboard loads faster, and is never written to a server-side database, logged, or retained beyond that.
+
+Nothing - not your keys, not your usage data, not your spend data, not the names or emails shown in the dashboard - is ever sent to Moss or any other third party. The only network calls this tool makes are the ones your own computer sends directly to `api.anthropic.com` and `api.openai.com` using your own keys.
 
 ## Requirements
 

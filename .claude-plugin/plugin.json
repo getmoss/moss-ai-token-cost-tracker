@@ -9,6 +9,7 @@
   "homepage": "https://github.com/getmoss/moss-ai-token-cost-tracker",
   "repository": "https://github.com/getmoss/moss-ai-token-cost-tracker",
   "supportUrl": "https://github.com/getmoss/moss-ai-token-cost-tracker/issues",
+  "privacyPolicyUrl": "https://github.com/getmoss/moss-ai-token-cost-tracker#privacy",
   "license": "MIT",
   "keywords": [
     "anthropic",
