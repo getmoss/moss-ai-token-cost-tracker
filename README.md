@@ -298,6 +298,11 @@ To build the per-user cost and usage breakdown, the dashboard reads names and em
 
 Nothing - not your keys, not your usage data, not your spend data, not the names or emails shown in the dashboard - is ever sent to Moss or any other third party. The only network calls this tool makes are the ones your own computer sends directly to `api.anthropic.com` and `api.openai.com` using your own keys.
 
+## Releasing a new plugin version
+
+1. Bump `version` in `plugin.json` and `.claude-plugin/plugin.json` (must match).
+2. Run `npm run package:plugin` → outputs `dist/moss-ai-token-cost-tracker-<version>.zip`.
+
 ## Requirements
 
 - [Node.js](https://nodejs.org/en/download) 24.21.0 or newer

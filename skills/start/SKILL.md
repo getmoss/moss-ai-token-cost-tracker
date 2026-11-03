@@ -8,32 +8,49 @@ Run the bundled dashboard on the user's computer. Installation already includes
 
 ## Check for updates before opening
 
-On the first start/open/restart request in each chat, check this plugin's configured
-marketplace for updates before selecting the app to run. Do not repeat the check
-in the same chat unless the user asks to update. A stop-only request skips it.
-Respect an explicit request to skip updates. Check only the configured source and
-ref; do not switch branches, unpin a release, or overwrite a local development copy.
+On the first start/open/restart request in each chat, check for updates before
+selecting the app to run, using the flow for how this installation was obtained.
+Do not repeat the check in the same chat unless the user asks to update. A
+stop-only request skips it. Respect an explicit request to skip updates. Check
+only the configured source and ref; do not switch branches, unpin a release, or
+overwrite a local development copy.
 
-- **Codex:** refresh with
-  `codex plugin marketplace upgrade moss-ai-token-cost-tracker`, then inspect
-  `codex plugin list --available --marketplace moss-ai-token-cost-tracker --json`.
-  Compare the available plugin version with the installed `plugin.json` version.
-  If a newer version exists, use the client's supported update mechanism. The
-  CLI provides `codex plugin add moss-ai-token-cost-tracker@moss-ai-token-cost-tracker`; verify
-  its result and installed manifest rather than assuming an already-installed
-  plugin was updated. If this client only applies updates through Plugins, report
-  the available version and the required action. Do not uninstall the plugin as
-  an update workaround or modify the installed cache by hand.
-- **Claude Code:** refresh with
-  `/plugin marketplace update moss-ai-token-cost-tracker`, then apply available
-  updates with `/plugin update moss-ai-token-cost-tracker@moss-ai-token-cost-tracker`. Use these
-  as Claude Code commands, not shell commands. Verify the resulting version.
-- A marketplace refresh alone does not prove the installed plugin was updated.
-  After a verified update, resolve the new installed plugin root and read its
-  `skills/start/SKILL.md` before continuing. Retain the same persistent state
-  directory, and mark the update check complete to avoid recursive update checks.
-  If the client requires a new chat or app restart to load the update, explain
-  that requirement rather than claiming the current chat has loaded the new skill.
+- **Installed from the OpenAI Plugin Directory:** use the host's supported
+  Plugins update flow (for example, its Plugins/Extensions settings or an
+  update check built into that surface) to see whether a newer version is
+  available, and apply it only through that flow. Do not add or point this
+  installation at the `getmoss/moss-ai-token-cost-tracker` GitHub marketplace,
+  and do not replace a directory installation with a GitHub-sourced copy of the
+  plugin — they are different distribution channels and must not be mixed.
+  If no directory update check is available in this host, do not fall back to
+  the GitHub marketplace commands below; continue using the installed version
+  and explain that updates for a Plugin Directory installation are managed
+  through Plugins, not through this chat.
+- **Installed from the configured GitHub marketplace** (added via
+  `codex plugin marketplace add getmoss/moss-ai-token-cost-tracker` or the
+  Claude Code `/plugin marketplace add` equivalent): use the commands below for
+  that client.
+  - **Codex:** refresh with
+    `codex plugin marketplace upgrade moss-ai-token-cost-tracker`, then inspect
+    `codex plugin list --available --marketplace moss-ai-token-cost-tracker --json`.
+    Compare the available plugin version with the installed `plugin.json` version.
+    If a newer version exists, use the client's supported update mechanism. The
+    CLI provides `codex plugin add moss-ai-token-cost-tracker@moss-ai-token-cost-tracker`; verify
+    its result and installed manifest rather than assuming an already-installed
+    plugin was updated. If this client only applies updates through Plugins, report
+    the available version and the required action. Do not uninstall the plugin as
+    an update workaround or modify the installed cache by hand.
+  - **Claude Code:** refresh with
+    `/plugin marketplace update moss-ai-token-cost-tracker`, then apply available
+    updates with `/plugin update moss-ai-token-cost-tracker@moss-ai-token-cost-tracker`. Use these
+    as Claude Code commands, not shell commands. Verify the resulting version.
+- A marketplace or directory refresh alone does not prove the installed plugin
+  was updated. After a verified update, resolve the new installed plugin root
+  and read its `skills/start/SKILL.md` before continuing. Retain the same
+  persistent state directory, and mark the update check complete to avoid
+  recursive update checks. If the client requires a new chat or app restart to
+  load the update, explain that requirement rather than claiming the current
+  chat has loaded the new skill.
 - If the check fails because the network, permissions, or update mechanism is
   unavailable, do not retry repeatedly or block opening an otherwise working
   dashboard. Continue with the installed version and mention briefly that the

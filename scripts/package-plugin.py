@@ -16,7 +16,8 @@ def build_package():
     # metadata must not enter a distributable, even if they are untracked.
     files = [
         ROOT / name for name in (
-            "plugin.json", ".claude-plugin/plugin.json", "README.md", "LICENSE",
+            "plugin.json", ".claude-plugin/plugin.json", ".claude-plugin/icon.png",
+            "assets/icon.png", "README.md", "LICENSE",
             "package.json", "server.mjs", "index.html", "reset-onboarding.sh",
             "scripts/start-plugin.mjs", "skills/start/SKILL.md", "assets/styles.css",
         )

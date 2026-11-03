@@ -2421,7 +2421,8 @@ const PROVIDER_COPY = {
       "This ChatGPT key doesn't have Admin permissions. Ask whoever created it to generate an Admin API key, not a standard API key.",
     requestMessage:
       "Hi, I'm setting up Moss AI Token Cost Tracker, a local finance tool provided by Moss (a German fintech company) to compare AI token costs across providers. Could you create an Admin API key for our ChatGPT organisation?\n\n" +
-      "1. Go to https://platform.openai.com/settings/organization/keys\n\n" +
+      "Note: only someone with the organization's owner role can do this — if you don't have that role, someone else will need to do this instead.\n\n" +
+      "1. Go to https://platform.openai.com/settings/organization/admin-keys\n\n" +
       '2. Click "Create new admin key".\n\n' +
       '3. Select "Read only" if asked to choose permissions.\n\n' +
       "4. Copy the key and share it with me securely.\n\n" +
