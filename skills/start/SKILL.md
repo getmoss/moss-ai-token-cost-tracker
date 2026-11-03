@@ -19,14 +19,14 @@ ref; do not switch branches, unpin a release, or overwrite a local development c
   `codex plugin list --available --marketplace moss-ai-token-cost-tracker --json`.
   Compare the available plugin version with the installed `plugin.json` version.
   If a newer version exists, use the client's supported update mechanism. The
-  CLI provides `codex plugin add moss-tracker@moss-ai-token-cost-tracker`; verify
+  CLI provides `codex plugin add moss-ai-token-cost-tracker@moss-ai-token-cost-tracker`; verify
   its result and installed manifest rather than assuming an already-installed
   plugin was updated. If this client only applies updates through Plugins, report
   the available version and the required action. Do not uninstall the plugin as
   an update workaround or modify the installed cache by hand.
 - **Claude Code:** refresh with
   `/plugin marketplace update moss-ai-token-cost-tracker`, then apply available
-  updates with `/plugin update moss-tracker@moss-ai-token-cost-tracker`. Use these
+  updates with `/plugin update moss-ai-token-cost-tracker@moss-ai-token-cost-tracker`. Use these
   as Claude Code commands, not shell commands. Verify the resulting version.
 - A marketplace refresh alone does not prove the installed plugin was updated.
   After a verified update, resolve the new installed plugin root and read its

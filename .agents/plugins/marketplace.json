@@ -5,7 +5,7 @@
   },
   "plugins": [
     {
-      "name": "moss-tracker",
+      "name": "moss-ai-token-cost-tracker",
       "source": {
         "source": "local",
         "path": "./"

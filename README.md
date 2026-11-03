@@ -20,7 +20,7 @@ dashboard runs on your own computer.
 2. Ask Codex:
 
    ```text
-   Install the moss-tracker plugin from the GitHub marketplace
+   Install the moss-ai-token-cost-tracker plugin from the GitHub marketplace
    getmoss/moss-ai-token-cost-tracker for me.
    ```
 
@@ -36,7 +36,7 @@ Run these commands in your terminal from any folder:
 
 ```sh
 codex plugin marketplace add getmoss/moss-ai-token-cost-tracker
-codex plugin add moss-tracker@moss-ai-token-cost-tracker
+codex plugin add moss-ai-token-cost-tracker@moss-ai-token-cost-tracker
 codex
 ```
 
@@ -48,7 +48,7 @@ if Codex was already running.
 In a local Codex chat (desktop or terminal), ask:
 
 ```text
-Use the moss-tracker plugin to start the dashboard.
+Use the moss-ai-token-cost-tracker plugin to start the dashboard.
 ```
 
 Codex checks Node.js, launches the installed plugin, and opens the local dashboard
@@ -89,14 +89,14 @@ Works in a terminal Claude Code session, or in the **Code** tab of the [Claude d
    - **Terminal**: inside the session, run:
      ```
      /plugin marketplace add getmoss/moss-ai-token-cost-tracker
-     /plugin install moss-tracker@moss-ai-token-cost-tracker
+     /plugin install moss-ai-token-cost-tracker@moss-ai-token-cost-tracker
      ```
-   - **Desktop app**: click **+** next to the prompt box, select **Add plugins** (or **Manage plugins** → **Browse plugins**), then search for and install `moss-tracker`. You can also type the same `/plugin` commands directly in the prompt box.
-3. After installing, `/moss-tracker:start` won't work yet in the same session - run `/reload-plugins`, or just start a new session, before using it.
+   - **Desktop app**: click **+** next to the prompt box, select **Add plugins** (or **Manage plugins** → **Browse plugins**), then search for and install `moss-ai-token-cost-tracker`. You can also type the same `/plugin` commands directly in the prompt box.
+3. After installing, `/moss-ai-token-cost-tracker:start` won't work yet in the same session - run `/reload-plugins`, or just start a new session, before using it.
 
 #### How to run the app
 
-Inside a Claude Code session (terminal or desktop app), run `/moss-tracker:start` any time you want to start or restart the dashboard.
+Inside a Claude Code session (terminal or desktop app), run `/moss-ai-token-cost-tracker:start` any time you want to start or restart the dashboard.
 
 #### Keeping it up to date
 
@@ -106,7 +106,7 @@ You can also enable Claude Code's marketplace auto-update (`/plugin` → Marketp
 
 ```
 /plugin marketplace update moss-ai-token-cost-tracker
-/plugin update moss-tracker@moss-ai-token-cost-tracker
+/plugin update moss-ai-token-cost-tracker@moss-ai-token-cost-tracker
 ```
 
 </details>

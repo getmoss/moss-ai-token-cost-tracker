@@ -28,7 +28,7 @@ def build_package():
     for file in files:
         if not file.is_file() or file.is_symlink() or not file.resolve().is_relative_to(ROOT):
             raise ValueError(f"Missing or unsafe package file: {file.relative_to(ROOT)}")
-    output = ROOT / "dist" / f"moss-tracker-{version}.zip"
+    output = ROOT / "dist" / f"moss-ai-token-cost-tracker-{version}.zip"
     output.parent.mkdir(exist_ok=True)
     with ZipFile(output, "w", ZIP_DEFLATED) as archive:
         for file in files:

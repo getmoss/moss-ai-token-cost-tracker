@@ -1,5 +1,5 @@
 {
-  "name": "moss-tracker",
+  "name": "moss-ai-token-cost-tracker",
   "displayName": "Moss AI Token Cost Tracker",
   "description": "AI Spend Tracker brings your organisation's OpenAI and Anthropic API usage and costs into one view for finance teams. Connect your provider accounts to understand AI spending without switching between dashboards. Built with love by Moss, the spend management platform.",
   "author": {
