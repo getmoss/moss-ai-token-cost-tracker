@@ -6,6 +6,9 @@
     "name": "Moss"
   },
   "icon": "./.claude-plugin/icon.png",
+  "homepage": "https://github.com/getmoss/moss-ai-token-cost-tracker",
+  "repository": "https://github.com/getmoss/moss-ai-token-cost-tracker",
+  "supportUrl": "https://github.com/getmoss/moss-ai-token-cost-tracker/issues",
   "license": "MIT",
   "keywords": [
     "anthropic",
